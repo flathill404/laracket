@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
+    use HasFactory;
+
     protected $guarded = [];
 
     public function organization()
@@ -21,12 +24,12 @@ class Project extends Model
     public function assignedTeams()
     {
         return $this->morphToMany(Team::class, 'assignable', 'project_assignments')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     public function assignedUsers()
     {
         return $this->morphToMany(User::class, 'assignable', 'project_assignments')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 }

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Ticket extends Model
 {
+    use HasFactory;
+
     protected $guarded = [];
 
     protected $casts = [
@@ -20,14 +23,14 @@ class Ticket extends Model
     public function assignees()
     {
         return $this->belongsToMany(User::class, 'ticket_user')
-                    ->wherePivot('role', 'assignee')
-                    ->withTimestamps();
+            ->wherePivot('role', 'assignee')
+            ->withTimestamps();
     }
 
     public function reviewers()
     {
         return $this->belongsToMany(User::class, 'ticket_user')
-                    ->wherePivot('role', 'reviewer')
-                    ->withTimestamps();
+            ->wherePivot('role', 'reviewer')
+            ->withTimestamps();
     }
 }
