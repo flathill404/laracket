@@ -1,0 +1,41 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('tickets', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('project_id')->constrained()->cascadeOnDelete();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->dateTime('deadline')->nullable();
+
+            // Open, In Progress, In Review, Done
+            $table->string('status')->default('Open');
+
+            $table->timestamps();
+        });
+
+        Schema::create('ticket_user', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('ticket_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+
+            // 'assignee' or 'reviewer'
+            $table->string('role');
+
+            $table->unique(['ticket_id', 'user_id', 'role']);
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('tickets');
+    }
+};
