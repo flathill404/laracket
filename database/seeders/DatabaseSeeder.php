@@ -46,7 +46,6 @@ class DatabaseSeeder extends Seeder
         $teamA->users()->attach($me->id, ['role' => 'leader']);
         $teamA->users()->attach($members->random(3)->pluck('id'), ['role' => 'member']);
 
-
         // --- Team B: 1 leader from members + 3 members ---
         $teamB = Team::factory()->create([
             'organization_id' => $myOrg->id,
@@ -61,7 +60,6 @@ class DatabaseSeeder extends Seeder
         $teamB->users()->attach($teamBLeader->id, ['role' => 'leader']);
         // Pick 3 from the REMAINING members
         $teamB->users()->attach($potentialMembers->random(3)->pluck('id'), ['role' => 'member']);
-
 
         // 5. Create projects (associated with the organization)
         $projects = Project::factory(3)->create([
