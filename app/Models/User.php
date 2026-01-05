@@ -45,4 +45,39 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function organization()
+    {
+        return $this->belongsTo(Organization::class);
+    }
+
+    public function teams()
+    {
+        return $this->belongsToMany(Team::class)
+                    ->withPivot('role')
+                    ->withTimestamps();
+    }
+
+    /**
+     * 個人として直接アサインされたプロジェクト
+     * (チーム経由のアサインはこれには含まれんから注意せよ)
+     */
+    public function assignedProjects()
+    {
+        return $this->morphedByMany(Project::class, 'assignable', 'project_assignments')
+                    ->withTimestamps();
+    }
+
+    public function assignedTickets()
+    {
+        return $this->belongsToMany(Ticket::class, 'ticket_user')
+                    ->wherePivot('role', 'assignee')
+                    ->withTimestamps();
+    }
+
+    public function reviewingTickets()
+    {
+        return $this->belongsToMany(Ticket::class, 'ticket_user')
+                    ->wherePivot('role', 'reviewer')
+                    ->withTimestamps();
+    }
 }
