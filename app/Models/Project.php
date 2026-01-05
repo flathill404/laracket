@@ -23,13 +23,13 @@ class Project extends Model
 
     public function assignedTeams()
     {
-        return $this->morphToMany(Team::class, 'assignable', 'project_assignments')
+        return $this->morphedByMany(Team::class, 'assignable', 'project_assignments')
             ->withTimestamps();
     }
 
     public function assignedUsers()
     {
-        return $this->morphToMany(User::class, 'assignable', 'project_assignments')
+        return $this->morphedByMany(User::class, 'assignable', 'project_assignments')
             ->withTimestamps();
     }
 }

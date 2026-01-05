@@ -53,8 +53,8 @@ class User extends Authenticatable
     public function teams()
     {
         return $this->belongsToMany(Team::class)
-                    ->withPivot('role')
-                    ->withTimestamps();
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
     /**
@@ -63,21 +63,21 @@ class User extends Authenticatable
      */
     public function assignedProjects()
     {
-        return $this->morphedByMany(Project::class, 'assignable', 'project_assignments')
-                    ->withTimestamps();
+        return $this->morphToMany(Project::class, 'assignable', 'project_assignments')
+            ->withTimestamps();
     }
 
     public function assignedTickets()
     {
         return $this->belongsToMany(Ticket::class, 'ticket_user')
-                    ->wherePivot('role', 'assignee')
-                    ->withTimestamps();
+            ->wherePivot('role', 'assignee')
+            ->withTimestamps();
     }
 
     public function reviewingTickets()
     {
         return $this->belongsToMany(Ticket::class, 'ticket_user')
-                    ->wherePivot('role', 'reviewer')
-                    ->withTimestamps();
+            ->wherePivot('role', 'reviewer')
+            ->withTimestamps();
     }
 }

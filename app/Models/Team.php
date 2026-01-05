@@ -25,7 +25,7 @@ class Team extends Model
 
     public function assignedProjects()
     {
-        return $this->morphedByMany(Project::class, 'assignable', 'project_assignments')
+        return $this->morphToMany(Project::class, 'assignable', 'project_assignments')
             ->withTimestamps();
     }
 }
