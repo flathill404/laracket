@@ -1,0 +1,27 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/var/www/html
+    working_dir: /var/www/html
+    environment:
+      XDEBUG_MODE: debug
+    command: sleep infinity
+
+  db:
+    image: mysql:8.4
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laracket
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+volumes:
+  db-data:
