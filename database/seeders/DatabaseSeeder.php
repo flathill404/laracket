@@ -36,7 +36,9 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 4. Create teams and assign members
-        // Team A: Myself (Leader) + 3 members
+
+        // --- Team A: Myself (Leader) + 3 members ---
+        // $me is separate from $members, so no conflict here.
         $teamA = Team::factory()->create([
             'organization_id' => $myOrg->id,
             'name' => 'Development Team',
@@ -44,13 +46,21 @@ class DatabaseSeeder extends Seeder
         $teamA->users()->attach($me->id, ['role' => 'leader']);
         $teamA->users()->attach($members->random(3)->pluck('id'), ['role' => 'member']);
 
-        // Team B: 1 leader from members + 3 members
+
+        // --- Team B: 1 leader from members + 3 members ---
         $teamB = Team::factory()->create([
             'organization_id' => $myOrg->id,
             'name' => 'Design Team',
         ]);
-        $teamB->users()->attach($members->random(1)->first()->id, ['role' => 'leader']);
-        $teamB->users()->attach($members->random(3)->pluck('id'), ['role' => 'member']);
+
+        // FIX: Pick a leader first, then exclude them from member selection
+        $teamBLeader = $members->random();
+        // Exclude the leader from the potential members list
+        $potentialMembers = $members->where('id', '!=', $teamBLeader->id);
+
+        $teamB->users()->attach($teamBLeader->id, ['role' => 'leader']);
+        // Pick 3 from the REMAINING members
+        $teamB->users()->attach($potentialMembers->random(3)->pluck('id'), ['role' => 'member']);
 
 
         // 5. Create projects (associated with the organization)
@@ -80,7 +90,7 @@ class DatabaseSeeder extends Seeder
                 $ticket->reviewers()->attach($me->id, ['role' => 'reviewer']);
             }
         }
-        
+
         // Just in case, create some data for another organization (for multi-tenant testing)
         Organization::factory()
             ->has(User::factory()->count(3))
