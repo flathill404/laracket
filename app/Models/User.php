@@ -49,12 +49,11 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * @return BelongsTo<Organization, $this>
-     */
-    public function organization(): BelongsTo
+    public function organizations()
     {
-        return $this->belongsTo(Organization::class);
+        return $this->belongsToMany(Organization::class)
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
     /**

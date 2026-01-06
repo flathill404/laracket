@@ -15,12 +15,11 @@ class Organization extends Model
 
     protected $guarded = [];
 
-    /**
-     * @return HasMany<User, $this>
-     */
-    public function users(): HasMany
+    public function users()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsToMany(User::class)
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
     /**
