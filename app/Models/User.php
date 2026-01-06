@@ -6,6 +6,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class User extends Authenticatable
 {
@@ -46,12 +49,18 @@ class User extends Authenticatable
         ];
     }
 
-    public function organization()
+    /**
+     * @return BelongsTo<Organization, $this>
+     */
+    public function organization(): BelongsTo
     {
         return $this->belongsTo(Organization::class);
     }
 
-    public function teams()
+    /**
+     * @return BelongsToMany<Team, $this>
+     */
+    public function teams(): BelongsToMany
     {
         return $this->belongsToMany(Team::class)
             ->withPivot('role')
@@ -61,21 +70,29 @@ class User extends Authenticatable
     /**
      * 個人として直接アサインされたプロジェクト
      * (チーム経由のアサインはこれには含まれんから注意せよ)
+     *
+     * @return MorphToMany<Project, $this>
      */
-    public function assignedProjects()
+    public function assignedProjects(): MorphToMany
     {
         return $this->morphToMany(Project::class, 'assignable', 'project_assignments')
             ->withTimestamps();
     }
 
-    public function assignedTickets()
+    /**
+     * @return BelongsToMany<Ticket, $this>
+     */
+    public function assignedTickets(): BelongsToMany
     {
         return $this->belongsToMany(Ticket::class, 'ticket_user')
             ->wherePivot('role', 'assignee')
             ->withTimestamps();
     }
 
-    public function reviewingTickets()
+    /**
+     * @return BelongsToMany<Ticket, $this>
+     */
+    public function reviewingTickets(): BelongsToMany
     {
         return $this->belongsToMany(Ticket::class, 'ticket_user')
             ->wherePivot('role', 'reviewer')
