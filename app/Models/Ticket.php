@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Ticket extends Model
 {
-    /** 
-     * @use HasFactory<\Database\Factories\TicketFactory> 
+    /**
+     * @use HasFactory<\Database\Factories\TicketFactory>
      */
     use HasFactory;
 

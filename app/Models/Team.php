@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Team extends Model
 {
-    /** 
-     * @use HasFactory<\Database\Factories\TeamFactory> 
+    /**
+     * @use HasFactory<\Database\Factories\TeamFactory>
      */
     use HasFactory;
 
