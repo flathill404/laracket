@@ -1,59 +1,72 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laracket API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Laracket is a robust backend API designed for a Ticket Management SaaS platform. It provides comprehensive features for managing organizations, projects, teams, and issue tracking tickets.
 
-## About Laravel
+## 🚀 Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Organization Management**: Multi-tenant support allowing users to belong to organizations.
+- **Project Tracking**: Create and manage projects with deadlines and summaries.
+- **Team Collaboration**: Flexible team structures with roles (Leader/Member).
+- **Ticket System**: Full lifecycle issue tracking (Open, In Progress, In Review, Done) with assignees and reviewers.
+- **Polymorphic Assignments**: flexible assignment system for projects.
+- **Secure API**: Authentication provided by Laravel Sanctum.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🛠 Tech Stack
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **PHP**: ^8.2
+- **Framework**: Laravel 12.x
+- **Database**: MySQL 8.4
+- **Environment**: Docker & DevContainers
 
-## Learning Laravel
+## 💻 Getting Started
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Prerequisites
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- Docker Desktop
+- VS Code (Recommended for DevContainer support)
 
-## Laravel Sponsors
+### Installation
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. **Clone the repository**
 
-### Premium Partners
+   ```bash
+   git clone <repository-url>
+   cd laracket
+    ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+2. **Start the Environment**
 
-## Contributing
+    This project is configured with DevContainers.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    - **VS Code**: Open the folder and click "Reopen in Container".
 
-## Code of Conduct
+    - **Manual Docker**:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+        ```bash
+        docker compose up -d
+        docker compose exec app bash
+        ```
 
-## Security Vulnerabilities
+3. **Setup Application**
+Run the convenient setup script included in `composer.json`. This command installs dependencies, sets up the `.env` file, generates the app key, and runs database migrations.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    ```bash
+    composer run setup
+    ```
 
-## License
+### 🏃‍♂️ Running Local Development
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+To start the server, queue worker, and other services:
+
+```bash
+composer run dev
+```
+
+This will run `php artisan serve`, queue listeners, and other dev tools concurrently.
+
+## 🗄️ Database Schema Overview
+
+- **Organizations**: Root entity.
+- **Teams**: Belongs to an Organization.
+- **Projects**: Belongs to an Organization. Can be assigned to various entities.
+- **Tickets**: Belongs to a Project. Contains status, deadline, and user assignments (Assignee/Reviewer).
