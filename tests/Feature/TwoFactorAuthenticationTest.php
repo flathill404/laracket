@@ -9,128 +9,123 @@ use Tests\TestCase;
 
 class TwoFactorAuthenticationTest extends TestCase
 {
-  use RefreshDatabase;
+    use RefreshDatabase;
 
+    public function test_user_can_enable_two_factor_authentication(): void
+    {
+        $user = User::factory()->create();
 
-  public function test_user_can_enable_two_factor_authentication(): void
-  {
-    $user = User::factory()->create();
+        $response = $this->actingAs($user)
+            ->withSession(['auth.password_confirmed_at' => time()])
+            ->postJson('/user/two-factor-authentication');
 
-    $response = $this->actingAs($user)
-      ->withSession(['auth.password_confirmed_at' => time()])
-      ->postJson('/user/two-factor-authentication');
+        $response->assertOk();
 
-    $response->assertOk();
+        $user->refresh();
+        $this->assertNotNull($user->two_factor_secret);
+        $this->assertNotNull($user->two_factor_recovery_codes);
+    }
 
-    $user->refresh();
-    $this->assertNotNull($user->two_factor_secret);
-    $this->assertNotNull($user->two_factor_recovery_codes);
-  }
+    public function test_user_can_get_two_factor_qr_code(): void
+    {
+        $user = User::factory()->create();
 
+        $this->actingAs($user)
+            ->withSession(['auth.password_confirmed_at' => time()])
+            ->postJson('/user/two-factor-authentication');
 
-  public function test_user_can_get_two_factor_qr_code(): void
-  {
-    $user = User::factory()->create();
+        $response = $this->getJson('/user/two-factor-qr-code');
 
-    $this->actingAs($user)
-      ->withSession(['auth.password_confirmed_at' => time()])
-      ->postJson('/user/two-factor-authentication');
+        $response->assertOk();
+        $this->assertStringContainsString('svg', $response->content());
+    }
 
-    $response = $this->getJson('/user/two-factor-qr-code');
+    public function test_user_can_confirm_two_factor_authentication(): void
+    {
+        $user = User::factory()->create();
 
-    $response->assertOk();
-    $this->assertStringContainsString('svg', $response->content());
-  }
+        $this->actingAs($user)
+            ->withSession(['auth.password_confirmed_at' => time()])
+            ->postJson('/user/two-factor-authentication');
 
+        $this->mock(TwoFactorAuthenticationProvider::class, function ($mock) {
+            $mock->shouldReceive('verify')->andReturn(true);
+        });
 
-  public function test_user_can_confirm_two_factor_authentication(): void
-  {
-    $user = User::factory()->create();
+        $response = $this->postJson('/user/confirmed-two-factor-authentication', [
+            'code' => '123456',
+        ]);
 
-    $this->actingAs($user)
-      ->withSession(['auth.password_confirmed_at' => time()])
-      ->postJson('/user/two-factor-authentication');
+        $response->assertOk();
 
-    $this->mock(TwoFactorAuthenticationProvider::class, function ($mock) {
-      $mock->shouldReceive('verify')->andReturn(true);
-    });
+        $user->refresh();
+        $this->assertNotNull($user->two_factor_confirmed_at);
+    }
 
-    $response = $this->postJson('/user/confirmed-two-factor-authentication', [
-      'code' => '123456',
-    ]);
+    public function test_user_can_authenticate_with_two_factor_code(): void
+    {
+        $user = User::factory()->create([
+            'two_factor_secret' => encrypt('dummy-secret'),
+            'two_factor_recovery_codes' => encrypt(json_encode(['dummy-recovery-code'])),
+            'two_factor_confirmed_at' => now(),
+        ]);
 
-    $response->assertOk();
+        $response = $this->postJson('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
 
-    $user->refresh();
-    $this->assertNotNull($user->two_factor_confirmed_at);
-  }
+        $response->assertJson(['two_factor' => true]);
+        $this->assertGuest();
 
+        $this->mock(TwoFactorAuthenticationProvider::class, function ($mock) {
+            $mock->shouldReceive('verify')->andReturn(true);
+        });
 
-  public function test_user_can_authenticate_with_two_factor_code(): void
-  {
-    $user = User::factory()->create([
-      'two_factor_secret' => encrypt('dummy-secret'),
-      'two_factor_recovery_codes' => encrypt(json_encode(['dummy-recovery-code'])),
-      'two_factor_confirmed_at' => now(),
-    ]);
+        $response = $this->postJson('/two-factor-challenge', [
+            'code' => '123456',
+        ]);
 
-    $response = $this->postJson('/login', [
-      'email' => $user->email,
-      'password' => 'password',
-    ]);
+        $response->assertNoContent();
+        $this->assertAuthenticatedAs($user);
+    }
 
-    $response->assertJson(['two_factor' => true]);
-    $this->assertGuest();
+    public function test_user_can_authenticate_with_recovery_code(): void
+    {
+        $user = User::factory()->create([
+            'two_factor_secret' => encrypt('dummy-secret'),
+            'two_factor_recovery_codes' => encrypt(json_encode(['valid-recovery-code'])),
+            'two_factor_confirmed_at' => now(),
+        ]);
 
-    $this->mock(TwoFactorAuthenticationProvider::class, function ($mock) {
-      $mock->shouldReceive('verify')->andReturn(true);
-    });
+        $this->postJson('/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
 
-    $response = $this->postJson('/two-factor-challenge', [
-      'code' => '123456',
-    ]);
+        $response = $this->postJson('/two-factor-challenge', [
+            'recovery_code' => 'valid-recovery-code',
+        ]);
 
-    $response->assertNoContent();
-    $this->assertAuthenticatedAs($user);
-  }
+        $response->assertNoContent();
+        $this->assertAuthenticatedAs($user);
+    }
 
+    public function test_user_can_disable_two_factor_authentication(): void
+    {
+        $user = User::factory()->create([
+            'two_factor_secret' => encrypt('secret'),
+            'two_factor_confirmed_at' => now(),
+        ]);
 
-  public function test_user_can_authenticate_with_recovery_code(): void
-  {
-    $user = User::factory()->create([
-      'two_factor_secret' => encrypt('dummy-secret'),
-      'two_factor_recovery_codes' => encrypt(json_encode(['valid-recovery-code'])),
-      'two_factor_confirmed_at' => now(),
-    ]);
+        $response = $this->actingAs($user)
+            ->withSession(['auth.password_confirmed_at' => time()])
+            ->deleteJson('/user/two-factor-authentication');
 
-    $this->postJson('/login', [
-      'email' => $user->email,
-      'password' => 'password',
-    ]);
+        $response->assertOk();
 
-    $response = $this->postJson('/two-factor-challenge', [
-      'recovery_code' => 'valid-recovery-code',
-    ]);
-
-    $response->assertNoContent();
-    $this->assertAuthenticatedAs($user);
-  }
-
-  public function test_user_can_disable_two_factor_authentication(): void
-  {
-    $user = User::factory()->create([
-      'two_factor_secret' => encrypt('secret'),
-      'two_factor_confirmed_at' => now(),
-    ]);
-
-    $response = $this->actingAs($user)
-      ->withSession(['auth.password_confirmed_at' => time()])
-      ->deleteJson('/user/two-factor-authentication');
-
-    $response->assertOk();
-
-    $user->refresh();
-    $this->assertNull($user->two_factor_secret);
-    $this->assertNull($user->two_factor_confirmed_at);
-  }
+        $user->refresh();
+        $this->assertNull($user->two_factor_secret);
+        $this->assertNull($user->two_factor_confirmed_at);
+    }
 }
