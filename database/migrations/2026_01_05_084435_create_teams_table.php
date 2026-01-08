@@ -12,19 +12,21 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUuid('organization_id')->constrained()->cascadeOnDelete();
             $table->string('name');
+            $table->string('display_name');
+            $table->foreignUUid('organization_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
+
+            $table->unique(['organization_id', 'name']);
         });
 
         Schema::create('team_user', function (Blueprint $table) {
             $table->id();
             $table->foreignUuid('team_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
-
-            // 'leader' or 'member'
-            $table->string('role')->default('member');
+            $table->string('role')->default('member'); // leader, member
+            $table->timestamps();
 
             $table->unique(['team_id', 'user_id']);
-            $table->timestamps();
         });
     }
 

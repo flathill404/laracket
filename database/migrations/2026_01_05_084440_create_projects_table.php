@@ -10,21 +10,31 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('organization_id')->constrained()->cascadeOnDelete();
+            $table->foreignUUid('organization_id')->constrained()->cascadeOnDelete();
             $table->string('name');
-            $table->text('summary')->nullable();
-            $table->date('deadline')->nullable();
+            $table->string('display_name');
+            $table->text('description')->nullable();
             $table->timestamps();
+
+            $table->unique(['organization_id', 'name']);
         });
 
-        Schema::create('project_assignments', function (Blueprint $table) {
+        Schema::create('project_user', function (Blueprint $table) {
             $table->id();
-            $table->foreignUuid('project_id')->constrained()->cascadeOnDelete();
-
-            $table->morphs('assignable');
-
-            $table->unique(['project_id', 'assignable_id', 'assignable_type'], 'unique_assignment');
+            $table->foreignUUid('project_id')->constrained()->cascadeOnDelete();
+            $table->foreignUUid('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
+
+            $table->unique(['project_id', 'user_id']);
+        });
+
+        Schema::create('project_team', function (Blueprint $table) {
+            $table->id();
+            $table->foreignUUid('project_id')->constrained()->cascadeOnDelete();
+            $table->foreignUUid('team_id')->constrained()->cascadeOnDelete();
+            $table->timestamps();
+
+            $table->unique(['project_id', 'team_id']);
         });
     }
 

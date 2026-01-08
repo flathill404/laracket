@@ -10,27 +10,22 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('project_id')->constrained()->cascadeOnDelete();
+            $table->foreignUUid('project_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->dateTime('deadline')->nullable();
-
-            // Open, In Progress, In Review, Done
-            $table->string('status')->default('Open');
-
+            $table->string('status')->default('open');
+            $table->double('display_order')->default(0);
             $table->timestamps();
         });
 
         Schema::create('ticket_user', function (Blueprint $table) {
             $table->id();
-            $table->foreignUuid('ticket_id')->constrained()->cascadeOnDelete();
-            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
-
-            // 'assignee' or 'reviewer'
-            $table->string('role');
-
-            $table->unique(['ticket_id', 'user_id', 'role']);
+            $table->foreignUUid('ticket_id')->constrained()->cascadeOnDelete();
+            $table->foreignUUid('user_id')->constrained()->cascadeOnDelete();
+            $table->string('type'); // 'assignee' or 'reviewer'
             $table->timestamps();
+
+            $table->unique(['ticket_id', 'user_id', 'type']);
         });
     }
 
