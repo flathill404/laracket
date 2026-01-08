@@ -14,6 +14,7 @@ class RegistrationTest extends TestCase
     {
         $response = $this->postJson('/register', [
             'name' => 'Power Chan',
+            'display_name' => 'Power Chan',
             'email' => 'power@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
@@ -30,6 +31,7 @@ class RegistrationTest extends TestCase
     {
         $response = $this->postJson('/register', [
             'name' => 'Power Chan',
+            'display_name' => 'Power Chan',
             'email' => 'power@example.com',
             'password' => 'password',
             'password_confirmation' => 'wrong-password',
@@ -47,6 +49,7 @@ class RegistrationTest extends TestCase
 
         $response = $this->postJson('/register', [
             'name' => 'Another Power',
+            'display_name' => 'Another Power',
             'email' => 'power@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',

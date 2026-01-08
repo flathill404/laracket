@@ -18,6 +18,7 @@ class CreateNewUserTest extends TestCase
         $action = $this->app->make(CreateNewUser::class);
         $input = [
             'name' => 'Power Chan',
+            'display_name' => 'Power Chan',
             'email' => 'power@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
@@ -39,6 +40,7 @@ class CreateNewUserTest extends TestCase
         $action = $this->app->make(CreateNewUser::class);
         $input = [
             'name' => 'Denji',
+            'display_name' => 'Denji',
             'email' => 'denji@example.com',
             'password' => 'password123',
             'password_confirmation' => 'wrong-password',
@@ -54,6 +56,7 @@ class CreateNewUserTest extends TestCase
         $action = $this->app->make(CreateNewUser::class);
         $input = [
             'name' => 'Aki',
+            'display_name' => 'Aki',
             'email' => 'aki@example.com',
             'password' => 'short',
             'password_confirmation' => 'short',

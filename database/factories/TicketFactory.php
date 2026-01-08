@@ -15,7 +15,7 @@ class TicketFactory extends Factory
             'title' => $this->faker->sentence(4),
             'description' => $this->faker->realText(200),
             'deadline' => $this->faker->dateTimeBetween('now', '+1 month'),
-            'status' => $this->faker->randomElement(['Open', 'In Progress', 'In Review', 'Done']),
+            'status' => $this->faker->randomElement(['open', 'in_progress', 'in_review', 'resolved', 'closed']),
             'project_id' => \App\Models\Project::factory(),
         ];
     }
