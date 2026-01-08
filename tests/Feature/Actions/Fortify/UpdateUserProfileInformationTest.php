@@ -16,7 +16,7 @@ class UpdateUserProfileInformationTest extends TestCase
 
   public function test_can_update_profile_information(): void
   {
-    $user = User::factory()->create([
+    $user = User::factory()->make([
       'name' => 'Old Name',
       'email' => 'old@example.com',
     ]);
@@ -36,7 +36,7 @@ class UpdateUserProfileInformationTest extends TestCase
   public function test_email_must_be_unique(): void
   {
     User::factory()->create(['email' => 'taken@example.com']);
-    $user = User::factory()->create(['email' => 'original@example.com']);
+    $user = User::factory()->make(['email' => 'original@example.com']);
     $action = new UpdateUserProfileInformation();
 
     $this->expectException(ValidationException::class);
@@ -49,7 +49,7 @@ class UpdateUserProfileInformationTest extends TestCase
 
   public function test_can_update_name_with_same_email(): void
   {
-    $user = User::factory()->create(['email' => 'me@example.com']);
+    $user = User::factory()->make(['email' => 'me@example.com']);
     $action = new UpdateUserProfileInformation();
 
     $action->update($user, [

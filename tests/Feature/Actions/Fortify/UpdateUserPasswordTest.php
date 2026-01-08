@@ -15,7 +15,7 @@ class UpdateUserPasswordTest extends TestCase
 
   public function test_can_update_password(): void
   {
-    $user = User::factory()->create([
+    $user = User::factory()->make([
       'password' => Hash::make('old-password'),
     ]);
     $this->actingAs($user);
@@ -37,7 +37,7 @@ class UpdateUserPasswordTest extends TestCase
 
   public function test_current_password_must_be_correct(): void
   {
-    $user = User::factory()->create([
+    $user = User::factory()->make([
       'password' => Hash::make('old-password'),
     ]);
     $this->actingAs($user);
@@ -54,7 +54,7 @@ class UpdateUserPasswordTest extends TestCase
 
   public function test_new_password_must_adhere_to_rules(): void
   {
-    $user = User::factory()->create();
+    $user = User::factory()->make();
     $this->actingAs($user);
     $action = new UpdateUserPassword();
 

@@ -15,7 +15,7 @@ class ResetUserPasswordTest extends TestCase
 
   public function test_can_reset_password(): void
   {
-    $user = User::factory()->create([
+    $user = User::factory()->make([
       'password' => Hash::make('old-password'),
     ]);
     $action = new ResetUserPassword();
@@ -35,7 +35,7 @@ class ResetUserPasswordTest extends TestCase
 
   public function test_validates_password_rules(): void
   {
-    $user = User::factory()->create();
+    $user = User::factory()->make();
     $action = new ResetUserPassword();
 
     $this->expectException(ValidationException::class);
