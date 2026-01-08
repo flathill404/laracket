@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('projects', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('organization_id')->constrained()->cascadeOnDelete();
+            $table->uuid("id")->primary();
+            $table->foreignUuid('organization_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->text('summary')->nullable();
             $table->date('deadline')->nullable();
@@ -19,7 +19,7 @@ return new class extends Migration
 
         Schema::create('project_assignments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('project_id')->constrained()->cascadeOnDelete();
+            $table->foreignUuid('project_id')->constrained()->cascadeOnDelete();
 
             $table->morphs('assignable');
 
