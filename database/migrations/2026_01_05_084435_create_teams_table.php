@@ -13,7 +13,6 @@ return new class extends Migration
             $table->foreignUuid('organization_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('display_name');
-            $table->foreignUUid('organization_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
 
             $table->unique(['organization_id', 'name']);
