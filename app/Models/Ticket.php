@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\TicketStatus;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\TicketUserType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -13,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $project_id
  * @property string $title
  * @property string|null $description
- * @property string $status
+ * @property TicketStatus $status
  * @property float $display_order
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -31,6 +33,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereDisplayOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereProjectId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereProjectId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereTitle($value)
@@ -51,6 +54,7 @@ class Ticket extends Model
 
     protected $casts = [
         'deadline' => 'datetime',
+        'status' => TicketStatus::class,
     ];
 
     /**
@@ -68,7 +72,7 @@ class Ticket extends Model
     {
         return $this->belongsToMany(User::class, 'ticket_user')
             ->withPivot('type')
-            ->wherePivot('type', 'assignee')
+            ->wherePivot('type', TicketUserType::Assignee)
             ->withTimestamps();
     }
 
@@ -79,7 +83,7 @@ class Ticket extends Model
     {
         return $this->belongsToMany(User::class, 'ticket_user')
             ->withPivot('type')
-            ->wherePivot('type', 'reviewer')
+            ->wherePivot('type', TicketUserType::Reviewer)
             ->withTimestamps();
     }
 }

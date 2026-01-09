@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\TicketStatus;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -15,7 +16,7 @@ class TicketFactory extends Factory
             'title' => $this->faker->sentence(4),
             'description' => $this->faker->realText(200),
             'display_order' => $this->faker->randomFloat(2, 0, 100),
-            'status' => $this->faker->randomElement(['open', 'in_progress', 'in_review', 'resolved', 'closed']),
+            'status' => $this->faker->randomElement(TicketStatus::cases()),
             'project_id' => \App\Models\Project::factory(),
         ];
     }
