@@ -14,6 +14,7 @@ class OrganizationFactory extends Factory
         return [
             'name' => $this->faker->company(),
             'display_name' => $this->faker->companySuffix(),
+            'owner_user_id' => \App\Models\User::factory(),
         ];
     }
 }

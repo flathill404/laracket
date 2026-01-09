@@ -14,8 +14,7 @@ class ProjectFactory extends Factory
         return [
             'name' => $this->faker->catchPhrase().' Project',
             'display_name' => $this->faker->catchPhrase().' Project',
-            'summary' => $this->faker->realText(50),
-            'deadline' => $this->faker->dateTimeBetween('now', '+1 year'),
+            'description' => $this->faker->realText(50),
             'organization_id' => \App\Models\Organization::factory(),
         ];
     }

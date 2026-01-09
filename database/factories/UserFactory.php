@@ -29,11 +29,4 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
-
-    public function representative(): static
-    {
-        return $this->state(fn (array $attributes) => [
-            'is_representative' => true,
-        ]);
-    }
 }
