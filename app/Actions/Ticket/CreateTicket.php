@@ -16,7 +16,7 @@ class CreateTicket
      */
     public function execute(User $creator, Project $project, array $data): Ticket
     {
-        return DB::transaction(function () use ($creator, $project, $data) {
+        return DB::transaction(function () use ($project, $data) {
             /** @var Ticket $ticket */
             $ticket = $project->tickets()->create([
                 'title' => $data['title'],

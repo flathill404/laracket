@@ -11,7 +11,7 @@ class UpdateTicketStatus
 {
     public function execute(User $actor, Ticket $ticket, TicketStatus $status): Ticket
     {
-        return DB::transaction(function () use ($actor, $ticket, $status) {
+        return DB::transaction(function () use ($ticket, $status) {
             $ticket->update(['status' => $status]);
 
             return $ticket;

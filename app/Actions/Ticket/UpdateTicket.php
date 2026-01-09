@@ -14,7 +14,7 @@ class UpdateTicket
      */
     public function execute(User $actor, Ticket $ticket, array $data): Ticket
     {
-        return DB::transaction(function () use ($actor, $ticket, $data) {
+        return DB::transaction(function () use ($ticket, $data) {
             $ticket->update([
                 'title' => $data['title'] ?? $ticket->title,
                 'description' => $data['description'] ?? $ticket->description,
@@ -27,7 +27,7 @@ class UpdateTicket
             }
 
             if (isset($data['reviewers'])) {
-                 // Sync reviewers
+                // Sync reviewers
                 $ticket->reviewers()->syncWithPivotValues($data['reviewers'], ['type' => TicketUserType::Reviewer]);
             }
 

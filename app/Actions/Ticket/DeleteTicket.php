@@ -10,7 +10,7 @@ class DeleteTicket
 {
     public function execute(User $actor, Ticket $ticket): bool
     {
-        return DB::transaction(function () use ($actor, $ticket) {
+        return DB::transaction(function () use ($ticket) {
             // Here we could check permissions if $actor has right to delete
             return $ticket->delete();
         });
