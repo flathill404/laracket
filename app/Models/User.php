@@ -102,6 +102,9 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * @return BelongsToMany<Organization, $this>
+     */
     public function organizations(): BelongsToMany
     {
         return $this->belongsToMany(Organization::class)
@@ -109,6 +112,9 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    /**
+     * @return HasMany<Organization, $this>
+     */
     public function ownedOrganizations(): HasMany
     {
         return $this->hasMany(Organization::class, 'owner_user_id');
