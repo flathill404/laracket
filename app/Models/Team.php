@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
+
 
 /**
  * @property string $id
@@ -65,11 +65,11 @@ class Team extends Model
     }
 
     /**
-     * @return MorphToMany<Project, $this>
+     * @return BelongsToMany<Project, $this>
      */
-    public function assignedProjects(): MorphToMany
+    public function assignedProjects(): BelongsToMany
     {
-        return $this->morphToMany(Project::class, 'assignable', 'project_assignments')
+        return $this->belongsToMany(Project::class, 'project_team')
             ->withTimestamps();
     }
 }

@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 /**
  * @property string $id
@@ -67,20 +67,20 @@ class Project extends Model
     }
 
     /**
-     * @return MorphToMany<Team, $this>
+     * @return BelongsToMany<Team, $this>
      */
-    public function assignedTeams(): MorphToMany
+    public function assignedTeams(): BelongsToMany
     {
-        return $this->morphedByMany(Team::class, 'assignable', 'project_assignments')
+        return $this->belongsToMany(Team::class, 'project_team')
             ->withTimestamps();
     }
 
     /**
-     * @return MorphToMany<User, $this>
+     * @return BelongsToMany<User, $this>
      */
-    public function assignedUsers(): MorphToMany
+    public function assignedUsers(): BelongsToMany
     {
-        return $this->morphedByMany(User::class, 'assignable', 'project_assignments')
+        return $this->belongsToMany(User::class, 'project_user')
             ->withTimestamps();
     }
 }

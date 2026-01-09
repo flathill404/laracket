@@ -67,7 +67,8 @@ class Ticket extends Model
     public function assignees(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'ticket_user')
-            ->wherePivot('role', 'assignee')
+            ->withPivot('type')
+            ->wherePivot('type', 'assignee')
             ->withTimestamps();
     }
 
@@ -77,7 +78,8 @@ class Ticket extends Model
     public function reviewers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'ticket_user')
-            ->wherePivot('role', 'reviewer')
+            ->withPivot('type')
+            ->wherePivot('type', 'reviewer')
             ->withTimestamps();
     }
 }

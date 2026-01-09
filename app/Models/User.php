@@ -7,7 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -102,11 +102,16 @@ class User extends Authenticatable
         ];
     }
 
-    public function organizations()
+    public function organizations(): BelongsToMany
     {
         return $this->belongsToMany(Organization::class)
             ->withPivot('role')
             ->withTimestamps();
+    }
+
+    public function ownedOrganizations(): HasMany
+    {
+        return $this->hasMany(Organization::class, 'owner_user_id');
     }
 
     /**
@@ -123,11 +128,11 @@ class User extends Authenticatable
      * 個人として直接アサインされたプロジェクト
      * (チーム経由のアサインはこれには含まれんから注意せよ)
      *
-     * @return MorphToMany<Project, $this>
+     * @return BelongsToMany<Project, $this>
      */
-    public function assignedProjects(): MorphToMany
+    public function assignedProjects(): BelongsToMany
     {
-        return $this->morphToMany(Project::class, 'assignable', 'project_assignments')
+        return $this->belongsToMany(Project::class, 'project_user')
             ->withTimestamps();
     }
 
@@ -137,7 +142,8 @@ class User extends Authenticatable
     public function assignedTickets(): BelongsToMany
     {
         return $this->belongsToMany(Ticket::class, 'ticket_user')
-            ->wherePivot('role', 'assignee')
+            ->withPivot('type')
+            ->wherePivot('type', 'assignee')
             ->withTimestamps();
     }
 
@@ -147,7 +153,8 @@ class User extends Authenticatable
     public function reviewingTickets(): BelongsToMany
     {
         return $this->belongsToMany(Ticket::class, 'ticket_user')
-            ->wherePivot('role', 'reviewer')
+            ->withPivot('type')
+            ->wherePivot('type', 'reviewer')
             ->withTimestamps();
     }
 }
