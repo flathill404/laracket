@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\Ticket\CreateTicket;
 use App\Actions\Ticket\DeleteTicket;
-use App\Actions\Ticket\UpdateTicketContent;
+use App\Actions\Ticket\UpdateTicket;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Ticket;
@@ -31,7 +31,7 @@ class TicketController extends Controller
         return $query($ticket);
     }
 
-    public function update(Request $request, Ticket $ticket, UpdateTicketContent $action)
+    public function update(Request $request, Ticket $ticket, UpdateTicket $action)
     {
         $ticket = $action($ticket, $request->all());
 
