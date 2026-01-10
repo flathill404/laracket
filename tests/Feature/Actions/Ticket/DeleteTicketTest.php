@@ -14,7 +14,7 @@ it('deletes a ticket', function () {
     $ticket = Ticket::factory()->create();
     $action = new DeleteTicket;
 
-    $action->delete($user, $ticket);
+    $action($user, $ticket);
 
     assertModelMissing($ticket);
 });

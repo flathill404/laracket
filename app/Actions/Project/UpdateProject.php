@@ -11,7 +11,7 @@ class UpdateProject
     /**
      * @param  array<string, mixed>  $input
      */
-    public function update(Project $project, array $input): Project
+    public function __invoke(Project $project, array $input): Project
     {
         Validator::make($input, $this->rules())->validate();
 

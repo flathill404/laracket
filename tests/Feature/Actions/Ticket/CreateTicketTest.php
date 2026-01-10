@@ -23,7 +23,7 @@ it('creates a ticket', function () {
         'assignee_id' => $user->id,
     ];
 
-    $ticket = $action->create($user, $project, $input);
+    $ticket = $action($user, $project, $input);
 
     assertDatabaseHas('tickets', [
         'id' => $ticket->id,
@@ -44,11 +44,11 @@ it('validates ticket creation', function () {
     $project = Project::factory()->create();
     $action = new CreateTicket;
 
-    expect(fn () => $action->create($user, $project, [
+    expect(fn () => $action($user, $project, [
         'title' => '',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action->create($user, $project, [
+    expect(fn () => $action($user, $project, [
         'title' => str_repeat('a', 101),
     ]))->toThrow(ValidationException::class);
 });

@@ -13,7 +13,7 @@ it('updates ticket status', function () {
     $ticket = Ticket::factory()->create(['status' => TicketStatus::Open]);
     $action = new UpdateTicketStatus;
 
-    $updatedTicket = $action->update($ticket, TicketStatus::InProgress);
+    $updatedTicket = $action($ticket, TicketStatus::InProgress);
 
     expect($updatedTicket->status)->toBe(TicketStatus::InProgress);
     assertDatabaseHas('tickets', [

@@ -13,7 +13,7 @@ class CreateTeam
     /**
      * @param  array<string, mixed>  $input
      */
-    public function create(User $creator, Organization $organization, array $input): Team
+    public function __invoke(User $creator, Organization $organization, array $input): Team
     {
         Validator::make($input, $this->rules())->validate();
 

@@ -18,7 +18,7 @@ it('creates an organization', function () {
         'display_name' => 'Test Org Display',
     ];
 
-    $organization = $action->create($user, $input);
+    $organization = $action($user, $input);
 
     assertDatabaseHas('organizations', [
         'id' => $organization->id,
@@ -37,12 +37,12 @@ it('validates organization creation', function () {
     $user = User::factory()->create();
     $action = new CreateOrganization;
 
-    expect(fn () => $action->create($user, [
+    expect(fn () => $action($user, [
         'name' => 'Invalid Name!',
         'display_name' => 'Valid Display',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action->create($user, [
+    expect(fn () => $action($user, [
         'name' => 'valid-name',
         'display_name' => str_repeat('a', 101),
     ]))->toThrow(ValidationException::class);

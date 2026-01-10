@@ -25,7 +25,7 @@ it('creates a project', function () {
         'assigned_teams' => [$team->id],
     ];
 
-    $project = $action->create($user, $organization, $input);
+    $project = $action($user, $organization, $input);
 
     assertDatabaseHas('projects', [
         'id' => $project->id,
@@ -49,12 +49,12 @@ it('validates project creation', function () {
     $user = User::factory()->create();
     $action = new CreateProject;
 
-    expect(fn () => $action->create($user, $organization, [
+    expect(fn () => $action($user, $organization, [
         'name' => 'Invalid Name!',
         'display_name' => 'Valid Display',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action->create($user, $organization, [
+    expect(fn () => $action($user, $organization, [
         'name' => 'valid-name',
         'display_name' => str_repeat('a', 51),
     ]))->toThrow(ValidationException::class);

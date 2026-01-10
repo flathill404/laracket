@@ -14,7 +14,7 @@ it('deletes a project', function () {
     $user = User::factory()->create();
     $action = new DeleteProject;
 
-    $action->delete($user, $project);
+    $action($user, $project);
 
     assertModelMissing($project);
 });

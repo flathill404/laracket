@@ -14,7 +14,7 @@ it('deletes an organization', function () {
     $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
     $action = new DeleteOrganization;
 
-    $action->delete($user, $organization);
+    $action($user, $organization);
 
     assertModelMissing($organization);
 });

@@ -11,7 +11,7 @@ class UpdateTeam
     /**
      * @param  array<string, mixed>  $input
      */
-    public function update(Team $team, array $input): Team
+    public function __invoke(Team $team, array $input): Team
     {
         Validator::make($input, $this->rules())->validate();
 

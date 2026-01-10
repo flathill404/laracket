@@ -14,7 +14,7 @@ it('deletes a team', function () {
     $user = User::factory()->create();
     $action = new DeleteTeam;
 
-    $action->delete($user, $team);
+    $action($user, $team);
 
     assertModelMissing($team);
 });

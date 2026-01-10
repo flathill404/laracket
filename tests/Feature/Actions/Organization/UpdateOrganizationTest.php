@@ -19,7 +19,7 @@ it('updates an organization', function () {
         'name' => 'UpdatedOrganizationName',
     ];
 
-    $action->update($organization, $input);
+    $action($organization, $input);
 
     assertDatabaseHas('organizations', [
         'id' => $organization->id,
@@ -32,11 +32,11 @@ it('validates organization update', function () {
     $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
     $action = new UpdateOrganization;
 
-    expect(fn () => $action->update($organization, [
+    expect(fn () => $action($organization, [
         'name' => 'Invalid Name!',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action->update($organization, [
+    expect(fn () => $action($organization, [
         'display_name' => str_repeat('a', 101),
     ]))->toThrow(ValidationException::class);
 });

@@ -13,7 +13,7 @@ class CreateProject
     /**
      * @param  array<string, mixed>  $input
      */
-    public function create(User $creator, Organization $organization, array $input): Project
+    public function __invoke(User $creator, Organization $organization, array $input): Project
     {
         Validator::make($input, $this->rules())->validate();
 

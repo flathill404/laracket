@@ -23,7 +23,7 @@ it('updates a project', function () {
         'assigned_teams' => [$team->id],
     ];
 
-    $action->update($project, $input);
+    $action($project, $input);
 
     assertDatabaseHas('projects', [
         'id' => $project->id,
@@ -45,11 +45,11 @@ it('validates project update', function () {
     $project = Project::factory()->create();
     $action = new UpdateProject;
 
-    expect(fn () => $action->update($project, [
+    expect(fn () => $action($project, [
         'name' => 'Invalid Name!',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action->update($project, [
+    expect(fn () => $action($project, [
         'display_name' => str_repeat('a', 51),
     ]))->toThrow(ValidationException::class);
 });

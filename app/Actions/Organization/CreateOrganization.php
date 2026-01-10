@@ -12,7 +12,7 @@ class CreateOrganization
     /**
      * @param  array<string, mixed>  $input
      */
-    public function create(User $creator, array $input): Organization
+    public function __invoke(User $creator, array $input): Organization
     {
         Validator::make($input, $this->rules())->validate();
 

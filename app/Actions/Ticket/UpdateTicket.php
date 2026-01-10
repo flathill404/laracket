@@ -14,7 +14,7 @@ class UpdateTicket
     /**
      * @param  array<string, mixed>  $input
      */
-    public function update(Ticket $ticket, array $input): Ticket
+    public function __invoke(Ticket $ticket, array $input): Ticket
     {
         Validator::make($input, $this->rules())->validate();
 

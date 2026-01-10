@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class DeleteOrganization
 {
-    public function delete(User $actor, Organization $organization): bool
+    public function __invoke(User $actor, Organization $organization): bool
     {
         return DB::transaction(function () use ($organization) {
             return $organization->delete();

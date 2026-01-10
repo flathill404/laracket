@@ -24,7 +24,7 @@ it('updates a ticket', function () {
         'reviewers' => [$reviewer->id],
     ];
 
-    $updatedTicket = $action->update($ticket, $input);
+    $updatedTicket = $action($ticket, $input);
 
     expect($updatedTicket->title)->toBe('Updated Title');
 
@@ -45,7 +45,7 @@ it('validates ticket update', function () {
     $ticket = Ticket::factory()->create();
     $action = new UpdateTicket;
 
-    expect(fn () => $action->update($ticket, [
+    expect(fn () => $action($ticket, [
         'title' => str_repeat('a', 101),
     ]))->toThrow(ValidationException::class);
 });

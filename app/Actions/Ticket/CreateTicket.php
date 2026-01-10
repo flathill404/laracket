@@ -16,7 +16,7 @@ class CreateTicket
     /**
      * @param  array<string, mixed>  $input
      */
-    public function create(User $creator, Project $project, array $input): Ticket
+    public function __invoke(User $creator, Project $project, array $input): Ticket
     {
         Validator::make($input, $this->rules())->validate();
 

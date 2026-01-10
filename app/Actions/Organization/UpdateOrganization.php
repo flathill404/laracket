@@ -11,7 +11,7 @@ class UpdateOrganization
     /**
      * @param  array<string, mixed>  $input
      */
-    public function update(Organization $organization, array $input): Organization
+    public function __invoke(Organization $organization, array $input): Organization
     {
         Validator::make($input, $this->rules())->validate();
 
