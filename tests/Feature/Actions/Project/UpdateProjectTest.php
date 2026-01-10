@@ -20,17 +20,17 @@ class UpdateProjectTest extends TestCase
         $team = Team::factory()->create();
         $action = new UpdateProject;
 
-        $data = [
-            'name' => 'Updated Project Name',
+        $input = [
+            'name' => 'UpdatedProjectName',
             'assigned_users' => [$user->id],
             'assigned_teams' => [$team->id],
         ];
 
-        $action->update($user, $project, $data);
+        $action->update($project, $input);
 
         $this->assertDatabaseHas('projects', [
             'id' => $project->id,
-            'name' => 'Updated Project Name',
+            'name' => 'UpdatedProjectName',
         ]);
 
         $this->assertDatabaseHas('project_user', [
@@ -42,5 +42,23 @@ class UpdateProjectTest extends TestCase
             'project_id' => $project->id,
             'team_id' => $team->id,
         ]);
+    }
+
+    public function test_it_validates_project_update(): void
+    {
+        $project = Project::factory()->create();
+        $action = new UpdateProject;
+
+        $this->assertThrows(function () use ($action, $project) {
+            $action->update($project, [
+                'name' => 'Invalid Name!',
+            ]);
+        }, \Illuminate\Validation\ValidationException::class);
+
+        $this->assertThrows(function () use ($action, $project) {
+            $action->update($project, [
+                'display_name' => str_repeat('a', 51),
+            ]);
+        }, \Illuminate\Validation\ValidationException::class);
     }
 }

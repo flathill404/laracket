@@ -3,32 +3,45 @@
 namespace App\Actions\Project;
 
 use App\Models\Project;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class UpdateProject
 {
     /**
-     * @param  array<string, mixed>  $data
+     * @param  array<string, mixed>  $input
      */
-    public function update(User $actor, Project $project, array $data): Project
+    public function update(Project $project, array $input): Project
     {
-        return DB::transaction(function () use ($project, $data) {
+        Validator::make($input, $this->rules())->validate();
+
+        return DB::transaction(function () use ($project, $input) {
             $project->update([
-                'name' => $data['name'] ?? $project->name,
-                'display_name' => $data['display_name'] ?? $project->display_name,
-                'description' => $data['description'] ?? $project->description,
+                'name' => $input['name'] ?? $project->name,
+                'display_name' => $input['display_name'] ?? $project->display_name,
+                'description' => $input['description'] ?? $project->description,
             ]);
 
-            if (isset($data['assigned_users'])) {
-                $project->assignedUsers()->sync($data['assigned_users']);
+            if (isset($input['assigned_users'])) {
+                $project->assignedUsers()->sync($input['assigned_users']);
             }
 
-            if (isset($data['assigned_teams'])) {
-                $project->assignedTeams()->sync($data['assigned_teams']);
+            if (isset($input['assigned_teams'])) {
+                $project->assignedTeams()->sync($input['assigned_teams']);
             }
 
             return $project;
         });
+    }
+
+    /**
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    protected function rules(): array
+    {
+        return [
+            'name' => ['sometimes', 'required', 'string', 'max:30', 'alpha_dash'],
+            'display_name' => ['sometimes', 'required', 'string', 'max:50'],
+        ];
     }
 }
