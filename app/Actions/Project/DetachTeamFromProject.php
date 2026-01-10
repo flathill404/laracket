@@ -7,8 +7,8 @@ use App\Models\Team;
 
 class DetachTeamFromProject
 {
-    public function __invoke(Project $project, Team $team)
+    public function __invoke(Project $project, Team $team): void
     {
-        // Detach logic
+        $project->assignedTeams()->detach($team);
     }
 }
