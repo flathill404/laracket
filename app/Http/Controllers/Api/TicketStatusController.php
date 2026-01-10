@@ -9,9 +9,9 @@ use Illuminate\Http\Request;
 
 class TicketStatusController extends Controller
 {
-    public function update(Request $request, Ticket $ticket, UpdateTicketStatus $action)
+    public function update(Request $request, Ticket $ticket, UpdateTicketStatus $action): \Illuminate\Http\Response
     {
-        $action($ticket, $request->input('status'));
+        $action($ticket, \App\Enums\TicketStatus::from($request->string('status')->value()));
 
         return response()->noContent();
     }

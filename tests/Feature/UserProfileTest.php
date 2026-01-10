@@ -26,7 +26,7 @@ it('updates profile information', function () {
     $user = User::factory()->create();
 
     $response = actingAs($user)
-        ->putJson('/user/profile-information', [
+        ->putJson('/api/user/profile-information', [
             'name' => 'Super Power',
             'email' => 'super_power@example.com',
         ]);
@@ -45,7 +45,7 @@ it('updates password', function () {
     ]);
 
     $response = actingAs($user)
-        ->putJson('/user/password', [
+        ->putJson('/api/user/password', [
             'current_password' => 'old-password',
             'password' => 'new-strong-password',
             'password_confirmation' => 'new-strong-password',
@@ -63,7 +63,7 @@ it('fails password update if current password is incorrect', function () {
     ]);
 
     $response = actingAs($user)
-        ->putJson('/user/password', [
+        ->putJson('/api/user/password', [
             'current_password' => 'wrong-password',
             'password' => 'new-password',
             'password_confirmation' => 'new-password',

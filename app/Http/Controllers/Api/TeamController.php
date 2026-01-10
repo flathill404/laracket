@@ -14,33 +14,44 @@ use Illuminate\Http\Request;
 
 class TeamController extends Controller
 {
-    public function index(Organization $org, GetOrganizationTeams $query)
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team>
+     */
+    public function index(Organization $org, GetOrganizationTeams $query): \Illuminate\Database\Eloquent\Collection
     {
         return $query($org);
     }
 
-    public function store(Request $request, Organization $org, CreateTeam $action)
+    public function store(Request $request, Organization $org, CreateTeam $action): \Illuminate\Http\JsonResponse
     {
-        $team = $action($org, $request->user(), $request->all());
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        /** @var array<string, mixed> $input */
+        $input = $request->all();
+        $team = $action($user, $org, $input);
 
         return response()->json($team, 201);
     }
 
-    public function show(Team $team, GetTeamDetail $query)
+    public function show(Team $team, GetTeamDetail $query): Team
     {
         return $query($team);
     }
 
-    public function update(Request $request, Team $team, UpdateTeam $action)
+    public function update(Request $request, Team $team, UpdateTeam $action): \Illuminate\Http\JsonResponse
     {
-        $team = $action($team, $request->all());
+        /** @var array<string, mixed> $input */
+        $input = $request->all();
+        $team = $action($team, $input);
 
         return response()->json($team);
     }
 
-    public function destroy(Team $team, DeleteTeam $action)
+    public function destroy(Request $request, Team $team, DeleteTeam $action): \Illuminate\Http\Response
     {
-        $action($team);
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        $action($user, $team);
 
         return response()->noContent();
     }

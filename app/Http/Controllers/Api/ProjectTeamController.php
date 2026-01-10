@@ -11,14 +11,16 @@ use Illuminate\Http\Request;
 
 class ProjectTeamController extends Controller
 {
-    public function store(Request $request, Project $project, AttachTeamToProject $action)
+    public function store(Request $request, Project $project, AttachTeamToProject $action): \Illuminate\Http\Response
     {
-        $action($project, Team::find($request->input('team_id')));
+        /** @var \App\Models\Team $team */
+        $team = Team::findOrFail($request->input('team_id'));
+        $action($project, $team);
 
         return response()->noContent();
     }
 
-    public function destroy(Project $project, Team $team, DetachTeamFromProject $action)
+    public function destroy(Project $project, Team $team, DetachTeamFromProject $action): \Illuminate\Http\Response
     {
         $action($project, $team);
 

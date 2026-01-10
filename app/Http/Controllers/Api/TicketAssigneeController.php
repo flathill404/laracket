@@ -11,14 +11,16 @@ use Illuminate\Http\Request;
 
 class TicketAssigneeController extends Controller
 {
-    public function store(Request $request, Ticket $ticket, AssignUserToTicket $action)
+    public function store(Request $request, Ticket $ticket, AssignUserToTicket $action): \Illuminate\Http\Response
     {
-        $action($ticket, User::find($request->input('user_id')));
+        /** @var \App\Models\User $user */
+        $user = User::findOrFail($request->input('user_id'));
+        $action($ticket, $user);
 
         return response()->noContent();
     }
 
-    public function destroy(Ticket $ticket, User $user, UnassignUserFromTicket $action)
+    public function destroy(Ticket $ticket, User $user, UnassignUserFromTicket $action): \Illuminate\Http\Response
     {
         $action($ticket, $user);
 

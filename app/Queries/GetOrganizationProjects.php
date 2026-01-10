@@ -3,10 +3,14 @@
 namespace App\Queries;
 
 use App\Models\Organization;
+use Illuminate\Database\Eloquent\Collection;
 
 class GetOrganizationProjects
 {
-    public function __invoke(Organization $organization)
+    /**
+     * @return Collection<int, \App\Models\Project>
+     */
+    public function __invoke(Organization $organization): Collection
     {
         return $organization->projects;
     }

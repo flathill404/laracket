@@ -13,26 +13,31 @@ use Illuminate\Http\Request;
 
 class TeamMemberController extends Controller
 {
-    public function index(Team $team, GetTeamMembers $query)
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\User>
+     */
+    public function index(Team $team, GetTeamMembers $query): \Illuminate\Support\Collection
     {
         return $query($team);
     }
 
-    public function store(Request $request, Team $team, AddTeamMember $action)
+    public function store(Request $request, Team $team, AddTeamMember $action): \Illuminate\Http\Response
     {
-        $action($team, User::find($request->input('user_id')));
+        /** @var \App\Models\User $user */
+        $user = User::findOrFail($request->input('user_id'));
+        $action($team, $user);
 
         return response()->noContent();
     }
 
-    public function update(Request $request, Team $team, User $user, UpdateTeamMemberRole $action)
+    public function update(Request $request, Team $team, User $user, UpdateTeamMemberRole $action): \Illuminate\Http\Response
     {
-        $action($team, $user, $request->input('role'));
+        $action($team, $user, \App\Enums\TeamRole::from($request->string('role')->value()));
 
         return response()->noContent();
     }
 
-    public function destroy(Team $team, User $user, RemoveTeamMember $action)
+    public function destroy(Team $team, User $user, RemoveTeamMember $action): \Illuminate\Http\Response
     {
         $action($team, $user);
 

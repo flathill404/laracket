@@ -8,8 +8,11 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function show(Request $request, GetUserProfile $query)
+    public function show(Request $request, GetUserProfile $query): \App\Models\User
     {
-        return $query($request->user());
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        return $query($user);
     }
 }

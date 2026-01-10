@@ -18,7 +18,7 @@ it('enables two factor authentication', function () {
 
     $response = actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
-        ->postJson('/user/two-factor-authentication');
+        ->postJson('/api/user/two-factor-authentication');
 
     $response->assertOk();
 
@@ -32,9 +32,9 @@ it('gets two factor qr code', function () {
 
     actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
-        ->postJson('/user/two-factor-authentication');
+        ->postJson('/api/user/two-factor-authentication');
 
-    $response = getJson('/user/two-factor-qr-code');
+    $response = getJson('/api/user/two-factor-qr-code');
 
     $response->assertOk();
     expect($response->content())->toContain('svg');
@@ -45,13 +45,13 @@ it('confirms two factor authentication', function () {
 
     actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
-        ->postJson('/user/two-factor-authentication');
+        ->postJson('/api/user/two-factor-authentication');
 
     mock(TwoFactorAuthenticationProvider::class, function ($mock) {
         $mock->shouldReceive('verify')->andReturn(true);
     });
 
-    $response = postJson('/user/confirmed-two-factor-authentication', [
+    $response = postJson('/api/user/confirmed-two-factor-authentication', [
         'code' => '123456',
     ]);
 
@@ -68,7 +68,7 @@ it('authenticates the user with two factor code', function () {
         'two_factor_confirmed_at' => now(),
     ]);
 
-    $response = postJson('/login', [
+    $response = postJson('/api/login', [
         'email' => $user->email,
         'password' => 'password',
     ]);
@@ -80,7 +80,7 @@ it('authenticates the user with two factor code', function () {
         $mock->shouldReceive('verify')->andReturn(true);
     });
 
-    $response = postJson('/two-factor-challenge', [
+    $response = postJson('/api/two-factor-challenge', [
         'code' => '123456',
     ]);
 
@@ -95,12 +95,12 @@ it('authenticates the user with recovery code', function () {
         'two_factor_confirmed_at' => now(),
     ]);
 
-    postJson('/login', [
+    postJson('/api/login', [
         'email' => $user->email,
         'password' => 'password',
     ]);
 
-    $response = postJson('/two-factor-challenge', [
+    $response = postJson('/api/two-factor-challenge', [
         'recovery_code' => 'valid-recovery-code',
     ]);
 
@@ -116,7 +116,7 @@ it('disables two factor authentication', function () {
 
     $response = actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
-        ->deleteJson('/user/two-factor-authentication');
+        ->deleteJson('/api/user/two-factor-authentication');
 
     $response->assertOk();
 

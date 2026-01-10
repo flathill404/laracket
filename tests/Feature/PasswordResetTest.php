@@ -15,7 +15,7 @@ it('requests a reset password link', function () {
     Notification::fake();
     $user = User::factory()->create();
 
-    $response = postJson('/forgot-password', [
+    $response = postJson('/api/forgot-password', [
         'email' => $user->email,
     ]);
 
@@ -31,7 +31,7 @@ it('resets password with valid token', function () {
 
     $token = Password::broker()->createToken($user);
 
-    $response = postJson('/reset-password', [
+    $response = postJson('/api/reset-password', [
         'token' => $token,
         'email' => $user->email,
         'password' => 'new-password',
@@ -41,7 +41,7 @@ it('resets password with valid token', function () {
     $response->assertOk();
     assertGuest();
 
-    $loginResponse = postJson('/login', [
+    $loginResponse = postJson('/api/login', [
         'email' => $user->email,
         'password' => 'new-password',
     ]);
@@ -52,7 +52,7 @@ it('resets password with valid token', function () {
 it('does not reset password with invalid token', function () {
     $user = User::factory()->create();
 
-    $response = postJson('/reset-password', [
+    $response = postJson('/api/reset-password', [
         'token' => 'invalid-token',
         'email' => $user->email,
         'password' => 'new-password',

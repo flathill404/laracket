@@ -20,7 +20,7 @@ it('retrieves sanctum csrf cookie', function () {
 it('authenticates the user', function () {
     $user = User::factory()->create();
 
-    $response = postJson('/login', [
+    $response = postJson('/api/login', [
         'email' => $user->email,
         'password' => 'password',
     ]);
@@ -32,7 +32,7 @@ it('authenticates the user', function () {
 it('does not authenticate with invalid password', function () {
     $user = User::factory()->create();
 
-    postJson('/login', [
+    postJson('/api/login', [
         'email' => $user->email,
         'password' => 'wrong-password',
     ]);
@@ -44,7 +44,7 @@ it('logs out the user', function () {
     $user = User::factory()->create();
     actingAs($user);
 
-    $response = postJson('/logout');
+    $response = postJson('/api/logout');
 
     $response->assertNoContent();
     assertGuest();

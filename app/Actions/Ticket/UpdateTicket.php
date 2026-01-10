@@ -28,12 +28,16 @@ class UpdateTicket
 
             if (isset($input['assignees'])) {
                 // Sync assignees, expecting array of user IDs
-                $ticket->assignees()->syncWithPivotValues($input['assignees'], ['type' => TicketUserType::Assignee]);
+                /** @var array<int|string> $assignees */
+                $assignees = $input['assignees'];
+                $ticket->assignees()->syncWithPivotValues($assignees, ['type' => TicketUserType::Assignee]);
             }
 
             if (isset($input['reviewers'])) {
                 // Sync reviewers
-                $ticket->reviewers()->syncWithPivotValues($input['reviewers'], ['type' => TicketUserType::Reviewer]);
+                /** @var array<int|string> $reviewers */
+                $reviewers = $input['reviewers'];
+                $ticket->reviewers()->syncWithPivotValues($reviewers, ['type' => TicketUserType::Reviewer]);
             }
 
             return $ticket;
@@ -50,6 +54,8 @@ class UpdateTicket
             'description' => ['sometimes', 'nullable', 'string'],
             'display_order' => ['sometimes', 'integer'],
             'status' => ['sometimes', Rule::enum(TicketStatus::class)],
+            'assignees' => ['sometimes', 'array'],
+            'reviewers' => ['sometimes', 'array'],
         ];
     }
 }

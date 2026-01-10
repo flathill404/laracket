@@ -11,7 +11,7 @@ class DeleteTeam
     public function __invoke(User $actor, Team $team): bool
     {
         return DB::transaction(function () use ($team) {
-            return $team->delete();
+            return (bool) $team->delete();
         });
     }
 }

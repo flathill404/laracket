@@ -13,26 +13,30 @@ use Illuminate\Http\Request;
 
 class OrganizationMemberController extends Controller
 {
-    public function index(Organization $org, GetOrganizationMembers $query)
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\User>
+     */
+    public function index(Organization $org, GetOrganizationMembers $query): \Illuminate\Support\Collection
     {
         return $query($org);
     }
 
-    public function store(Request $request, Organization $org, InviteOrganizationMember $action)
+    public function store(Request $request, Organization $org, InviteOrganizationMember $action): \Illuminate\Http\Response
     {
-        $action($org, $request->input('email'));
+        $role = \App\Enums\OrganizationRole::tryFrom($request->string('role')->toString()) ?? \App\Enums\OrganizationRole::Member;
+        $action($org, $request->string('email')->toString(), $role);
 
         return response()->noContent();
     }
 
-    public function update(Request $request, Organization $org, User $user, UpdateOrganizationMemberRole $action)
+    public function update(Request $request, Organization $org, User $user, UpdateOrganizationMemberRole $action): \Illuminate\Http\Response
     {
-        $action($org, $user, $request->input('role'));
+        $action($org, $user, \App\Enums\OrganizationRole::from($request->string('role')->value()));
 
         return response()->noContent();
     }
 
-    public function destroy(Organization $org, User $user, RemoveOrganizationMember $action)
+    public function destroy(Organization $org, User $user, RemoveOrganizationMember $action): \Illuminate\Http\Response
     {
         $action($org, $user);
 

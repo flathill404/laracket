@@ -12,19 +12,24 @@ use Illuminate\Http\Request;
 
 class ProjectMemberController extends Controller
 {
-    public function index(Project $project, GetProjectMembers $query)
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\User>
+     */
+    public function index(Project $project, GetProjectMembers $query): \Illuminate\Support\Collection
     {
         return $query($project);
     }
 
-    public function store(Request $request, Project $project, AddProjectMember $action)
+    public function store(Request $request, Project $project, AddProjectMember $action): \Illuminate\Http\Response
     {
-        $action($project, User::find($request->input('user_id')));
+        /** @var \App\Models\User $user */
+        $user = User::findOrFail($request->input('user_id'));
+        $action($project, $user);
 
         return response()->noContent();
     }
 
-    public function destroy(Project $project, User $user, RemoveProjectMember $action)
+    public function destroy(Project $project, User $user, RemoveProjectMember $action): \Illuminate\Http\Response
     {
         $action($project, $user);
 

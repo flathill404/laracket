@@ -13,33 +13,47 @@ use Illuminate\Http\Request;
 
 class OrganizationController extends Controller
 {
-    public function index(Request $request, GetMyOrganizations $query)
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Organization>
+     */
+    public function index(Request $request, GetMyOrganizations $query): \Illuminate\Database\Eloquent\Collection
     {
-        return $query($request->user());
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        return $query($user);
     }
 
-    public function store(Request $request, CreateOrganization $action)
+    public function store(Request $request, CreateOrganization $action): \Illuminate\Http\JsonResponse
     {
-        $organization = $action($request->user(), $request->all());
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        /** @var array<string, mixed> $input */
+        $input = $request->all();
+        $organization = $action($user, $input);
 
         return response()->json($organization, 201);
     }
 
-    public function show(Organization $organization, GetOrganizationDetail $query)
+    public function show(Organization $organization, GetOrganizationDetail $query): Organization
     {
         return $query($organization);
     }
 
-    public function update(Request $request, Organization $organization, UpdateOrganization $action)
+    public function update(Request $request, Organization $organization, UpdateOrganization $action): \Illuminate\Http\JsonResponse
     {
-        $organization = $action($organization, $request->all());
+        /** @var array<string, mixed> $input */
+        $input = $request->all();
+        $organization = $action($organization, $input);
 
         return response()->json($organization);
     }
 
-    public function destroy(Organization $organization, DeleteOrganization $action)
+    public function destroy(Request $request, Organization $organization, DeleteOrganization $action): \Illuminate\Http\Response
     {
-        $action($organization);
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        $action($user, $organization);
 
         return response()->noContent();
     }

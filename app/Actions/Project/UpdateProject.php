@@ -23,11 +23,15 @@ class UpdateProject
             ]);
 
             if (isset($input['assigned_users'])) {
-                $project->assignedUsers()->sync($input['assigned_users']);
+                /** @var array<int|string> $users */
+                $users = $input['assigned_users'];
+                $project->assignedUsers()->sync($users);
             }
 
             if (isset($input['assigned_teams'])) {
-                $project->assignedTeams()->sync($input['assigned_teams']);
+                /** @var array<int|string> $teams */
+                $teams = $input['assigned_teams'];
+                $project->assignedTeams()->sync($teams);
             }
 
             return $project;
@@ -42,6 +46,8 @@ class UpdateProject
         return [
             'name' => ['sometimes', 'required', 'string', 'max:30', 'alpha_dash'],
             'display_name' => ['sometimes', 'required', 'string', 'max:50'],
+            'assigned_users' => ['sometimes', 'array'],
+            'assigned_teams' => ['sometimes', 'array'],
         ];
     }
 }

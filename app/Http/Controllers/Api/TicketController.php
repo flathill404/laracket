@@ -14,33 +14,44 @@ use Illuminate\Http\Request;
 
 class TicketController extends Controller
 {
-    public function index(Project $project, GetProjectTickets $query)
+    /**
+     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ticket>
+     */
+    public function index(Project $project, GetProjectTickets $query): \Illuminate\Support\Collection
     {
         return $query($project);
     }
 
-    public function store(Request $request, Project $project, CreateTicket $action)
+    public function store(Request $request, Project $project, CreateTicket $action): \Illuminate\Http\JsonResponse
     {
-        $ticket = $action($project, $request->user(), $request->all());
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        /** @var array<string, mixed> $input */
+        $input = $request->all();
+        $ticket = $action($user, $project, $input);
 
         return response()->json($ticket, 201);
     }
 
-    public function show(Ticket $ticket, GetTicketDetail $query)
+    public function show(Ticket $ticket, GetTicketDetail $query): Ticket
     {
         return $query($ticket);
     }
 
-    public function update(Request $request, Ticket $ticket, UpdateTicket $action)
+    public function update(Request $request, Ticket $ticket, UpdateTicket $action): \Illuminate\Http\JsonResponse
     {
-        $ticket = $action($ticket, $request->all());
+        /** @var array<string, mixed> $input */
+        $input = $request->all();
+        $ticket = $action($ticket, $input);
 
         return response()->json($ticket);
     }
 
-    public function destroy(Ticket $ticket, DeleteTicket $action)
+    public function destroy(Request $request, Ticket $ticket, DeleteTicket $action): \Illuminate\Http\Response
     {
-        $action($ticket);
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        $action($user, $ticket);
 
         return response()->noContent();
     }

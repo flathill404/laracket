@@ -11,7 +11,7 @@ class DeleteProject
     public function __invoke(User $actor, Project $project): bool
     {
         return DB::transaction(function () use ($project) {
-            return $project->delete();
+            return (bool) $project->delete();
         });
     }
 }

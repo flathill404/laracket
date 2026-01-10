@@ -6,7 +6,7 @@ use App\Models\User;
 
 class GetUserProfile
 {
-    public function __invoke(User $user)
+    public function __invoke(User $user): User
     {
         return $user;
     }

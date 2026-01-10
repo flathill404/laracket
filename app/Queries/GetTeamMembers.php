@@ -3,10 +3,14 @@
 namespace App\Queries;
 
 use App\Models\Team;
+use Illuminate\Database\Eloquent\Collection;
 
 class GetTeamMembers
 {
-    public function __invoke(Team $team)
+    /**
+     * @return Collection<int, \App\Models\User>
+     */
+    public function __invoke(Team $team): Collection
     {
         return $team->members;
     }

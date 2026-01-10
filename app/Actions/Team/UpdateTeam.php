@@ -22,7 +22,9 @@ class UpdateTeam
             ]);
 
             if (isset($input['members'])) {
-                $team->users()->syncWithPivotValues($input['members'], ['role' => 'member']);
+                /** @var array<int|string> $members */
+                $members = $input['members'];
+                $team->users()->syncWithPivotValues($members, ['role' => 'member']);
             }
 
             return $team;
@@ -37,6 +39,7 @@ class UpdateTeam
         return [
             'name' => ['sometimes', 'required', 'string', 'max:30', 'alpha_dash'],
             'display_name' => ['sometimes', 'required', 'string', 'max:50'],
+            'members' => ['sometimes', 'array'],
         ];
     }
 }
