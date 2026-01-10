@@ -5,19 +5,22 @@ namespace App\Actions\Organization;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class CreateOrganization
 {
     /**
-     * @param  array<string, mixed>  $data
+     * @param  array<string, mixed>  $input
      */
-    public function create(User $creator, array $data): Organization
+    public function create(User $creator, array $input): Organization
     {
-        return DB::transaction(function () use ($creator, $data) {
+        Validator::make($input, $this->rules())->validate();
+
+        return DB::transaction(function () use ($creator, $input) {
             /** @var Organization $organization */
             $organization = Organization::create([
-                'name' => $data['name'],
-                'display_name' => $data['display_name'],
+                'name' => $input['name'],
+                'display_name' => $input['display_name'],
                 'owner_user_id' => $creator->id,
             ]);
 
@@ -26,5 +29,16 @@ class CreateOrganization
 
             return $organization;
         });
+    }
+
+    /**
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    protected function rules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:30', 'alpha_dash'],
+            'display_name' => ['required', 'string', 'max:100'],
+        ];
     }
 }
