@@ -6,8 +6,8 @@ use App\Models\Ticket;
 
 class UpdateTicketOrder
 {
-    public function __invoke(Ticket $ticket, int $order)
+    public function __invoke(Ticket $ticket, float $order): void
     {
-        $ticket->update(['order' => $order]);
+        $ticket->update(['display_order' => $order]);
     }
 }
