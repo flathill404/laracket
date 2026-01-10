@@ -12,15 +12,11 @@ use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TicketOrderController;
 use App\Http\Controllers\Api\TicketStatusController;
 use App\Http\Controllers\Api\UserController;
-use App\Http\Controllers\Api\UserPasswordController;
-use App\Http\Controllers\Api\UserProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     // User Scope
     Route::get('/user', [UserController::class, 'show']);
-    Route::put('/user/profile', [UserProfileController::class, 'update']);
-    Route::put('/user/password', [UserPasswordController::class, 'update']);
 
     // Organization Scope
     Route::get('/organizations', [OrganizationController::class, 'index']);
