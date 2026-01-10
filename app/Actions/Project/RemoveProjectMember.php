@@ -7,8 +7,8 @@ use App\Models\User;
 
 class RemoveProjectMember
 {
-    public function __invoke(Project $project, User $user)
+    public function __invoke(Project $project, User $user): void
     {
-        // Remove member logic
+        $project->assignedUsers()->detach($user);
     }
 }
