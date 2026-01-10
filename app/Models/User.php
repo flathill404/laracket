@@ -164,4 +164,45 @@ class User extends Authenticatable
             ->wherePivot('type', TicketUserType::Reviewer)
             ->withTimestamps();
     }
+
+    public function isAdmin(Organization $organization): bool
+    {
+        return $this->organizations()
+            ->where('organization_id', $organization->id)
+            ->wherePivot('role', \App\Enums\OrganizationRole::Admin)
+            ->exists();
+    }
+
+    public function isOrganizationOwner(Organization $organization): bool
+    {
+        return $organization->owner_user_id === $this->id;
+    }
+
+    public function hasProjectAccess(Project $project): bool
+    {
+        $directAccess = $this->assignedProjects()
+            ->where('project_id', $project->id)
+            ->exists();
+
+        if ($directAccess) {
+            return true;
+        }
+
+        // Check via Team
+        // project -> teams -> users
+        // Does the user belong to any team that is assigned to this project?
+        return $this->teams()
+            ->whereHas('assignedProjects', function ($query) use ($project) {
+                $query->where('projects.id', $project->id);
+            })
+            ->exists();
+    }
+
+    public function isTeamLeader(Team $team): bool
+    {
+        return $this->teams()
+            ->where('team_id', $team->id)
+            ->wherePivot('role', \App\Enums\TeamRole::Leader)
+            ->exists();
+    }
 }
