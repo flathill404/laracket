@@ -15,7 +15,7 @@ class OrganizationMemberController extends Controller
 {
     public function index(Organization $org, GetOrganizationMembers $query)
     {
-        return $query->execute($org);
+        return $query($org);
     }
 
     public function store(Request $request, Organization $org, InviteOrganizationMember $action)

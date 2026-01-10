@@ -6,7 +6,7 @@ use App\Models\Project;
 
 class GetProjectDetail
 {
-    public function execute(Project $project)
+    public function __invoke(Project $project)
     {
         return $project;
     }

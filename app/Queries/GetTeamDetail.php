@@ -6,7 +6,7 @@ use App\Models\Team;
 
 class GetTeamDetail
 {
-    public function execute(Team $team)
+    public function __invoke(Team $team)
     {
         return $team;
     }

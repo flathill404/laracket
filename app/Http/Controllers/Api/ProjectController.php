@@ -16,7 +16,7 @@ class ProjectController extends Controller
 {
     public function index(Organization $org, GetOrganizationProjects $query)
     {
-        return $query->execute($org);
+        return $query($org);
     }
 
     public function store(Request $request, Organization $org, CreateProject $action)
@@ -28,7 +28,7 @@ class ProjectController extends Controller
 
     public function show(Project $project, GetProjectDetail $query)
     {
-        return $query->execute($project);
+        return $query($project);
     }
 
     public function update(Request $request, Project $project, UpdateProject $action)

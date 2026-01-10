@@ -16,7 +16,7 @@ class TeamController extends Controller
 {
     public function index(Organization $org, GetOrganizationTeams $query)
     {
-        return $query->execute($org);
+        return $query($org);
     }
 
     public function store(Request $request, Organization $org, CreateTeam $action)
@@ -28,7 +28,7 @@ class TeamController extends Controller
 
     public function show(Team $team, GetTeamDetail $query)
     {
-        return $query->execute($team);
+        return $query($team);
     }
 
     public function update(Request $request, Team $team, UpdateTeam $action)

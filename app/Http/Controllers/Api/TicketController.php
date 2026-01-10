@@ -16,7 +16,7 @@ class TicketController extends Controller
 {
     public function index(Project $project, GetProjectTickets $query)
     {
-        return $query->execute($project);
+        return $query($project);
     }
 
     public function store(Request $request, Project $project, CreateTicket $action)
@@ -28,7 +28,7 @@ class TicketController extends Controller
 
     public function show(Ticket $ticket, GetTicketDetail $query)
     {
-        return $query->execute($ticket);
+        return $query($ticket);
     }
 
     public function update(Request $request, Ticket $ticket, UpdateTicketContent $action)

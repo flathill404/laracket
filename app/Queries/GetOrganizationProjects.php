@@ -6,7 +6,7 @@ use App\Models\Organization;
 
 class GetOrganizationProjects
 {
-    public function execute(Organization $organization)
+    public function __invoke(Organization $organization)
     {
         return $organization->projects;
     }

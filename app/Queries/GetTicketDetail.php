@@ -6,7 +6,7 @@ use App\Models\Ticket;
 
 class GetTicketDetail
 {
-    public function execute(Ticket $ticket)
+    public function __invoke(Ticket $ticket)
     {
         return $ticket;
     }

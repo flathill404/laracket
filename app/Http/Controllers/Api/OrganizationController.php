@@ -15,7 +15,7 @@ class OrganizationController extends Controller
 {
     public function index(Request $request, GetMyOrganizations $query)
     {
-        return $query->execute($request->user());
+        return $query($request->user());
     }
 
     public function store(Request $request, CreateOrganization $action)
@@ -27,7 +27,7 @@ class OrganizationController extends Controller
 
     public function show(Organization $organization, GetOrganizationDetail $query)
     {
-        return $query->execute($organization);
+        return $query($organization);
     }
 
     public function update(Request $request, Organization $organization, UpdateOrganizationProfile $action)

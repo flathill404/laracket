@@ -14,7 +14,7 @@ class ProjectMemberController extends Controller
 {
     public function index(Project $project, GetProjectMembers $query)
     {
-        return $query->execute($project);
+        return $query($project);
     }
 
     public function store(Request $request, Project $project, AddProjectMember $action)

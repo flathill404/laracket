@@ -10,6 +10,6 @@ class UserController extends Controller
 {
     public function show(Request $request, GetUserProfile $query)
     {
-        return $query->execute($request->user());
+        return $query($request->user());
     }
 }

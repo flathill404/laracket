@@ -15,7 +15,7 @@ class TeamMemberController extends Controller
 {
     public function index(Team $team, GetTeamMembers $query)
     {
-        return $query->execute($team);
+        return $query($team);
     }
 
     public function store(Request $request, Team $team, AddTeamMember $action)
