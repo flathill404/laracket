@@ -21,8 +21,7 @@ it('resets the user password', function () {
     ]);
 
     $user->refresh();
-    $this->assertTrue(
-        Hash::check($newPassword, $user->password),
+    expect(Hash::check($newPassword, $user->password))->toBeTrue(
         'The user password was not reset correctly.'
     );
 });
@@ -31,10 +30,8 @@ it('validates password rules', function () {
     $user = User::factory()->make();
     $action = new ResetUserPassword;
 
-    $this->expectException(ValidationException::class);
-
-    $action->reset($user, [
+    expect(fn () => $action->reset($user, [
         'password' => 'short',
         'password_confirmation' => 'mismatch',
-    ]);
+    ]))->toThrow(ValidationException::class);
 });

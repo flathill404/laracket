@@ -3,10 +3,16 @@
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\assertAuthenticated;
+use function Pest\Laravel\assertGuest;
+use function Pest\Laravel\get;
+use function Pest\Laravel\postJson;
+
 uses(RefreshDatabase::class);
 
 it('retrieves sanctum csrf cookie', function () {
-    $response = $this->get('/sanctum/csrf-cookie');
+    $response = get('/sanctum/csrf-cookie');
 
     $response->assertNoContent();
 });
@@ -14,32 +20,32 @@ it('retrieves sanctum csrf cookie', function () {
 it('authenticates the user', function () {
     $user = User::factory()->create();
 
-    $response = $this->postJson('/login', [
+    $response = postJson('/login', [
         'email' => $user->email,
         'password' => 'password',
     ]);
 
     $response->assertOk();
-    $this->assertAuthenticated();
+    assertAuthenticated();
 });
 
 it('does not authenticate with invalid password', function () {
     $user = User::factory()->create();
 
-    $this->postJson('/login', [
+    postJson('/login', [
         'email' => $user->email,
         'password' => 'wrong-password',
     ]);
 
-    $this->assertGuest();
+    assertGuest();
 });
 
 it('logs out the user', function () {
     $user = User::factory()->create();
-    $this->actingAs($user);
+    actingAs($user);
 
-    $response = $this->postJson('/logout');
+    $response = postJson('/logout');
 
     $response->assertNoContent();
-    $this->assertGuest();
+    assertGuest();
 });

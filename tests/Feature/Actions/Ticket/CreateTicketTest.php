@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
+use function Pest\Laravel\assertDatabaseHas;
+
 uses(RefreshDatabase::class);
 
 it('creates a ticket', function () {
@@ -23,14 +25,14 @@ it('creates a ticket', function () {
 
     $ticket = $action->create($user, $project, $input);
 
-    $this->assertDatabaseHas('tickets', [
+    assertDatabaseHas('tickets', [
         'id' => $ticket->id,
         'title' => 'Test Ticket',
         'description' => 'Test Description',
         'status' => TicketStatus::Open,
     ]);
 
-    $this->assertDatabaseHas('ticket_user', [
+    assertDatabaseHas('ticket_user', [
         'ticket_id' => $ticket->id,
         'user_id' => $user->id,
         'type' => TicketUserType::Assignee,

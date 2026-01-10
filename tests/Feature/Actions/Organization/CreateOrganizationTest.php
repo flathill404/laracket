@@ -5,6 +5,8 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
+use function Pest\Laravel\assertDatabaseHas;
+
 uses(RefreshDatabase::class);
 
 it('creates an organization', function () {
@@ -18,13 +20,13 @@ it('creates an organization', function () {
 
     $organization = $action->create($user, $input);
 
-    $this->assertDatabaseHas('organizations', [
+    assertDatabaseHas('organizations', [
         'id' => $organization->id,
         'name' => 'TestOrganization',
         'owner_user_id' => $user->id,
     ]);
 
-    $this->assertDatabaseHas('organization_user', [
+    assertDatabaseHas('organization_user', [
         'organization_id' => $organization->id,
         'user_id' => $user->id,
         'role' => 'admin',

@@ -5,6 +5,8 @@ use App\Models\Project;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use function Pest\Laravel\assertModelMissing;
+
 uses(RefreshDatabase::class);
 
 it('deletes a project', function () {
@@ -14,5 +16,5 @@ it('deletes a project', function () {
 
     $action->delete($user, $project);
 
-    $this->assertModelMissing($project);
+    assertModelMissing($project);
 });

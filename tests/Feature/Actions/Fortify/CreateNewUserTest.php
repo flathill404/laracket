@@ -6,10 +6,12 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+use function Pest\Laravel\assertDatabaseHas;
+
 uses(RefreshDatabase::class);
 
 it('creates a new user', function () {
-    $action = $this->app->make(CreateNewUser::class);
+    $action = app(CreateNewUser::class);
     $input = [
         'name' => 'Power Chan',
         'display_name' => 'Power Chan',
@@ -20,17 +22,17 @@ it('creates a new user', function () {
 
     $user = $action->create($input);
 
-    $this->assertInstanceOf(User::class, $user);
-    $this->assertEquals('Power Chan', $user->name);
-    $this->assertEquals('power@example.com', $user->email);
-    $this->assertTrue(Hash::check('password123', $user->password));
-    $this->assertDatabaseHas('users', [
+    expect($user)->toBeInstanceOf(User::class);
+    expect($user->name)->toBe('Power Chan');
+    expect($user->email)->toBe('power@example.com');
+    expect(Hash::check('password123', $user->password))->toBeTrue();
+    assertDatabaseHas('users', [
         'email' => 'power@example.com',
     ]);
 });
 
 it('validates password confirmation', function () {
-    $action = $this->app->make(CreateNewUser::class);
+    $action = app(CreateNewUser::class);
     $input = [
         'name' => 'Denji',
         'display_name' => 'Denji',
@@ -39,13 +41,12 @@ it('validates password confirmation', function () {
         'password_confirmation' => 'wrong-password',
     ];
 
-    $this->expectException(ValidationException::class);
-
-    $action->create($input);
+    expect(fn () => $action->create($input))
+        ->toThrow(ValidationException::class);
 });
 
 it('validates password rules', function () {
-    $action = $this->app->make(CreateNewUser::class);
+    $action = app(CreateNewUser::class);
     $input = [
         'name' => 'Aki',
         'display_name' => 'Aki',
@@ -54,7 +55,6 @@ it('validates password rules', function () {
         'password_confirmation' => 'short',
     ];
 
-    $this->expectException(ValidationException::class);
-
-    $action->create($input);
+    expect(fn () => $action->create($input))
+        ->toThrow(ValidationException::class);
 });

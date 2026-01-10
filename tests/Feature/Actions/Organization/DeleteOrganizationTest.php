@@ -5,6 +5,8 @@ use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use function Pest\Laravel\assertModelMissing;
+
 uses(RefreshDatabase::class);
 
 it('deletes an organization', function () {
@@ -14,5 +16,5 @@ it('deletes an organization', function () {
 
     $action->delete($user, $organization);
 
-    $this->assertModelMissing($organization);
+    assertModelMissing($organization);
 });

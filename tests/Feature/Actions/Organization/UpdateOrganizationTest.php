@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
+use function Pest\Laravel\assertDatabaseHas;
+
 uses(RefreshDatabase::class);
 
 it('updates an organization', function () {
@@ -19,7 +21,7 @@ it('updates an organization', function () {
 
     $action->update($organization, $input);
 
-    $this->assertDatabaseHas('organizations', [
+    assertDatabaseHas('organizations', [
         'id' => $organization->id,
         'name' => 'UpdatedOrganizationName',
     ]);

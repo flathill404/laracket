@@ -4,12 +4,15 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\assertDatabaseHas;
+
 uses(RefreshDatabase::class);
 
 it('retrieves user profile', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)
+    $response = actingAs($user)
         ->getJson('/api/user');
 
     $response->assertOk()
@@ -22,14 +25,14 @@ it('retrieves user profile', function () {
 it('updates profile information', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)
+    $response = actingAs($user)
         ->putJson('/user/profile-information', [
             'name' => 'Super Power',
             'email' => 'super_power@example.com',
         ]);
 
     $response->assertOk();
-    $this->assertDatabaseHas('users', [
+    assertDatabaseHas('users', [
         'id' => $user->id,
         'name' => 'Super Power',
         'email' => 'super_power@example.com',
@@ -41,7 +44,7 @@ it('updates password', function () {
         'password' => Hash::make('old-password'),
     ]);
 
-    $response = $this->actingAs($user)
+    $response = actingAs($user)
         ->putJson('/user/password', [
             'current_password' => 'old-password',
             'password' => 'new-strong-password',
@@ -51,10 +54,7 @@ it('updates password', function () {
     $response->assertOk();
 
     $user->refresh();
-    $this->assertTrue(
-        Hash::check('new-strong-password', $user->password),
-        'The password was not updated correctly.'
-    );
+    expect(Hash::check('new-strong-password', $user->password))->toBeTrue();
 });
 
 it('fails password update if current password is incorrect', function () {
@@ -62,7 +62,7 @@ it('fails password update if current password is incorrect', function () {
         'password' => Hash::make('old-password'),
     ]);
 
-    $response = $this->actingAs($user)
+    $response = actingAs($user)
         ->putJson('/user/password', [
             'current_password' => 'wrong-password',
             'password' => 'new-password',

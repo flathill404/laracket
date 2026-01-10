@@ -3,10 +3,14 @@
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use function Pest\Laravel\assertAuthenticated;
+use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\postJson;
+
 uses(RefreshDatabase::class);
 
 it('registers a new user', function () {
-    $response = $this->postJson('/register', [
+    $response = postJson('/register', [
         'name' => 'Power Chan',
         'display_name' => 'Power Chan',
         'email' => 'power@example.com',
@@ -15,14 +19,14 @@ it('registers a new user', function () {
     ]);
 
     $response->assertCreated();
-    $this->assertAuthenticated();
-    $this->assertDatabaseHas('users', [
+    assertAuthenticated();
+    assertDatabaseHas('users', [
         'email' => 'power@example.com',
     ]);
 });
 
 it('fails registration if passwords do not match', function () {
-    $response = $this->postJson('/register', [
+    $response = postJson('/register', [
         'name' => 'Power Chan',
         'display_name' => 'Power Chan',
         'email' => 'power@example.com',
@@ -39,7 +43,7 @@ it('fails registration with duplicate email', function () {
         'email' => 'power@example.com',
     ]);
 
-    $response = $this->postJson('/register', [
+    $response = postJson('/register', [
         'name' => 'Another Power',
         'display_name' => 'Another Power',
         'email' => 'power@example.com',

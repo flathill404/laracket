@@ -5,6 +5,8 @@ use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use function Pest\Laravel\assertModelMissing;
+
 uses(RefreshDatabase::class);
 
 it('deletes a ticket', function () {
@@ -14,5 +16,5 @@ it('deletes a ticket', function () {
 
     $action->delete($user, $ticket);
 
-    $this->assertModelMissing($ticket);
+    assertModelMissing($ticket);
 });

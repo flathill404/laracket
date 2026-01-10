@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
+use function Pest\Laravel\assertDatabaseHas;
+
 uses(RefreshDatabase::class);
 
 it('updates a team', function () {
@@ -21,12 +23,12 @@ it('updates a team', function () {
 
     $action->update($team, $input);
 
-    $this->assertDatabaseHas('teams', [
+    assertDatabaseHas('teams', [
         'id' => $team->id,
         'name' => 'UpdatedTeamName',
     ]);
 
-    $this->assertDatabaseHas('team_user', [
+    assertDatabaseHas('team_user', [
         'team_id' => $team->id,
         'user_id' => $member->id,
         'role' => 'member',

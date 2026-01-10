@@ -6,13 +6,16 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 
+use function Pest\Laravel\assertGuest;
+use function Pest\Laravel\postJson;
+
 uses(RefreshDatabase::class);
 
 it('requests a reset password link', function () {
     Notification::fake();
     $user = User::factory()->create();
 
-    $response = $this->postJson('/forgot-password', [
+    $response = postJson('/forgot-password', [
         'email' => $user->email,
     ]);
 
@@ -28,7 +31,7 @@ it('resets password with valid token', function () {
 
     $token = Password::broker()->createToken($user);
 
-    $response = $this->postJson('/reset-password', [
+    $response = postJson('/reset-password', [
         'token' => $token,
         'email' => $user->email,
         'password' => 'new-password',
@@ -36,9 +39,9 @@ it('resets password with valid token', function () {
     ]);
 
     $response->assertOk();
-    $this->assertGuest();
+    assertGuest();
 
-    $loginResponse = $this->postJson('/login', [
+    $loginResponse = postJson('/login', [
         'email' => $user->email,
         'password' => 'new-password',
     ]);
@@ -49,7 +52,7 @@ it('resets password with valid token', function () {
 it('does not reset password with invalid token', function () {
     $user = User::factory()->create();
 
-    $response = $this->postJson('/reset-password', [
+    $response = postJson('/reset-password', [
         'token' => 'invalid-token',
         'email' => $user->email,
         'password' => 'new-password',

@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
+use function Pest\Laravel\assertDatabaseHas;
+
 uses(RefreshDatabase::class);
 
 it('updates a ticket', function () {
@@ -24,15 +26,15 @@ it('updates a ticket', function () {
 
     $updatedTicket = $action->update($ticket, $input);
 
-    $this->assertEquals('Updated Title', $updatedTicket->title);
+    expect($updatedTicket->title)->toBe('Updated Title');
 
-    $this->assertDatabaseHas('ticket_user', [
+    assertDatabaseHas('ticket_user', [
         'ticket_id' => $ticket->id,
         'user_id' => $assignee->id,
         'type' => TicketUserType::Assignee,
     ]);
 
-    $this->assertDatabaseHas('ticket_user', [
+    assertDatabaseHas('ticket_user', [
         'ticket_id' => $ticket->id,
         'user_id' => $reviewer->id,
         'type' => TicketUserType::Reviewer,

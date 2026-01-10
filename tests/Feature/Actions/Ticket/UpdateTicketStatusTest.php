@@ -5,6 +5,8 @@ use App\Enums\TicketStatus;
 use App\Models\Ticket;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use function Pest\Laravel\assertDatabaseHas;
+
 uses(RefreshDatabase::class);
 
 it('updates ticket status', function () {
@@ -13,8 +15,8 @@ it('updates ticket status', function () {
 
     $updatedTicket = $action->update($ticket, TicketStatus::InProgress);
 
-    $this->assertEquals(TicketStatus::InProgress, $updatedTicket->status);
-    $this->assertDatabaseHas('tickets', [
+    expect($updatedTicket->status)->toBe(TicketStatus::InProgress);
+    assertDatabaseHas('tickets', [
         'id' => $ticket->id,
         'status' => TicketStatus::InProgress,
     ]);

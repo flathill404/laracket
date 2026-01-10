@@ -5,6 +5,8 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use function Pest\Laravel\assertModelMissing;
+
 uses(RefreshDatabase::class);
 
 it('deletes a team', function () {
@@ -14,5 +16,5 @@ it('deletes a team', function () {
 
     $action->delete($user, $team);
 
-    $this->assertModelMissing($team);
+    assertModelMissing($team);
 });

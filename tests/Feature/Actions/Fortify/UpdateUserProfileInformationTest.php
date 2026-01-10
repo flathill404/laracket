@@ -21,8 +21,8 @@ it('updates profile information', function () {
     ]);
     $user->refresh();
 
-    $this->assertEquals('New Name', $user->name);
-    $this->assertEquals('new@example.com', $user->email);
+    expect($user->name)->toBe('New Name');
+    expect($user->email)->toBe('new@example.com');
 });
 
 it('validates email uniqueness', function () {
@@ -30,12 +30,10 @@ it('validates email uniqueness', function () {
     $user = User::factory()->make(['email' => 'original@example.com']);
     $action = new UpdateUserProfileInformation;
 
-    $this->expectException(ValidationException::class);
-
-    $action->update($user, [
+    expect(fn () => $action->update($user, [
         'name' => 'New Name',
         'email' => 'taken@example.com',
-    ]);
+    ]))->toThrow(ValidationException::class);
 });
 
 it('updates name with the same email', function () {
@@ -48,5 +46,5 @@ it('updates name with the same email', function () {
     ]);
 
     $user->refresh();
-    $this->assertEquals('New Name', $user->name);
+    expect($user->name)->toBe('New Name');
 });

@@ -4,54 +4,61 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
 
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\assertAuthenticatedAs;
+use function Pest\Laravel\assertGuest;
+use function Pest\Laravel\getJson;
+use function Pest\Laravel\mock;
+use function Pest\Laravel\postJson;
+
 uses(RefreshDatabase::class);
 
 it('enables two factor authentication', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)
+    $response = actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
         ->postJson('/user/two-factor-authentication');
 
     $response->assertOk();
 
     $user->refresh();
-    $this->assertNotNull($user->two_factor_secret);
-    $this->assertNotNull($user->two_factor_recovery_codes);
+    expect($user->two_factor_secret)->not->toBeNull();
+    expect($user->two_factor_recovery_codes)->not->toBeNull();
 });
 
 it('gets two factor qr code', function () {
     $user = User::factory()->create();
 
-    $this->actingAs($user)
+    actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
         ->postJson('/user/two-factor-authentication');
 
-    $response = $this->getJson('/user/two-factor-qr-code');
+    $response = getJson('/user/two-factor-qr-code');
 
     $response->assertOk();
-    $this->assertStringContainsString('svg', $response->content());
+    expect($response->content())->toContain('svg');
 });
 
 it('confirms two factor authentication', function () {
     $user = User::factory()->create();
 
-    $this->actingAs($user)
+    actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
         ->postJson('/user/two-factor-authentication');
 
-    $this->mock(TwoFactorAuthenticationProvider::class, function ($mock) {
+    mock(TwoFactorAuthenticationProvider::class, function ($mock) {
         $mock->shouldReceive('verify')->andReturn(true);
     });
 
-    $response = $this->postJson('/user/confirmed-two-factor-authentication', [
+    $response = postJson('/user/confirmed-two-factor-authentication', [
         'code' => '123456',
     ]);
 
     $response->assertOk();
 
     $user->refresh();
-    $this->assertNotNull($user->two_factor_confirmed_at);
+    expect($user->two_factor_confirmed_at)->not->toBeNull();
 });
 
 it('authenticates the user with two factor code', function () {
@@ -61,24 +68,24 @@ it('authenticates the user with two factor code', function () {
         'two_factor_confirmed_at' => now(),
     ]);
 
-    $response = $this->postJson('/login', [
+    $response = postJson('/login', [
         'email' => $user->email,
         'password' => 'password',
     ]);
 
     $response->assertJson(['two_factor' => true]);
-    $this->assertGuest();
+    assertGuest();
 
-    $this->mock(TwoFactorAuthenticationProvider::class, function ($mock) {
+    mock(TwoFactorAuthenticationProvider::class, function ($mock) {
         $mock->shouldReceive('verify')->andReturn(true);
     });
 
-    $response = $this->postJson('/two-factor-challenge', [
+    $response = postJson('/two-factor-challenge', [
         'code' => '123456',
     ]);
 
     $response->assertNoContent();
-    $this->assertAuthenticatedAs($user);
+    assertAuthenticatedAs($user);
 });
 
 it('authenticates the user with recovery code', function () {
@@ -88,17 +95,17 @@ it('authenticates the user with recovery code', function () {
         'two_factor_confirmed_at' => now(),
     ]);
 
-    $this->postJson('/login', [
+    postJson('/login', [
         'email' => $user->email,
         'password' => 'password',
     ]);
 
-    $response = $this->postJson('/two-factor-challenge', [
+    $response = postJson('/two-factor-challenge', [
         'recovery_code' => 'valid-recovery-code',
     ]);
 
     $response->assertNoContent();
-    $this->assertAuthenticatedAs($user);
+    assertAuthenticatedAs($user);
 });
 
 it('disables two factor authentication', function () {
@@ -107,13 +114,13 @@ it('disables two factor authentication', function () {
         'two_factor_confirmed_at' => now(),
     ]);
 
-    $response = $this->actingAs($user)
+    $response = actingAs($user)
         ->withSession(['auth.password_confirmed_at' => time()])
         ->deleteJson('/user/two-factor-authentication');
 
     $response->assertOk();
 
     $user->refresh();
-    $this->assertNull($user->two_factor_secret);
-    $this->assertNull($user->two_factor_confirmed_at);
+    expect($user->two_factor_secret)->toBeNull();
+    expect($user->two_factor_confirmed_at)->toBeNull();
 });
