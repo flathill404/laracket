@@ -7,8 +7,8 @@ use App\Models\User;
 
 class RemoveTeamMember
 {
-    public function __invoke(Team $team, User $user)
+    public function __invoke(Team $team, User $user): void
     {
-        // Remove logic
+        $team->users()->detach($user);
     }
 }
