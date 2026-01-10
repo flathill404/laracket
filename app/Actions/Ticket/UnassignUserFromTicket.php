@@ -7,8 +7,8 @@ use App\Models\User;
 
 class UnassignUserFromTicket
 {
-    public function __invoke(Ticket $ticket, User $user)
+    public function __invoke(Ticket $ticket, User $user): void
     {
-        // Unassign logic
+        $ticket->assignees()->detach($user);
     }
 }
