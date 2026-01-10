@@ -4,7 +4,7 @@ namespace App\Queries;
 
 use App\Models\Team;
 
-class GetTeamDetail extends Query
+class GetTeamDetail
 {
     public function execute(Team $team)
     {

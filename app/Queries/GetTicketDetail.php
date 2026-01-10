@@ -4,7 +4,7 @@ namespace App\Queries;
 
 use App\Models\Ticket;
 
-class GetTicketDetail extends Query
+class GetTicketDetail
 {
     public function execute(Ticket $ticket)
     {

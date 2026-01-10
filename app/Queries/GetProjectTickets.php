@@ -4,7 +4,7 @@ namespace App\Queries;
 
 use App\Models\Project;
 
-class GetProjectTickets extends Query
+class GetProjectTickets
 {
     public function execute(Project $project)
     {

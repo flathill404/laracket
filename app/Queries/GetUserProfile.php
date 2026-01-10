@@ -4,7 +4,7 @@ namespace App\Queries;
 
 use App\Models\User;
 
-class GetUserProfile extends Query
+class GetUserProfile
 {
     public function execute(User $user)
     {

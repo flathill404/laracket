@@ -4,7 +4,7 @@ namespace App\Queries;
 
 use App\Models\Project;
 
-class GetProjectMembers extends Query
+class GetProjectMembers
 {
     public function execute(Project $project)
     {

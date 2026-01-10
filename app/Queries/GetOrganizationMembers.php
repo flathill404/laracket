@@ -4,7 +4,7 @@ namespace App\Queries;
 
 use App\Models\Organization;
 
-class GetOrganizationMembers extends Query
+class GetOrganizationMembers
 {
     public function execute(Organization $organization)
     {
