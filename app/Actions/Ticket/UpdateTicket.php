@@ -2,36 +2,54 @@
 
 namespace App\Actions\Ticket;
 
+use App\Enums\TicketStatus;
 use App\Enums\TicketUserType;
 use App\Models\Ticket;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class UpdateTicket
 {
     /**
-     * @param  array<string, mixed>  $data
+     * @param  array<string, mixed>  $input
      */
-    public function update(User $actor, Ticket $ticket, array $data): Ticket
+    public function update(Ticket $ticket, array $input): Ticket
     {
-        return DB::transaction(function () use ($ticket, $data) {
+        Validator::make($input, $this->rules())->validate();
+
+        return DB::transaction(function () use ($ticket, $input) {
             $ticket->update([
-                'title' => $data['title'] ?? $ticket->title,
-                'description' => $data['description'] ?? $ticket->description,
-                'display_order' => $data['display_order'] ?? $ticket->display_order,
+                'title' => $input['title'] ?? $ticket->title,
+                'description' => $input['description'] ?? $ticket->description,
+                'display_order' => $input['display_order'] ?? $ticket->display_order,
+                'status' => $input['status'] ?? $ticket->status,
             ]);
 
-            if (isset($data['assignees'])) {
+            if (isset($input['assignees'])) {
                 // Sync assignees, expecting array of user IDs
-                $ticket->assignees()->syncWithPivotValues($data['assignees'], ['type' => TicketUserType::Assignee]);
+                $ticket->assignees()->syncWithPivotValues($input['assignees'], ['type' => TicketUserType::Assignee]);
             }
 
-            if (isset($data['reviewers'])) {
+            if (isset($input['reviewers'])) {
                 // Sync reviewers
-                $ticket->reviewers()->syncWithPivotValues($data['reviewers'], ['type' => TicketUserType::Reviewer]);
+                $ticket->reviewers()->syncWithPivotValues($input['reviewers'], ['type' => TicketUserType::Reviewer]);
             }
 
             return $ticket;
         });
+    }
+
+    /**
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    protected function rules(): array
+    {
+        return [
+            'title' => ['sometimes', 'required', 'string', 'max:100'],
+            'description' => ['sometimes', 'nullable', 'string'],
+            'display_order' => ['sometimes', 'integer'],
+            'status' => ['sometimes', Rule::enum(TicketStatus::class)],
+        ];
     }
 }
