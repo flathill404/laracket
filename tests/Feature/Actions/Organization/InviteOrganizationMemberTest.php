@@ -1,7 +1,5 @@
 <?php
 
-namespace Tests\Feature\Actions\Organization;
-
 use App\Actions\Organization\InviteOrganizationMember;
 use App\Enums\OrganizationRole;
 use App\Models\Organization;
@@ -9,65 +7,60 @@ use App\Models\OrganizationInvitation;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Validation\ValidationException;
-use Tests\TestCase;
 
-class InviteOrganizationMemberTest extends TestCase
-{
-    use RefreshDatabase;
+use function Pest\Laravel\assertDatabaseCount;
+use function Pest\Laravel\assertDatabaseHas;
 
-    public function test_can_invite_new_member(): void
-    {
-        $organization = Organization::factory()->create();
-        $action = new InviteOrganizationMember;
+uses(RefreshDatabase::class);
 
-        $invitation = $action($organization, 'test@example.com', OrganizationRole::Member);
+it('invites a new member', function () {
+    $organization = Organization::factory()->create();
+    $action = new InviteOrganizationMember;
 
-        $this->assertDatabaseHas('organization_invitations', [
-            'organization_id' => $organization->id,
-            'email' => 'test@example.com',
-            'role' => OrganizationRole::Member->value,
-        ]);
+    $invitation = $action($organization, 'test@example.com', OrganizationRole::Member);
 
-        $this->assertNotNull($invitation->token);
-    }
+    assertDatabaseHas('organization_invitations', [
+        'organization_id' => $organization->id,
+        'email' => 'test@example.com',
+        'role' => OrganizationRole::Member->value,
+    ]);
 
-    public function test_cannot_invite_existing_member(): void
-    {
-        $organization = Organization::factory()->create();
-        $user = User::factory()->create(['email' => 'existing@example.com']);
-        $organization->users()->attach($user, ['role' => 'member']);
+    expect($invitation->token)->not->toBeNull();
+});
 
-        $action = new InviteOrganizationMember;
+it('validates existing member', function () {
+    $organization = Organization::factory()->create();
+    $user = User::factory()->create(['email' => 'existing@example.com']);
+    $organization->users()->attach($user, ['role' => 'member']);
 
-        $this->expectException(ValidationException::class);
-        $action($organization, 'existing@example.com', OrganizationRole::Member);
-    }
+    $action = new InviteOrganizationMember;
 
-    public function test_cannot_send_duplicate_invitation(): void
-    {
-        $organization = Organization::factory()->create();
+    expect(fn () => $action($organization, 'existing@example.com', OrganizationRole::Member))
+        ->toThrow(ValidationException::class);
+});
 
-        OrganizationInvitation::create([
-            'organization_id' => $organization->id,
-            'email' => 'test@example.com',
-            'role' => OrganizationRole::Member,
-            'token' => 'existing-token',
-        ]);
+it('validates duplicate invitation', function () {
+    $organization = Organization::factory()->create();
 
-        $action = new InviteOrganizationMember;
+    OrganizationInvitation::create([
+        'organization_id' => $organization->id,
+        'email' => 'test@example.com',
+        'role' => OrganizationRole::Member,
+        'token' => 'existing-token',
+    ]);
 
-        $this->expectException(ValidationException::class);
-        $action($organization, 'test@example.com', OrganizationRole::Member);
-    }
+    $action = new InviteOrganizationMember;
 
-    public function test_can_invite_different_email_to_same_organization(): void
-    {
-        $organization = Organization::factory()->create();
-        $action = new InviteOrganizationMember;
+    expect(fn () => $action($organization, 'test@example.com', OrganizationRole::Member))
+        ->toThrow(ValidationException::class);
+});
 
-        $action($organization, 'first@example.com', OrganizationRole::Member);
-        $action($organization, 'second@example.com', OrganizationRole::Member);
+it('invites different emails to the same organization', function () {
+    $organization = Organization::factory()->create();
+    $action = new InviteOrganizationMember;
 
-        $this->assertDatabaseCount('organization_invitations', 2);
-    }
-}
+    $action($organization, 'first@example.com', OrganizationRole::Member);
+    $action($organization, 'second@example.com', OrganizationRole::Member);
+
+    assertDatabaseCount('organization_invitations', 2);
+});
