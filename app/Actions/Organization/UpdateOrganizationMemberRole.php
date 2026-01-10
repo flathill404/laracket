@@ -2,13 +2,32 @@
 
 namespace App\Actions\Organization;
 
+use App\Enums\OrganizationRole;
 use App\Models\Organization;
 use App\Models\User;
+use Illuminate\Validation\ValidationException;
 
 class UpdateOrganizationMemberRole
 {
-    public function __invoke(Organization $organization, User $user, string $role)
+    /**
+     * @throws ValidationException
+     */
+    public function __invoke(Organization $organization, User $user, OrganizationRole $role): void
     {
-        // Update logic
+        if ($organization->owner_user_id === $user->id) {
+            throw ValidationException::withMessages([
+                'user' => ['The organization owner\'s role cannot be changed.'],
+            ]);
+        }
+
+        if (! $organization->users()->where('user_id', $user->id)->exists()) {
+            throw ValidationException::withMessages([
+                'user' => ['This user is not a member of the organization.'],
+            ]);
+        }
+
+        $organization->users()->updateExistingPivot($user->id, [
+            'role' => $role->value,
+        ]);
     }
 }
