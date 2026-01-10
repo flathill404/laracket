@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\Organization\CreateOrganization;
 use App\Actions\Organization\DeleteOrganization;
-use App\Actions\Organization\UpdateOrganizationProfile;
+use App\Actions\Organization\UpdateOrganization;
 use App\Http\Controllers\Controller;
 use App\Models\Organization;
 use App\Queries\GetMyOrganizations;
@@ -30,7 +30,7 @@ class OrganizationController extends Controller
         return $query($organization);
     }
 
-    public function update(Request $request, Organization $organization, UpdateOrganizationProfile $action)
+    public function update(Request $request, Organization $organization, UpdateOrganization $action)
     {
         $organization = $action($organization, $request->all());
 
