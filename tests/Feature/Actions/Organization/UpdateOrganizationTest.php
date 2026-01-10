@@ -22,7 +22,7 @@ class UpdateOrganizationTest extends TestCase
             'name' => 'Updated Organization Name',
         ];
 
-        $action->execute($user, $organization, $data);
+        $action->update($user, $organization, $data);
 
         $this->assertDatabaseHas('organizations', [
             'id' => $organization->id,

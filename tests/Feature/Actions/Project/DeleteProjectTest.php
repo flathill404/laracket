@@ -18,7 +18,7 @@ class DeleteProjectTest extends TestCase
         $user = User::factory()->create();
         $action = new DeleteProject;
 
-        $action->execute($user, $project);
+        $action->delete($user, $project);
 
         $this->assertModelMissing($project);
     }

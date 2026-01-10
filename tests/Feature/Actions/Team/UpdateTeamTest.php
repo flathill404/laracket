@@ -24,7 +24,7 @@ class UpdateTeamTest extends TestCase
             'members' => [$member->id],
         ];
 
-        $action->execute($user, $team, $data);
+        $action->update($user, $team, $data);
 
         $this->assertDatabaseHas('teams', [
             'id' => $team->id,

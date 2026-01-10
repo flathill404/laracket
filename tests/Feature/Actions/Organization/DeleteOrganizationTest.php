@@ -18,7 +18,7 @@ class DeleteOrganizationTest extends TestCase
         $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
         $action = new DeleteOrganization;
 
-        $action->execute($user, $organization);
+        $action->delete($user, $organization);
 
         $this->assertModelMissing($organization);
     }

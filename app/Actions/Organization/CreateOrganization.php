@@ -11,7 +11,7 @@ class CreateOrganization
     /**
      * @param  array<string, mixed>  $data
      */
-    public function execute(User $creator, array $data): Organization
+    public function create(User $creator, array $data): Organization
     {
         return DB::transaction(function () use ($creator, $data) {
             /** @var Organization $organization */

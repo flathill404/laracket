@@ -11,7 +11,7 @@ class UpdateOrganization
     /**
      * @param  array<string, mixed>  $data
      */
-    public function execute(User $actor, Organization $organization, array $data): Organization
+    public function update(User $actor, Organization $organization, array $data): Organization
     {
         return DB::transaction(function () use ($organization, $data) {
             $organization->update([

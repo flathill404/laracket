@@ -12,7 +12,7 @@ class UpdateTicket
     /**
      * @param  array<string, mixed>  $data
      */
-    public function execute(User $actor, Ticket $ticket, array $data): Ticket
+    public function update(User $actor, Ticket $ticket, array $data): Ticket
     {
         return DB::transaction(function () use ($ticket, $data) {
             $ticket->update([

@@ -14,7 +14,7 @@ class CreateTicket
     /**
      * @param  array<string, mixed>  $data
      */
-    public function execute(User $creator, Project $project, array $data): Ticket
+    public function create(User $creator, Project $project, array $data): Ticket
     {
         return DB::transaction(function () use ($project, $data) {
             /** @var Ticket $ticket */

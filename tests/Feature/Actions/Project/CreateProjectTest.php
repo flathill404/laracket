@@ -28,7 +28,7 @@ class CreateProjectTest extends TestCase
             'assigned_teams' => [$team->id],
         ];
 
-        $project = $action->execute($user, $organization, $data);
+        $project = $action->create($user, $organization, $data);
 
         $this->assertDatabaseHas('projects', [
             'id' => $project->id,

@@ -18,7 +18,7 @@ class DeleteTeamTest extends TestCase
         $user = User::factory()->create();
         $action = new DeleteTeam;
 
-        $action->execute($user, $team);
+        $action->delete($user, $team);
 
         $this->assertModelMissing($team);
     }

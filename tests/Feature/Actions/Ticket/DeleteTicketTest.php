@@ -18,7 +18,7 @@ class DeleteTicketTest extends TestCase
         $ticket = Ticket::factory()->create();
         $action = new DeleteTicket;
 
-        $action->execute($user, $ticket);
+        $action->delete($user, $ticket);
 
         $this->assertModelMissing($ticket);
     }

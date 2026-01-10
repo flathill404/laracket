@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class DeleteTeam
 {
-    public function execute(User $actor, Team $team): bool
+    public function delete(User $actor, Team $team): bool
     {
         return DB::transaction(function () use ($team) {
             return $team->delete();

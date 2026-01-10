@@ -21,7 +21,7 @@ class CreateOrganizationTest extends TestCase
             'display_name' => 'Test Org Display',
         ];
 
-        $organization = $action->execute($user, $data);
+        $organization = $action->create($user, $data);
 
         $this->assertDatabaseHas('organizations', [
             'id' => $organization->id,

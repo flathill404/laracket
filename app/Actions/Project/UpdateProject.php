@@ -11,7 +11,7 @@ class UpdateProject
     /**
      * @param  array<string, mixed>  $data
      */
-    public function execute(User $actor, Project $project, array $data): Project
+    public function update(User $actor, Project $project, array $data): Project
     {
         return DB::transaction(function () use ($project, $data) {
             $project->update([

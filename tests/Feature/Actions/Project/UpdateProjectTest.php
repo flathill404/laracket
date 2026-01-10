@@ -26,7 +26,7 @@ class UpdateProjectTest extends TestCase
             'assigned_teams' => [$team->id],
         ];
 
-        $action->execute($user, $project, $data);
+        $action->update($user, $project, $data);
 
         $this->assertDatabaseHas('projects', [
             'id' => $project->id,

@@ -12,7 +12,7 @@ class CreateProject
     /**
      * @param  array<string, mixed>  $data
      */
-    public function execute(User $creator, Organization $organization, array $data): Project
+    public function create(User $creator, Organization $organization, array $data): Project
     {
         return DB::transaction(function () use ($organization, $data) {
             /** @var Project $project */

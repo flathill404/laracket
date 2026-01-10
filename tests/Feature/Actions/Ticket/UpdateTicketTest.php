@@ -28,7 +28,7 @@ class UpdateTicketTest extends TestCase
             'reviewers' => [$reviewer->id],
         ];
 
-        $updatedTicket = $action->execute($user, $ticket, $data);
+        $updatedTicket = $action->update($user, $ticket, $data);
 
         $this->assertEquals('Updated Title', $updatedTicket->title);
 

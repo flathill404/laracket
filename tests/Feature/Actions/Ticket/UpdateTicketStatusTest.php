@@ -19,7 +19,7 @@ class UpdateTicketStatusTest extends TestCase
         $ticket = Ticket::factory()->create(['status' => TicketStatus::Open]);
         $action = new UpdateTicketStatus;
 
-        $updatedTicket = $action->execute($user, $ticket, TicketStatus::InProgress);
+        $updatedTicket = $action->update($user, $ticket, TicketStatus::InProgress);
 
         $this->assertEquals(TicketStatus::InProgress, $updatedTicket->status);
         $this->assertDatabaseHas('tickets', [

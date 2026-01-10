@@ -26,7 +26,7 @@ class CreateTicketTest extends TestCase
             'assignee_id' => $user->id,
         ];
 
-        $ticket = $action->execute($user, $project, $data);
+        $ticket = $action->create($user, $project, $data);
 
         $this->assertDatabaseHas('tickets', [
             'id' => $ticket->id,

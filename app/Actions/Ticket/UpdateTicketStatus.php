@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class UpdateTicketStatus
 {
-    public function execute(User $actor, Ticket $ticket, TicketStatus $status): Ticket
+    public function update(User $actor, Ticket $ticket, TicketStatus $status): Ticket
     {
         return DB::transaction(function () use ($ticket, $status) {
             $ticket->update(['status' => $status]);

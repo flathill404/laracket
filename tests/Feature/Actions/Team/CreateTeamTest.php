@@ -25,7 +25,7 @@ class CreateTeamTest extends TestCase
             'members' => [$member->id],
         ];
 
-        $team = $action->execute($user, $organization, $data);
+        $team = $action->create($user, $organization, $data);
 
         $this->assertDatabaseHas('teams', [
             'id' => $team->id,

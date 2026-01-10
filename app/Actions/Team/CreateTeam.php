@@ -12,7 +12,7 @@ class CreateTeam
     /**
      * @param  array<string, mixed>  $data
      */
-    public function execute(User $creator, Organization $organization, array $data): Team
+    public function create(User $creator, Organization $organization, array $data): Team
     {
         return DB::transaction(function () use ($organization, $data) {
             /** @var Team $team */

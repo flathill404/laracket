@@ -11,7 +11,7 @@ class UpdateTeam
     /**
      * @param  array<string, mixed>  $data
      */
-    public function execute(User $actor, Team $team, array $data): Team
+    public function update(User $actor, Team $team, array $data): Team
     {
         return DB::transaction(function () use ($team, $data) {
             $team->update([
