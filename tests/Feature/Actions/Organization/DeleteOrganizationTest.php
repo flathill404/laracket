@@ -1,25 +1,18 @@
 <?php
 
-namespace Tests\Feature\Actions\Organization;
-
 use App\Actions\Organization\DeleteOrganization;
 use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class DeleteOrganizationTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
 
-    public function test_it_deletes_an_organization(): void
-    {
-        $user = User::factory()->create();
-        $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
-        $action = new DeleteOrganization;
+it('deletes an organization', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+    $action = new DeleteOrganization;
 
-        $action->delete($user, $organization);
+    $action->delete($user, $organization);
 
-        $this->assertModelMissing($organization);
-    }
-}
+    $this->assertModelMissing($organization);
+});

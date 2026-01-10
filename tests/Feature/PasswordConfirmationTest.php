@@ -1,52 +1,43 @@
 <?php
 
-namespace Tests\Feature;
-
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class PasswordConfirmationTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
 
-    public function test_password_confirmation_status_is_false_initially(): void
-    {
-        $user = User::factory()->create();
+it('returns false for initial password confirmation status', function () {
+    $user = User::factory()->create();
 
-        $response = $this->actingAs($user)
-            ->getJson('/user/confirmed-password-status');
+    $response = $this->actingAs($user)
+        ->getJson('/user/confirmed-password-status');
 
-        $response->assertOk()
-            ->assertJson(['confirmed' => false]);
-    }
+    $response->assertOk()
+        ->assertJson(['confirmed' => false]);
+});
 
-    public function test_user_can_confirm_password(): void
-    {
-        $user = User::factory()->create();
+it('confirms the password', function () {
+    $user = User::factory()->create();
 
-        $response = $this->actingAs($user)
-            ->postJson('/user/confirm-password', [
-                'password' => 'password',
-            ]);
+    $response = $this->actingAs($user)
+        ->postJson('/user/confirm-password', [
+            'password' => 'password',
+        ]);
 
-        $response->assertCreated();
-        $this->getJson('/user/confirmed-password-status')
-            ->assertJson(['confirmed' => true]);
-    }
+    $response->assertCreated();
+    $this->getJson('/user/confirmed-password-status')
+        ->assertJson(['confirmed' => true]);
+});
 
-    public function test_password_confirmation_fails_with_invalid_password(): void
-    {
-        $user = User::factory()->create();
+it('fails password confirmation with invalid password', function () {
+    $user = User::factory()->create();
 
-        $response = $this->actingAs($user)
-            ->postJson('/user/confirm-password', [
-                'password' => 'wrong-password',
-            ]);
+    $response = $this->actingAs($user)
+        ->postJson('/user/confirm-password', [
+            'password' => 'wrong-password',
+        ]);
 
-        $response->assertUnprocessable();
-        $response->assertJsonValidationErrors(['password']);
-        $this->getJson('/user/confirmed-password-status')
-            ->assertJson(['confirmed' => false]);
-    }
-}
+    $response->assertUnprocessable();
+    $response->assertJsonValidationErrors(['password']);
+    $this->getJson('/user/confirmed-password-status')
+        ->assertJson(['confirmed' => false]);
+});

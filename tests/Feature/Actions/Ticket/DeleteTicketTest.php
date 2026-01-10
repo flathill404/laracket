@@ -1,25 +1,18 @@
 <?php
 
-namespace Tests\Feature\Actions\Ticket;
-
 use App\Actions\Ticket\DeleteTicket;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class DeleteTicketTest extends TestCase
-{
-    use RefreshDatabase;
+uses(RefreshDatabase::class);
 
-    public function test_it_deletes_a_ticket(): void
-    {
-        $user = User::factory()->create();
-        $ticket = Ticket::factory()->create();
-        $action = new DeleteTicket;
+it('deletes a ticket', function () {
+    $user = User::factory()->create();
+    $ticket = Ticket::factory()->create();
+    $action = new DeleteTicket;
 
-        $action->delete($user, $ticket);
+    $action->delete($user, $ticket);
 
-        $this->assertModelMissing($ticket);
-    }
-}
+    $this->assertModelMissing($ticket);
+});
