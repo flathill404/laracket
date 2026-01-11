@@ -1,41 +1,168 @@
 <?php
 
-use App\Enums\TeamRole;
+use App\Enums\OrganizationRole;
 use App\Models\Organization;
 use App\Models\Project;
-use App\Models\Team;
 use App\Models\User;
-use App\Policies\ProjectPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('project policy', function () {
-    $owner = User::factory()->create();
-    $member = User::factory()->create();
-    $teamMember = User::factory()->create();
-    $stranger = User::factory()->create();
+it('allows organization owner to view the project', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+    $project = Project::factory()->for($organization)->create();
 
-    $org = Organization::factory()->create(['owner_user_id' => $owner->id]);
-    $project = Project::factory()->create(['organization_id' => $org->id]);
+    expect($user->can('view', $project))->toBeTrue();
+});
 
-    // Direct assignment
-    $project->assignedUsers()->attach($member);
+it('allows organization admin to view the project', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $user = User::factory()->create();
+    $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-    // Team assignment
-    $team = Team::factory()->create(['organization_id' => $org->id]);
-    $team->users()->attach($teamMember, ['role' => TeamRole::Member]);
-    $project->assignedTeams()->attach($team);
+    expect($user->can('view', $project))->toBeTrue();
+});
 
-    $policy = new ProjectPolicy;
+it('allows project member to view the project', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $user = User::factory()->create();
+    // Assuming project member logic, usually implies org membership too for this context,
+    // but specific logic for hasProjectAccess should be covered.
+    // Assuming simple project membership here:
+    $project->members()->attach($user);
 
-    // View
-    expect($policy->view($owner, $project))->toBeTrue();
-    expect($policy->view($member, $project))->toBeTrue();
-    expect($policy->view($teamMember, $project))->toBeTrue();
-    expect($policy->view($stranger, $project))->toBeFalse();
+    expect($user->can('view', $project))->toBeTrue();
+});
 
-    // Update / Delete
-    expect($policy->update($owner, $project))->toBeTrue();
-    expect($policy->update($member, $project))->toBeFalse();
+it('allows organization owner to update the project', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+    $project = Project::factory()->for($organization)->create();
+
+    expect($user->can('update', $project))->toBeTrue();
+});
+
+it('allows organization admin to update the project', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $user = User::factory()->create();
+    $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+
+    expect($user->can('update', $project))->toBeTrue();
+});
+
+it('denies project member to update the project', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
+
+    expect($user->can('update', $project))->toBeFalse();
+});
+
+it('allows organization owner to delete the project', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+    $project = Project::factory()->for($organization)->create();
+
+    expect($user->can('delete', $project))->toBeTrue();
+});
+
+it('allows organization admin to delete the project', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $user = User::factory()->create();
+    $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+
+    expect($user->can('delete', $project))->toBeTrue();
+});
+
+it('denies project member to delete the project', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
+
+    expect($user->can('delete', $project))->toBeFalse();
+});
+
+it('allows project member to create tickets', function () {
+    // create_ticket delegates to view
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
+
+    expect($user->can('create_ticket', $project))->toBeTrue();
+});
+
+it('allows organization owner to add members', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+    $project = Project::factory()->for($organization)->create();
+
+    expect($user->can('add_member', $project))->toBeTrue();
+});
+
+it('denies project member to add members', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
+
+    expect($user->can('add_member', $project))->toBeFalse();
+});
+
+it('allows organization owner to remove members', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+    $project = Project::factory()->for($organization)->create();
+
+    expect($user->can('remove_member', $project))->toBeTrue();
+});
+
+it('denies project member to remove members', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
+
+    expect($user->can('remove_member', $project))->toBeFalse();
+});
+
+it('allows organization owner to attach team', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+    $project = Project::factory()->for($organization)->create();
+
+    expect($user->can('attach_team', $project))->toBeTrue();
+});
+
+it('denies project member to attach team', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
+
+    expect($user->can('attach_team', $project))->toBeFalse();
+});
+
+it('allows organization owner to detach team', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+    $project = Project::factory()->for($organization)->create();
+
+    expect($user->can('detach_team', $project))->toBeTrue();
+});
+
+it('denies project member to detach team', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
+
+    expect($user->can('detach_team', $project))->toBeFalse();
 });

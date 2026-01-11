@@ -1,40 +1,106 @@
 <?php
 
-use App\Enums\TicketUserType;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Ticket;
 use App\Models\User;
-use App\Policies\TicketPolicy;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('ticket policy', function () {
-    $owner = User::factory()->create();
-    $reviewer = User::factory()->create();
-    $assignee = User::factory()->create();
-    $stranger = User::factory()->create();
+it('allows organization owner to view the ticket', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+    $project = Project::factory()->for($organization)->create();
+    $ticket = Ticket::factory()->for($project)->create();
 
-    $org = Organization::factory()->create(['owner_user_id' => $owner->id]);
-    $project = Project::factory()->create(['organization_id' => $org->id]);
-    $ticket = Ticket::factory()->create(['project_id' => $project->id]);
+    expect($user->can('view', $ticket))->toBeTrue();
+});
 
-    // Setup access for reviewer/assignee to project to pass 'view' check
-    $project->assignedUsers()->attach($reviewer);
-    $project->assignedUsers()->attach($assignee);
+it('allows project member to view the ticket', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $ticket = Ticket::factory()->for($project)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
 
-    $ticket->reviewers()->attach($reviewer, ['type' => TicketUserType::Reviewer]);
-    $ticket->assignees()->attach($assignee, ['type' => TicketUserType::Assignee]);
+    expect($user->can('view', $ticket))->toBeTrue();
+});
 
-    $policy = new TicketPolicy;
+it('denies outsider to view the ticket', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $ticket = Ticket::factory()->for($project)->create();
+    $user = User::factory()->create();
 
-    // View
-    expect($policy->view($assignee, $ticket))->toBeTrue();
-    expect($policy->view($stranger, $ticket))->toBeFalse();
+    expect($user->can('view', $ticket))->toBeFalse();
+});
 
-    // Delete
-    expect($policy->delete($owner, $ticket))->toBeTrue();
-    expect($policy->delete($reviewer, $ticket))->toBeTrue();
-    expect($policy->delete($assignee, $ticket))->toBeFalse(); // Assignee can't delete unless they are reviewer or admin
+it('allows project member to create tickets', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
+
+    expect($user->can('create', [Ticket::class, $project]))->toBeTrue();
+});
+
+it('allows project member to update the ticket', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $ticket = Ticket::factory()->for($project)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
+
+    expect($user->can('update', $ticket))->toBeTrue();
+});
+
+it('allows organization owner to delete the ticket', function () {
+    $user = User::factory()->create();
+    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+    $project = Project::factory()->for($organization)->create();
+    $ticket = Ticket::factory()->for($project)->create();
+
+    expect($user->can('delete', $ticket))->toBeTrue();
+});
+
+it('allows reviewer to delete the ticket', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $ticket = Ticket::factory()->for($project)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
+    $ticket->reviewers()->attach($user, ['type' => App\Enums\TicketUserType::Reviewer]);
+
+    expect($user->can('delete', $ticket))->toBeTrue();
+});
+
+it('denies regular project member to delete the ticket', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $ticket = Ticket::factory()->for($project)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
+
+    expect($user->can('delete', $ticket))->toBeFalse();
+});
+
+it('allows project member to assign user', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $ticket = Ticket::factory()->for($project)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
+
+    expect($user->can('assign_user', $ticket))->toBeTrue();
+});
+
+it('allows project member to unassign user', function () {
+    $organization = Organization::factory()->create();
+    $project = Project::factory()->for($organization)->create();
+    $ticket = Ticket::factory()->for($project)->create();
+    $user = User::factory()->create();
+    $project->members()->attach($user);
+
+    expect($user->can('unassign_user', $ticket))->toBeTrue();
 });
