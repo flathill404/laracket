@@ -32,7 +32,7 @@ class CreateNewUser implements CreatesNewUsers
     /**
      * Get the validation rules for creating a new user.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     protected function rules(): array
     {
