@@ -86,4 +86,12 @@ class Ticket extends Model
             ->wherePivot('type', TicketUserType::Reviewer)
             ->withTimestamps();
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Comment>
+     */
+    public function comments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Comment::class)->orderBy('created_at', 'asc');
+    }
 }

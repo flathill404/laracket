@@ -165,6 +165,14 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    /**
+     * @return HasMany<Comment>
+     */
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function isAdmin(Organization $organization): bool
     {
         return $this->organizations()

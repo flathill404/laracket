@@ -70,4 +70,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/tickets/{ticket}/order', [TicketOrderController::class, 'update']);
     Route::post('/tickets/{ticket}/assignees', [TicketAssigneeController::class, 'store']);
     Route::delete('/tickets/{ticket}/assignees/{user}', [TicketAssigneeController::class, 'destroy']);
+
+    // Comments
+    Route::get('/tickets/{ticket}/comments', [\App\Http\Controllers\Api\TicketCommentController::class, 'index']);
+    Route::post('/tickets/{ticket}/comments', [\App\Http\Controllers\Api\TicketCommentController::class, 'store']);
 });
