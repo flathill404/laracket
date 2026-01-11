@@ -18,12 +18,22 @@ class ResetUserPassword implements ResetsUserPasswords
      */
     public function reset(User $user, array $input): void
     {
-        Validator::make($input, [
-            'password' => $this->passwordRules(),
-        ])->validate();
+        Validator::make($input, $this->rules())->validate();
 
         $user->forceFill([
             'password' => Hash::make($input['password']),
         ])->save();
+    }
+
+    /**
+     * Get the validation rules for resetting the user's password.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+     */
+    protected function rules(): array
+    {
+        return [
+            'password' => $this->passwordRules(),
+        ];
     }
 }

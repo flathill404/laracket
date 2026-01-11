@@ -19,7 +19,24 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
-        Validator::make($input, [
+        Validator::make($input, $this->rules())->validate();
+
+        return User::create([
+            'name' => $input['name'],
+            'display_name' => $input['display_name'],
+            'email' => $input['email'],
+            'password' => Hash::make($input['password']),
+        ]);
+    }
+
+    /**
+     * Get the validation rules for creating a new user.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+     */
+    protected function rules(): array
+    {
+        return [
             'name' => ['required', 'string', 'max:255'],
             'display_name' => ['required', 'string', 'max:255'],
             'email' => [
@@ -30,13 +47,6 @@ class CreateNewUser implements CreatesNewUsers
                 Rule::unique(User::class),
             ],
             'password' => $this->passwordRules(),
-        ])->validate();
-
-        return User::create([
-            'name' => $input['name'],
-            'display_name' => $input['display_name'],
-            'email' => $input['email'],
-            'password' => Hash::make($input['password']),
-        ]);
+        ];
     }
 }
