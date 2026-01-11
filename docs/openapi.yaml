@@ -1,0 +1,1138 @@
+openapi: 3.1.0
+info:
+  title: Laracket API
+  version: 1.0.0
+  description: API documentation for the Laracket project.
+servers:
+  - url: http://localhost/api
+    description: Local Development Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # --- Enums ---
+    TicketStatus:
+      type: string
+      enum: [open, in_progress, in_review, resolved, closed]
+    
+    OrganizationRole:
+      type: string
+      enum: [owner, admin, member]
+      
+    TeamRole:
+      type: string
+      enum: [leader, member]
+
+    # --- Models ---
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        display_name:
+          type: string
+        email:
+          type: string
+          format: email
+        email_verified_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Organization:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        display_name:
+          type: string
+        owner_user_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        organization_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        display_name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Team:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        organization_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        display_name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        project_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/TicketStatus'
+        display_order:
+          type: number
+          format: float
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        content:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        user:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            name:
+              type: string
+            display_name:
+              type: string
+
+    # --- Error Responses ---
+    ValidationError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: The given data was invalid.
+        errors:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
+security:
+  - bearerAuth: []
+
+paths:
+  /user:
+    get:
+      summary: Get authenticated user
+      tags: [User]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /organizations:
+    get:
+      summary: List organizations
+      tags: [Organization]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+    post:
+      summary: Create organization
+      tags: [Organization]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, display_name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 30
+                display_name:
+                  type: string
+                  maxLength: 100
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /organizations/{organization}:
+    get:
+      summary: Get organization details
+      tags: [Organization]
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+    put:
+      summary: Update organization
+      tags: [Organization]
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 30
+                display_name:
+                  type: string
+                  maxLength: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Organization'
+    delete:
+      summary: Delete organization
+      tags: [Organization]
+      parameters:
+        - name: organization
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+
+  /organizations/{org}/members:
+    get:
+      summary: List organization members
+      tags: [Organization Members]
+      parameters:
+        - name: org
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Invite member to organization
+      tags: [Organization Members]
+      parameters:
+        - name: org
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+                role:
+                  $ref: '#/components/schemas/OrganizationRole'
+      responses:
+        '204':
+          description: Invited (No Content)
+
+  /organizations/{org}/members/{user}:
+    patch:
+      summary: Update organization member role
+      tags: [Organization Members]
+      parameters:
+        - name: org
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: user
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  $ref: '#/components/schemas/OrganizationRole'
+      responses:
+        '204':
+          description: Updated (No Content)
+    delete:
+      summary: Remove member from organization
+      tags: [Organization Members]
+      parameters:
+        - name: org
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: user
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Removed (No Content)
+
+  /organizations/{org}/projects:
+    get:
+      summary: List organization projects
+      tags: [Project]
+      parameters:
+        - name: org
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+    post:
+      summary: Create project
+      tags: [Project]
+      parameters:
+        - name: org
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, display_name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 30
+                display_name:
+                  type: string
+                  maxLength: 50
+                description:
+                  type: string
+                  nullable: true
+                assigned_users:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                assigned_teams:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+
+  /projects/{project}:
+    get:
+      summary: Get project details
+      tags: [Project]
+      parameters:
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+    put:
+      summary: Update project
+      tags: [Project]
+      parameters:
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 30
+                display_name:
+                  type: string
+                  maxLength: 50
+                description:
+                  type: string
+                  nullable: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+    delete:
+      summary: Delete project
+      tags: [Project]
+      parameters:
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+
+  /projects/{project}/members:
+    get:
+      summary: List project members
+      tags: [Project Members]
+      parameters:
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Add member to project
+      tags: [Project Members]
+      parameters:
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_id]
+              properties:
+                user_id:
+                  type: string
+                  format: uuid
+      responses:
+        '204':
+          description: Added (No Content)
+
+  /projects/{project}/members/{user}:
+    delete:
+      summary: Remove member from project
+      tags: [Project Members]
+      parameters:
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: user
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Removed (No Content)
+
+  /projects/{project}/teams:
+    post:
+      summary: Attach team to project
+      tags: [Project Teams]
+      parameters:
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [team_id]
+              properties:
+                team_id:
+                  type: string
+                  format: uuid
+      responses:
+        '204':
+          description: Attached (No Content)
+
+  /projects/{project}/teams/{team}:
+    delete:
+      summary: Detach team from project
+      tags: [Project Teams]
+      parameters:
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: team
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Detached (No Content)
+
+  /organizations/{org}/teams:
+    get:
+      summary: List organization teams
+      tags: [Team]
+      parameters:
+        - name: org
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+    post:
+      summary: Create team
+      tags: [Team]
+      parameters:
+        - name: org
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, display_name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 30
+                display_name:
+                  type: string
+                  maxLength: 50
+                members:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+
+  /teams/{team}:
+    get:
+      summary: Get team details
+      tags: [Team]
+      parameters:
+        - name: team
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+    put:
+      summary: Update team
+      tags: [Team]
+      parameters:
+        - name: team
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 30
+                display_name:
+                  type: string
+                  maxLength: 50
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+    delete:
+      summary: Delete team
+      tags: [Team]
+      parameters:
+        - name: team
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+
+  /teams/{team}/members:
+    get:
+      summary: List team members
+      tags: [Team Members]
+      parameters:
+        - name: team
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      summary: Add member to team
+      tags: [Team Members]
+      parameters:
+        - name: team
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_id]
+              properties:
+                user_id:
+                  type: string
+                  format: uuid
+      responses:
+        '204':
+          description: Added (No Content)
+
+  /teams/{team}/members/{user}:
+    patch:
+      summary: Update team member role
+      tags: [Team Members]
+      parameters:
+        - name: team
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: user
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  $ref: '#/components/schemas/TeamRole'
+      responses:
+        '204':
+          description: Updated (No Content)
+    delete:
+      summary: Remove member from team
+      tags: [Team Members]
+      parameters:
+        - name: team
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: user
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Removed (No Content)
+
+  /projects/{project}/tickets:
+    get:
+      summary: List project tickets
+      tags: [Ticket]
+      parameters:
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Ticket'
+    post:
+      summary: Create ticket
+      tags: [Ticket]
+      parameters:
+        - name: project
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+                  maxLength: 100
+                description:
+                  type: string
+                  nullable: true
+                status:
+                  $ref: '#/components/schemas/TicketStatus'
+                display_order:
+                  type: integer
+                assignee_id:
+                  type: string
+                  format: uuid
+                  nullable: true
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+
+  /tickets/{ticket}:
+    get:
+      summary: Get ticket details
+      tags: [Ticket]
+      parameters:
+        - name: ticket
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+    put:
+      summary: Update ticket
+      tags: [Ticket]
+      parameters:
+        - name: ticket
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  maxLength: 100
+                description:
+                  type: string
+                  nullable: true
+                status:
+                  $ref: '#/components/schemas/TicketStatus'
+                display_order:
+                  type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+    delete:
+      summary: Delete ticket
+      tags: [Ticket]
+      parameters:
+        - name: ticket
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: No Content
+
+  /tickets/{ticket}/status:
+    patch:
+      summary: Update ticket status
+      tags: [Ticket]
+      parameters:
+        - name: ticket
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  $ref: '#/components/schemas/TicketStatus'
+      responses:
+        '204':
+          description: Updated (No Content)
+
+  /tickets/{ticket}/order:
+    patch:
+      summary: Update ticket order
+      tags: [Ticket]
+      parameters:
+        - name: ticket
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [order]
+              properties:
+                order:
+                  type: number
+                  format: float
+      responses:
+        '204':
+          description: Updated (No Content)
+
+  /tickets/{ticket}/assignees:
+    post:
+      summary: Assign user to ticket
+      tags: [Ticket]
+      parameters:
+        - name: ticket
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_id]
+              properties:
+                user_id:
+                  type: string
+                  format: uuid
+      responses:
+        '204':
+          description: Assigned (No Content)
+
+  /tickets/{ticket}/assignees/{user}:
+    delete:
+      summary: Unassign user from ticket
+      tags: [Ticket]
+      parameters:
+        - name: ticket
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: user
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Unassigned (No Content)
+  
+  /tickets/{ticket}/comments:
+    get:
+      summary: List ticket comments
+      tags: [Comment]
+      parameters:
+        - name: ticket
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+    post:
+      summary: Add comment to ticket
+      tags: [Comment]
+      parameters:
+        - name: ticket
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+                  maxLength: 1000
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
