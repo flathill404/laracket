@@ -4,12 +4,12 @@ use App\Actions\Organization\UpdateOrganizationMemberRole;
 use App\Enums\OrganizationRole;
 use App\Models\Organization;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('updates a member role', function () {
     $organization = Organization::factory()->create();
@@ -34,7 +34,7 @@ it('validates owner role cannot be changed', function () {
 
     $action = new UpdateOrganizationMemberRole;
 
-    expect(fn () => $action($organization, $owner, OrganizationRole::Member))
+    expect(fn() => $action($organization, $owner, OrganizationRole::Member))
         ->toThrow(ValidationException::class);
 });
 
@@ -44,6 +44,6 @@ it('validates user is a member', function () {
 
     $action = new UpdateOrganizationMemberRole;
 
-    expect(fn () => $action($organization, $user, OrganizationRole::Admin))
+    expect(fn() => $action($organization, $user, OrganizationRole::Admin))
         ->toThrow(ValidationException::class);
 });

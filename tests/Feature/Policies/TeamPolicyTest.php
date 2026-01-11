@@ -5,9 +5,9 @@ use App\Enums\TeamRole;
 use App\Models\Organization;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('allows organization member to view the team', function () {
     $organization = Organization::factory()->create();

@@ -5,11 +5,11 @@ use App\Enums\TicketStatus;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Ticket;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('updates ticket status', function () {
     $organization = Organization::factory()->create();

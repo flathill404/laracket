@@ -4,11 +4,11 @@ use App\Actions\Project\RemoveProjectMember;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 use function Pest\Laravel\assertDatabaseMissing;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('removes a member from a project', function () {
     $organization = Organization::factory()->create();

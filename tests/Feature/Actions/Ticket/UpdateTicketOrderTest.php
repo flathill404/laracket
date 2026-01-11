@@ -4,11 +4,11 @@ use App\Actions\Ticket\UpdateTicketOrder;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Ticket;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('updates ticket order', function () {
     $organization = Organization::factory()->create();

@@ -4,9 +4,9 @@ use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Ticket;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('allows organization owner to view the ticket', function () {
     $user = User::factory()->create();

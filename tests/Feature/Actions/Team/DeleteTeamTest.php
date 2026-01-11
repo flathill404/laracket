@@ -3,11 +3,11 @@
 use App\Actions\Team\DeleteTeam;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 use function Pest\Laravel\assertModelMissing;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('deletes a team', function () {
     $team = Team::factory()->create();

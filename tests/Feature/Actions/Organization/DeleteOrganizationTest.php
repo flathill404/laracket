@@ -3,11 +3,11 @@
 use App\Actions\Organization\DeleteOrganization;
 use App\Models\Organization;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 use function Pest\Laravel\assertModelMissing;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('deletes an organization', function () {
     $user = User::factory()->create();

@@ -4,12 +4,12 @@ use App\Actions\Project\UpdateProject;
 use App\Models\Project;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('updates a project', function () {
     $project = Project::factory()->create();
@@ -45,11 +45,11 @@ it('validates project update', function () {
     $project = Project::factory()->create();
     $action = new UpdateProject;
 
-    expect(fn () => $action($project, [
+    expect(fn() => $action($project, [
         'name' => 'Invalid Name!',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action($project, [
+    expect(fn() => $action($project, [
         'display_name' => str_repeat('a', 51),
     ]))->toThrow(ValidationException::class);
 });

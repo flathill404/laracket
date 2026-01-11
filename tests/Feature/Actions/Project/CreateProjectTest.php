@@ -4,12 +4,12 @@ use App\Actions\Project\CreateProject;
 use App\Models\Organization;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('creates a project', function () {
     $organization = Organization::factory()->create();
@@ -49,12 +49,12 @@ it('validates project creation', function () {
     $user = User::factory()->create();
     $action = new CreateProject;
 
-    expect(fn () => $action($user, $organization, [
+    expect(fn() => $action($user, $organization, [
         'name' => 'Invalid Name!',
         'display_name' => 'Valid Display',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action($user, $organization, [
+    expect(fn() => $action($user, $organization, [
         'name' => 'valid-name',
         'display_name' => str_repeat('a', 51),
     ]))->toThrow(ValidationException::class);

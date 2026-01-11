@@ -3,11 +3,11 @@
 use App\Actions\Ticket\DeleteTicket;
 use App\Models\Ticket;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 use function Pest\Laravel\assertModelMissing;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('deletes a ticket', function () {
     $user = User::factory()->create();

@@ -4,12 +4,12 @@ use App\Actions\Project\AddProjectMember;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('adds a member to a project', function () {
     $organization = Organization::factory()->create();
@@ -35,7 +35,7 @@ it('validates user belongs to organization', function () {
 
     $action = new AddProjectMember;
 
-    expect(fn () => $action($project, $user))
+    expect(fn() => $action($project, $user))
         ->toThrow(ValidationException::class);
 });
 
@@ -48,6 +48,6 @@ it('validates user is not already a member', function () {
 
     $action = new AddProjectMember;
 
-    expect(fn () => $action($project, $user))
+    expect(fn() => $action($project, $user))
         ->toThrow(ValidationException::class);
 });

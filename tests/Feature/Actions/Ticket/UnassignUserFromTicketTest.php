@@ -6,11 +6,11 @@ use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Ticket;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 use function Pest\Laravel\assertDatabaseMissing;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('unassigns a user from a ticket', function () {
     $organization = Organization::factory()->create();

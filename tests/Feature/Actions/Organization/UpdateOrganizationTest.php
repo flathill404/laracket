@@ -3,12 +3,12 @@
 use App\Actions\Organization\UpdateOrganization;
 use App\Models\Organization;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('updates an organization', function () {
     $user = User::factory()->create();
@@ -32,11 +32,11 @@ it('validates organization update', function () {
     $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
     $action = new UpdateOrganization;
 
-    expect(fn () => $action($organization, [
+    expect(fn() => $action($organization, [
         'name' => 'Invalid Name!',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action($organization, [
+    expect(fn() => $action($organization, [
         'display_name' => str_repeat('a', 101),
     ]))->toThrow(ValidationException::class);
 });

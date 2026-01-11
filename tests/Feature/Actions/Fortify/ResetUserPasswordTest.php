@@ -2,11 +2,11 @@
 
 use App\Actions\Fortify\ResetUserPassword;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('resets the user password', function () {
     $user = User::factory()->make([
@@ -30,7 +30,7 @@ it('validates password rules', function () {
     $user = User::factory()->make();
     $action = new ResetUserPassword;
 
-    expect(fn () => $action->reset($user, [
+    expect(fn() => $action->reset($user, [
         'password' => 'short',
         'password_confirmation' => 'mismatch',
     ]))->toThrow(ValidationException::class);

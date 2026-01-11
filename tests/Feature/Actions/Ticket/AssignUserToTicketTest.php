@@ -6,12 +6,12 @@ use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Ticket;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('assigns a user to a ticket', function () {
     $organization = Organization::factory()->create();
@@ -40,7 +40,7 @@ it('validates user access', function () {
 
     $action = new AssignUserToTicket;
 
-    expect(fn () => $action($ticket, $user))
+    expect(fn() => $action($ticket, $user))
         ->toThrow(ValidationException::class);
 });
 
@@ -54,6 +54,6 @@ it('validates user is not already assigned', function () {
 
     $action = new AssignUserToTicket;
 
-    expect(fn () => $action($ticket, $user))
+    expect(fn() => $action($ticket, $user))
         ->toThrow(ValidationException::class);
 });

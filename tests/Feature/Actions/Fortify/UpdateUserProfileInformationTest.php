@@ -2,10 +2,10 @@
 
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('updates profile information', function () {
     $user = User::factory()->make([
@@ -30,7 +30,7 @@ it('validates email uniqueness', function () {
     $user = User::factory()->make(['email' => 'original@example.com']);
     $action = new UpdateUserProfileInformation;
 
-    expect(fn () => $action->update($user, [
+    expect(fn() => $action->update($user, [
         'name' => 'New Name',
         'email' => 'taken@example.com',
     ]))->toThrow(ValidationException::class);

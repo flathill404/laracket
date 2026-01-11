@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Laravel\Fortify\Contracts\TwoFactorAuthenticationProvider;
 
 use function Pest\Laravel\actingAs;
@@ -11,7 +11,7 @@ use function Pest\Laravel\getJson;
 use function Pest\Laravel\mock;
 use function Pest\Laravel\postJson;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('enables two factor authentication', function () {
     $user = User::factory()->create();

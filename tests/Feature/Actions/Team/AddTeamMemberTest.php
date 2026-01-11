@@ -5,12 +5,12 @@ use App\Enums\TeamRole;
 use App\Models\Organization;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('adds a member to a team', function () {
     $organization = Organization::factory()->create();
@@ -37,7 +37,7 @@ it('validates user belongs to organization', function () {
 
     $action = new AddTeamMember;
 
-    expect(fn () => $action($team, $user))
+    expect(fn() => $action($team, $user))
         ->toThrow(ValidationException::class);
 });
 
@@ -50,6 +50,6 @@ it('validates user is not already a member', function () {
 
     $action = new AddTeamMember;
 
-    expect(fn () => $action($team, $user))
+    expect(fn() => $action($team, $user))
         ->toThrow(ValidationException::class);
 });

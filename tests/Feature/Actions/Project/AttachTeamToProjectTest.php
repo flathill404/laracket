@@ -4,12 +4,12 @@ use App\Actions\Project\AttachTeamToProject;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Team;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('attaches a team to a project', function () {
     $organization = Organization::factory()->create();
@@ -35,7 +35,7 @@ it('validates team belongs to organization', function () {
 
     $action = new AttachTeamToProject;
 
-    expect(fn () => $action($project, $team))
+    expect(fn() => $action($project, $team))
         ->toThrow(ValidationException::class);
 });
 
@@ -47,6 +47,6 @@ it('validates team is not already attached', function () {
 
     $action = new AttachTeamToProject;
 
-    expect(fn () => $action($project, $team))
+    expect(fn() => $action($project, $team))
         ->toThrow(ValidationException::class);
 });

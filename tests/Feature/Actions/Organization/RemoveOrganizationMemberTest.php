@@ -3,12 +3,12 @@
 use App\Actions\Organization\RemoveOrganizationMember;
 use App\Models\Organization;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\assertDatabaseMissing;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('removes a member from organization', function () {
     $organization = Organization::factory()->create();
@@ -36,6 +36,6 @@ it('validates owner cannot be removed', function () {
 
     $action = new RemoveOrganizationMember;
 
-    expect(fn () => $action($organization, $owner))
+    expect(fn() => $action($organization, $owner))
         ->toThrow(ValidationException::class);
 });

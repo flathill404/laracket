@@ -5,11 +5,11 @@ use App\Enums\TeamRole;
 use App\Models\Organization;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 use function Pest\Laravel\assertDatabaseMissing;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('removes a member from a team', function () {
     $organization = Organization::factory()->create();

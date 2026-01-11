@@ -2,13 +2,13 @@
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('creates a new user', function () {
     $action = app(CreateNewUser::class);
@@ -41,7 +41,7 @@ it('validates password confirmation', function () {
         'password_confirmation' => 'wrong-password',
     ];
 
-    expect(fn () => $action->create($input))
+    expect(fn() => $action->create($input))
         ->toThrow(ValidationException::class);
 });
 
@@ -55,6 +55,6 @@ it('validates password rules', function () {
         'password_confirmation' => 'short',
     ];
 
-    expect(fn () => $action->create($input))
+    expect(fn() => $action->create($input))
         ->toThrow(ValidationException::class);
 });

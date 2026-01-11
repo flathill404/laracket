@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertAuthenticated;
@@ -9,7 +9,7 @@ use function Pest\Laravel\assertGuest;
 use function Pest\Laravel\get;
 use function Pest\Laravel\postJson;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('retrieves sanctum csrf cookie', function () {
     $response = get('/sanctum/csrf-cookie');

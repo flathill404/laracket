@@ -1,13 +1,13 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 use function Pest\Laravel\assertAuthenticated;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\postJson;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('registers a new user', function () {
     $response = postJson('/api/register', [

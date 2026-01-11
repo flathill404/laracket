@@ -2,13 +2,13 @@
 
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\actingAs;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('updates the user password', function () {
     $user = User::factory()->make([
@@ -37,7 +37,7 @@ it('validates the current password', function () {
     actingAs($user);
     $action = new UpdateUserPassword;
 
-    expect(fn () => $action->update($user, [
+    expect(fn() => $action->update($user, [
         'current_password' => 'wrong-password',
         'password' => 'new-password',
         'password_confirmation' => 'new-password',
@@ -49,7 +49,7 @@ it('validates new password rules', function () {
     actingAs($user);
     $action = new UpdateUserPassword;
 
-    expect(fn () => $action->update($user, [
+    expect(fn() => $action->update($user, [
         'current_password' => 'password',
         'password' => 'short',
         'password_confirmation' => 'mismatch',

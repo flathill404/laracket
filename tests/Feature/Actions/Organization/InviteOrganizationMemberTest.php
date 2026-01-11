@@ -5,13 +5,13 @@ use App\Enums\OrganizationRole;
 use App\Models\Organization;
 use App\Models\OrganizationInvitation;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('invites a new member', function () {
     $organization = Organization::factory()->create();
@@ -35,7 +35,7 @@ it('validates existing member', function () {
 
     $action = new InviteOrganizationMember;
 
-    expect(fn () => $action($organization, 'existing@example.com', OrganizationRole::Member))
+    expect(fn() => $action($organization, 'existing@example.com', OrganizationRole::Member))
         ->toThrow(ValidationException::class);
 });
 
@@ -51,7 +51,7 @@ it('validates duplicate invitation', function () {
 
     $action = new InviteOrganizationMember;
 
-    expect(fn () => $action($organization, 'test@example.com', OrganizationRole::Member))
+    expect(fn() => $action($organization, 'test@example.com', OrganizationRole::Member))
         ->toThrow(ValidationException::class);
 });
 

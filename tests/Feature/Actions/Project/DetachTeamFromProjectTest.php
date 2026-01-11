@@ -4,11 +4,11 @@ use App\Actions\Project\DetachTeamFromProject;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Team;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 use function Pest\Laravel\assertDatabaseMissing;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('detaches a team from a project', function () {
     $organization = Organization::factory()->create();

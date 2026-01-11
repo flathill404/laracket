@@ -3,12 +3,12 @@
 use App\Actions\Team\UpdateTeam;
 use App\Models\Team;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('updates a team', function () {
     $team = Team::factory()->create();
@@ -39,11 +39,11 @@ it('validates team update', function () {
     $team = Team::factory()->create();
     $action = new UpdateTeam;
 
-    expect(fn () => $action($team, [
+    expect(fn() => $action($team, [
         'name' => 'Invalid Name!',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action($team, [
+    expect(fn() => $action($team, [
         'display_name' => str_repeat('a', 51),
     ]))->toThrow(ValidationException::class);
 });

@@ -5,12 +5,12 @@ use App\Enums\TicketStatus;
 use App\Enums\TicketUserType;
 use App\Models\Project;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Validation\ValidationException;
 
 use function Pest\Laravel\assertDatabaseHas;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('creates a ticket', function () {
     $user = User::factory()->create();
@@ -44,11 +44,11 @@ it('validates ticket creation', function () {
     $project = Project::factory()->create();
     $action = new CreateTicket;
 
-    expect(fn () => $action($user, $project, [
+    expect(fn() => $action($user, $project, [
         'title' => '',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action($user, $project, [
+    expect(fn() => $action($user, $project, [
         'title' => str_repeat('a', 101),
     ]))->toThrow(ValidationException::class);
 });

@@ -4,9 +4,9 @@ use App\Enums\OrganizationRole;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
-uses(RefreshDatabase::class);
+uses(LazilyRefreshDatabase::class);
 
 it('allows organization owner to view the project', function () {
     $user = User::factory()->create();
