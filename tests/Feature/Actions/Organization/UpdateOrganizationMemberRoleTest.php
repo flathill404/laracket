@@ -34,7 +34,7 @@ it('validates owner role cannot be changed', function () {
 
     $action = new UpdateOrganizationMemberRole;
 
-    expect(fn() => $action($organization, $owner, OrganizationRole::Member))
+    expect(fn () => $action($organization, $owner, OrganizationRole::Member))
         ->toThrow(ValidationException::class);
 });
 
@@ -44,6 +44,6 @@ it('validates user is a member', function () {
 
     $action = new UpdateOrganizationMemberRole;
 
-    expect(fn() => $action($organization, $user, OrganizationRole::Admin))
+    expect(fn () => $action($organization, $user, OrganizationRole::Admin))
         ->toThrow(ValidationException::class);
 });

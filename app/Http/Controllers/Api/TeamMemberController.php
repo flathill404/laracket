@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Team\AddTeamMember;
 use App\Actions\Team\RemoveTeamMember;
 use App\Actions\Team\UpdateTeamMemberRole;
-use App\Http\Controllers\Controller;
 use App\Models\Team;
 use App\Models\User;
 use App\Queries\GetTeamMembers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
-class TeamMemberController extends Controller
+class TeamMemberController
 {
     /**
      * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\User>

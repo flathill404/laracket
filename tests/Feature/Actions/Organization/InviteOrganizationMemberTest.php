@@ -35,7 +35,7 @@ it('validates existing member', function () {
 
     $action = new InviteOrganizationMember;
 
-    expect(fn() => $action($organization, 'existing@example.com', OrganizationRole::Member))
+    expect(fn () => $action($organization, 'existing@example.com', OrganizationRole::Member))
         ->toThrow(ValidationException::class);
 });
 
@@ -51,7 +51,7 @@ it('validates duplicate invitation', function () {
 
     $action = new InviteOrganizationMember;
 
-    expect(fn() => $action($organization, 'test@example.com', OrganizationRole::Member))
+    expect(fn () => $action($organization, 'test@example.com', OrganizationRole::Member))
         ->toThrow(ValidationException::class);
 });
 

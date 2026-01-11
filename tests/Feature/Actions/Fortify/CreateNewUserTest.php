@@ -41,7 +41,7 @@ it('validates password confirmation', function () {
         'password_confirmation' => 'wrong-password',
     ];
 
-    expect(fn() => $action->create($input))
+    expect(fn () => $action->create($input))
         ->toThrow(ValidationException::class);
 });
 
@@ -55,6 +55,6 @@ it('validates password rules', function () {
         'password_confirmation' => 'short',
     ];
 
-    expect(fn() => $action->create($input))
+    expect(fn () => $action->create($input))
         ->toThrow(ValidationException::class);
 });

@@ -45,11 +45,11 @@ it('validates project update', function () {
     $project = Project::factory()->create();
     $action = new UpdateProject;
 
-    expect(fn() => $action($project, [
+    expect(fn () => $action($project, [
         'name' => 'Invalid Name!',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn() => $action($project, [
+    expect(fn () => $action($project, [
         'display_name' => str_repeat('a', 51),
     ]))->toThrow(ValidationException::class);
 });

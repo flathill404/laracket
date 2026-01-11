@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Ticket\CreateTicket;
 use App\Actions\Ticket\DeleteTicket;
 use App\Actions\Ticket\UpdateTicket;
-use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Ticket;
 use App\Queries\GetProjectTickets;
@@ -13,7 +12,7 @@ use App\Queries\GetTicketDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
-class TicketController extends Controller
+class TicketController
 {
     /**
      * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ticket>

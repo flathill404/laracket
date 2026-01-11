@@ -39,11 +39,11 @@ it('validates team update', function () {
     $team = Team::factory()->create();
     $action = new UpdateTeam;
 
-    expect(fn() => $action($team, [
+    expect(fn () => $action($team, [
         'name' => 'Invalid Name!',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn() => $action($team, [
+    expect(fn () => $action($team, [
         'display_name' => str_repeat('a', 51),
     ]))->toThrow(ValidationException::class);
 });

@@ -39,6 +39,6 @@ it('validates user is a member of the team', function () {
 
     $action = new UpdateTeamMemberRole;
 
-    expect(fn() => $action($team, $user, TeamRole::Leader))
+    expect(fn () => $action($team, $user, TeamRole::Leader))
         ->toThrow(ValidationException::class);
 });

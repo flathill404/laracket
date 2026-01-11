@@ -4,13 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\Ticket\AssignUserToTicket;
 use App\Actions\Ticket\UnassignUserFromTicket;
-use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
-class TicketAssigneeController extends Controller
+class TicketAssigneeController
 {
     public function store(Request $request, Ticket $ticket, AssignUserToTicket $action): \Illuminate\Http\Response
     {

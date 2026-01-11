@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Organization\CreateOrganization;
 use App\Actions\Organization\DeleteOrganization;
 use App\Actions\Organization\UpdateOrganization;
-use App\Http\Controllers\Controller;
 use App\Models\Organization;
 use App\Queries\GetMyOrganizations;
 use App\Queries\GetOrganizationDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
-class OrganizationController extends Controller
+class OrganizationController
 {
     /**
      * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Organization>

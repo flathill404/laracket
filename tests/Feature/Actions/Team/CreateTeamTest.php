@@ -42,12 +42,12 @@ it('validates team creation', function () {
     $user = User::factory()->create();
     $action = new CreateTeam;
 
-    expect(fn() => $action($user, $organization, [
+    expect(fn () => $action($user, $organization, [
         'name' => 'Invalid Name!',
         'display_name' => 'Valid Display',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn() => $action($user, $organization, [
+    expect(fn () => $action($user, $organization, [
         'name' => 'valid-name',
         'display_name' => str_repeat('a', 51),
     ]))->toThrow(ValidationException::class);

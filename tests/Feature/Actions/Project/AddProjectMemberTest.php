@@ -35,7 +35,7 @@ it('validates user belongs to organization', function () {
 
     $action = new AddProjectMember;
 
-    expect(fn() => $action($project, $user))
+    expect(fn () => $action($project, $user))
         ->toThrow(ValidationException::class);
 });
 
@@ -48,6 +48,6 @@ it('validates user is not already a member', function () {
 
     $action = new AddProjectMember;
 
-    expect(fn() => $action($project, $user))
+    expect(fn () => $action($project, $user))
         ->toThrow(ValidationException::class);
 });

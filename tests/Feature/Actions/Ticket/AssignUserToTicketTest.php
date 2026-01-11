@@ -40,7 +40,7 @@ it('validates user access', function () {
 
     $action = new AssignUserToTicket;
 
-    expect(fn() => $action($ticket, $user))
+    expect(fn () => $action($ticket, $user))
         ->toThrow(ValidationException::class);
 });
 
@@ -54,6 +54,6 @@ it('validates user is not already assigned', function () {
 
     $action = new AssignUserToTicket;
 
-    expect(fn() => $action($ticket, $user))
+    expect(fn () => $action($ticket, $user))
         ->toThrow(ValidationException::class);
 });

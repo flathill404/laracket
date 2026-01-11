@@ -35,7 +35,7 @@ it('validates team belongs to organization', function () {
 
     $action = new AttachTeamToProject;
 
-    expect(fn() => $action($project, $team))
+    expect(fn () => $action($project, $team))
         ->toThrow(ValidationException::class);
 });
 
@@ -47,6 +47,6 @@ it('validates team is not already attached', function () {
 
     $action = new AttachTeamToProject;
 
-    expect(fn() => $action($project, $team))
+    expect(fn () => $action($project, $team))
         ->toThrow(ValidationException::class);
 });

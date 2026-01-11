@@ -4,14 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\Project\AddProjectMember;
 use App\Actions\Project\RemoveProjectMember;
-use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\User;
 use App\Queries\GetProjectMembers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
-class ProjectMemberController extends Controller
+class ProjectMemberController
 {
     /**
      * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\User>

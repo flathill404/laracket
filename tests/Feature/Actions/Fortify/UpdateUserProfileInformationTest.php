@@ -30,7 +30,7 @@ it('validates email uniqueness', function () {
     $user = User::factory()->make(['email' => 'original@example.com']);
     $action = new UpdateUserProfileInformation;
 
-    expect(fn() => $action->update($user, [
+    expect(fn () => $action->update($user, [
         'name' => 'New Name',
         'email' => 'taken@example.com',
     ]))->toThrow(ValidationException::class);

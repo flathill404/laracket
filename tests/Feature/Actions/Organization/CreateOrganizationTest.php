@@ -37,12 +37,12 @@ it('validates organization creation', function () {
     $user = User::factory()->create();
     $action = new CreateOrganization;
 
-    expect(fn() => $action($user, [
+    expect(fn () => $action($user, [
         'name' => 'Invalid Name!',
         'display_name' => 'Valid Display',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn() => $action($user, [
+    expect(fn () => $action($user, [
         'name' => 'valid-name',
         'display_name' => str_repeat('a', 101),
     ]))->toThrow(ValidationException::class);

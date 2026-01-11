@@ -30,7 +30,7 @@ it('validates password rules', function () {
     $user = User::factory()->make();
     $action = new ResetUserPassword;
 
-    expect(fn() => $action->reset($user, [
+    expect(fn () => $action->reset($user, [
         'password' => 'short',
         'password_confirmation' => 'mismatch',
     ]))->toThrow(ValidationException::class);

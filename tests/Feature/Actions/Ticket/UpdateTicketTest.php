@@ -45,7 +45,7 @@ it('validates ticket update', function () {
     $ticket = Ticket::factory()->create();
     $action = new UpdateTicket;
 
-    expect(fn() => $action($ticket, [
+    expect(fn () => $action($ticket, [
         'title' => str_repeat('a', 101),
     ]))->toThrow(ValidationException::class);
 });

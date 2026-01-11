@@ -44,11 +44,11 @@ it('validates ticket creation', function () {
     $project = Project::factory()->create();
     $action = new CreateTicket;
 
-    expect(fn() => $action($user, $project, [
+    expect(fn () => $action($user, $project, [
         'title' => '',
     ]))->toThrow(ValidationException::class);
 
-    expect(fn() => $action($user, $project, [
+    expect(fn () => $action($user, $project, [
         'title' => str_repeat('a', 101),
     ]))->toThrow(ValidationException::class);
 });

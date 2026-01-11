@@ -5,14 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Organization\InviteOrganizationMember;
 use App\Actions\Organization\RemoveOrganizationMember;
 use App\Actions\Organization\UpdateOrganizationMemberRole;
-use App\Http\Controllers\Controller;
 use App\Models\Organization;
 use App\Models\User;
 use App\Queries\GetOrganizationMembers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
-class OrganizationMemberController extends Controller
+class OrganizationMemberController
 {
     /**
      * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\User>

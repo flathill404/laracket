@@ -4,13 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\Project\AttachTeamToProject;
 use App\Actions\Project\DetachTeamFromProject;
-use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
-class ProjectTeamController extends Controller
+class ProjectTeamController
 {
     public function store(Request $request, Project $project, AttachTeamToProject $action): \Illuminate\Http\Response
     {

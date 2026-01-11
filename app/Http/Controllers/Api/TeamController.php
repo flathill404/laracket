@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Team\CreateTeam;
 use App\Actions\Team\DeleteTeam;
 use App\Actions\Team\UpdateTeam;
-use App\Http\Controllers\Controller;
 use App\Models\Organization;
 use App\Models\Team;
 use App\Queries\GetOrganizationTeams;
@@ -13,7 +12,7 @@ use App\Queries\GetTeamDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
-class TeamController extends Controller
+class TeamController
 {
     /**
      * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team>

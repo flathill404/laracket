@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Project\CreateProject;
 use App\Actions\Project\DeleteProject;
 use App\Actions\Project\UpdateProject;
-use App\Http\Controllers\Controller;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Queries\GetOrganizationProjects;
@@ -13,7 +12,7 @@ use App\Queries\GetProjectDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
-class ProjectController extends Controller
+class ProjectController
 {
     /**
      * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project>

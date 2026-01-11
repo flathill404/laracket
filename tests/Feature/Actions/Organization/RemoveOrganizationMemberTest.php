@@ -36,6 +36,6 @@ it('validates owner cannot be removed', function () {
 
     $action = new RemoveOrganizationMember;
 
-    expect(fn() => $action($organization, $owner))
+    expect(fn () => $action($organization, $owner))
         ->toThrow(ValidationException::class);
 });
