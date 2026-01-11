@@ -13,7 +13,7 @@ Laracket is a robust backend API designed for a Ticket Management SaaS platform.
 
 ## 🛠 Tech Stack
 
-- **PHP**: ^8.2
+- **PHP**: ^8.4
 - **Framework**: Laravel 12.x
 - **Database**: MySQL 8.4
 - **Environment**: Docker & DevContainers
