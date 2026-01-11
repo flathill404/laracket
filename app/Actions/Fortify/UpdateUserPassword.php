@@ -30,7 +30,7 @@ class UpdateUserPassword implements UpdatesUserPasswords
     /**
      * Get the validation rules for updating the user's password.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     protected function rules(): array
     {
