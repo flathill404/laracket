@@ -8,11 +8,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Team;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ProjectTeamController extends Controller
 {
     public function store(Request $request, Project $project, AttachTeamToProject $action): \Illuminate\Http\Response
     {
+        Gate::authorize('attach_team', $project);
+
         /** @var \App\Models\Team $team */
         $team = Team::findOrFail($request->input('team_id'));
         $action($project, $team);
@@ -22,6 +25,8 @@ class ProjectTeamController extends Controller
 
     public function destroy(Project $project, Team $team, DetachTeamFromProject $action): \Illuminate\Http\Response
     {
+        Gate::authorize('detach_team', $project);
+
         $action($project, $team);
 
         return response()->noContent();

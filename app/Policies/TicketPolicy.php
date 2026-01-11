@@ -59,4 +59,20 @@ class TicketPolicy
         // Reviewer check (Ticket creator/reviewer)
         return $ticket->reviewers->contains('id', $user->id);
     }
+
+    /**
+     * Determine whether the user can assign a user to the ticket.
+     */
+    public function assign_user(User $user, Ticket $ticket): bool
+    {
+        return $this->update($user, $ticket);
+    }
+
+    /**
+     * Determine whether the user can unassign a user from the ticket.
+     */
+    public function unassign_user(User $user, Ticket $ticket): bool
+    {
+        return $this->update($user, $ticket);
+    }
 }

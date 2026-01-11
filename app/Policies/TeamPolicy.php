@@ -22,8 +22,8 @@ class TeamPolicy
     public function update(User $user, Team $team): bool
     {
         return $user->isOrganizationOwner($team->organization) ||
-               $user->isAdmin($team->organization) ||
-               $user->isTeamLeader($team);
+            $user->isAdmin($team->organization) ||
+            $user->isTeamLeader($team);
     }
 
     /**
@@ -33,13 +33,29 @@ class TeamPolicy
     {
         // Only Org Owner or Admin
         return $user->isOrganizationOwner($team->organization) ||
-               $user->isAdmin($team->organization);
+            $user->isAdmin($team->organization);
     }
 
     /**
      * Determine whether the user can add members to the team.
      */
     public function add_member(User $user, Team $team): bool
+    {
+        return $this->update($user, $team);
+    }
+
+    /**
+     * Determine whether the user can remove members from the team.
+     */
+    public function remove_member(User $user, Team $team): bool
+    {
+        return $this->update($user, $team);
+    }
+
+    /**
+     * Determine whether the user can update member roles in the team.
+     */
+    public function update_member_role(User $user, Team $team): bool
     {
         return $this->update($user, $team);
     }

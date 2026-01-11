@@ -42,4 +42,36 @@ class ProjectPolicy
     {
         return $this->view($user, $project);
     }
+
+    /**
+     * Determine whether the user can add members to the project.
+     */
+    public function add_member(User $user, Project $project): bool
+    {
+        return $this->update($user, $project);
+    }
+
+    /**
+     * Determine whether the user can remove members from the project.
+     */
+    public function remove_member(User $user, Project $project): bool
+    {
+        return $this->update($user, $project);
+    }
+
+    /**
+     * Determine whether the user can attach teams to the project.
+     */
+    public function attach_team(User $user, Project $project): bool
+    {
+        return $this->update($user, $project);
+    }
+
+    /**
+     * Determine whether the user can detach teams from the project.
+     */
+    public function detach_team(User $user, Project $project): bool
+    {
+        return $this->update($user, $project);
+    }
 }

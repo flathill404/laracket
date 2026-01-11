@@ -10,6 +10,7 @@ use App\Models\Organization;
 use App\Queries\GetMyOrganizations;
 use App\Queries\GetOrganizationDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class OrganizationController extends Controller
 {
@@ -37,11 +38,15 @@ class OrganizationController extends Controller
 
     public function show(Organization $organization, GetOrganizationDetail $query): Organization
     {
+        Gate::authorize('view', $organization);
+
         return $query($organization);
     }
 
     public function update(Request $request, Organization $organization, UpdateOrganization $action): \Illuminate\Http\JsonResponse
     {
+        Gate::authorize('update', $organization);
+
         /** @var array<string, mixed> $input */
         $input = $request->all();
         $organization = $action($organization, $input);
@@ -51,6 +56,8 @@ class OrganizationController extends Controller
 
     public function destroy(Request $request, Organization $organization, DeleteOrganization $action): \Illuminate\Http\Response
     {
+        Gate::authorize('delete', $organization);
+
         /** @var \App\Models\User $user */
         $user = $request->user();
         $action($user, $organization);

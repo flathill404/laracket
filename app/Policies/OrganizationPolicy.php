@@ -47,4 +47,36 @@ class OrganizationPolicy
     {
         return $user->isOrganizationOwner($organization) || $user->isAdmin($organization);
     }
+
+    /**
+     * Determine whether the user can create projects for the organization.
+     */
+    public function create_project(User $user, Organization $organization): bool
+    {
+        return $user->isOrganizationOwner($organization) || $user->isAdmin($organization);
+    }
+
+    /**
+     * Determine whether the user can create teams for the organization.
+     */
+    public function create_team(User $user, Organization $organization): bool
+    {
+        return $user->isOrganizationOwner($organization) || $user->isAdmin($organization);
+    }
+
+    /**
+     * Determine whether the user can remove members from the organization.
+     */
+    public function remove_member(User $user, Organization $organization): bool
+    {
+        return $user->isOrganizationOwner($organization) || $user->isAdmin($organization);
+    }
+
+    /**
+     * Determine whether the user can update member roles in the organization.
+     */
+    public function update_member_role(User $user, Organization $organization): bool
+    {
+        return $user->isOrganizationOwner($organization) || $user->isAdmin($organization);
+    }
 }

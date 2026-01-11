@@ -10,6 +10,7 @@ use App\Models\Organization;
 use App\Models\User;
 use App\Queries\GetOrganizationMembers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class OrganizationMemberController extends Controller
 {
@@ -18,11 +19,15 @@ class OrganizationMemberController extends Controller
      */
     public function index(Organization $org, GetOrganizationMembers $query): \Illuminate\Support\Collection
     {
+        Gate::authorize('view', $org);
+
         return $query($org);
     }
 
     public function store(Request $request, Organization $org, InviteOrganizationMember $action): \Illuminate\Http\Response
     {
+        Gate::authorize('invite_member', $org);
+
         $role = \App\Enums\OrganizationRole::tryFrom($request->string('role')->toString()) ?? \App\Enums\OrganizationRole::Member;
         $action($org, $request->string('email')->toString(), $role);
 
@@ -31,6 +36,8 @@ class OrganizationMemberController extends Controller
 
     public function update(Request $request, Organization $org, User $user, UpdateOrganizationMemberRole $action): \Illuminate\Http\Response
     {
+        Gate::authorize('update_member_role', $org);
+
         $action($org, $user, \App\Enums\OrganizationRole::from($request->string('role')->value()));
 
         return response()->noContent();
@@ -38,6 +45,8 @@ class OrganizationMemberController extends Controller
 
     public function destroy(Organization $org, User $user, RemoveOrganizationMember $action): \Illuminate\Http\Response
     {
+        Gate::authorize('remove_member', $org);
+
         $action($org, $user);
 
         return response()->noContent();
