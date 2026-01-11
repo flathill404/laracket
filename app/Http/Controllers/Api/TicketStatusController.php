@@ -13,7 +13,11 @@ class TicketStatusController
     {
         Gate::authorize('update', $ticket);
 
-        $action($ticket, \App\Enums\TicketStatus::from($request->string('status')->value()));
+        $validated = $request->validate([
+            'status' => ['required', \Illuminate\Validation\Rule::enum(\App\Enums\TicketStatus::class)],
+        ]);
+
+        $action($ticket, \App\Enums\TicketStatus::from($validated['status']));
 
         return response()->noContent();
     }
