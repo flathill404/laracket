@@ -621,12 +621,12 @@ paths:
         '204':
           description: No Content
 
-  /organizations/{org}/members:
+  /organizations/{organization}/members:
     get:
       summary: List organization members
       tags: [Organization Members]
       parameters:
-        - name: org
+        - name: organization
           in: path
           required: true
           schema:
@@ -645,7 +645,7 @@ paths:
       summary: Invite member to organization
       tags: [Organization Members]
       parameters:
-        - name: org
+        - name: organization
           in: path
           required: true
           schema:
@@ -668,12 +668,12 @@ paths:
         '204':
           description: Invited (No Content)
 
-  /organizations/{org}/members/{user}:
+  /organizations/{organization}/members/{user}:
     patch:
       summary: Update organization member role
       tags: [Organization Members]
       parameters:
-        - name: org
+        - name: organization
           in: path
           required: true
           schema:
@@ -702,7 +702,7 @@ paths:
       summary: Remove member from organization
       tags: [Organization Members]
       parameters:
-        - name: org
+        - name: organization
           in: path
           required: true
           schema:
@@ -718,12 +718,12 @@ paths:
         '204':
           description: Removed (No Content)
 
-  /organizations/{org}/projects:
+  /organizations/{organization}/projects:
     get:
       summary: List organization projects
       tags: [Project]
       parameters:
-        - name: org
+        - name: organization
           in: path
           required: true
           schema:
@@ -742,7 +742,7 @@ paths:
       summary: Create project
       tags: [Project]
       parameters:
-        - name: org
+        - name: organization
           in: path
           required: true
           schema:
@@ -961,12 +961,12 @@ paths:
         '204':
           description: Detached (No Content)
 
-  /organizations/{org}/teams:
+  /organizations/{organization}/teams:
     get:
       summary: List organization teams
       tags: [Team]
       parameters:
-        - name: org
+        - name: organization
           in: path
           required: true
           schema:
@@ -985,7 +985,7 @@ paths:
       summary: Create team
       tags: [Team]
       parameters:
-        - name: org
+        - name: organization
           in: path
           required: true
           schema:
