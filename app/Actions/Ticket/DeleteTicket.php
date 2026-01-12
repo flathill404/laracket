@@ -10,9 +10,11 @@ class DeleteTicket
 {
     public function __invoke(User $actor, Ticket $ticket): bool
     {
-        return DB::transaction(function () use ($ticket) {
+        $deleted = DB::transaction(function () use ($ticket) {
             // Here we could check permissions if $actor has right to delete
             return (bool) $ticket->delete();
         });
+
+        return $deleted;
     }
 }

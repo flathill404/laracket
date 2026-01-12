@@ -7,29 +7,34 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class CreateTeam
 {
     /**
      * @param  array<string, mixed>  $input
+     *
+     * @throws ValidationException
      */
     public function __invoke(User $creator, Organization $organization, array $input): Team
     {
-        Validator::make($input, $this->rules())->validate();
+        $validated = Validator::make($input, $this->rules())->validate();
 
-        return DB::transaction(function () use ($organization, $input) {
+        $team = DB::transaction(function () use ($organization, $validated) {
             /** @var Team $team */
             $team = $organization->teams()->create([
-                'name' => $input['name'],
-                'display_name' => $input['display_name'],
+                'name' => $validated['name'],
+                'display_name' => $validated['display_name'],
             ]);
 
-            if (isset($input['members'])) {
-                $team->users()->attach($input['members'], ['role' => 'member']);
+            if (isset($validated['members'])) {
+                $team->users()->attach($validated['members'], ['role' => 'member']);
             }
 
             return $team;
         });
+
+        return $team;
     }
 
     /**
@@ -40,6 +45,7 @@ class CreateTeam
         return [
             'name' => ['required', 'string', 'max:30', 'alpha_dash'],
             'display_name' => ['required', 'string', 'max:50'],
+            'members' => ['sometimes', 'array'],
         ];
     }
 }

@@ -5,24 +5,25 @@ namespace App\Actions\Organization;
 use App\Models\Organization;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class UpdateOrganization
 {
     /**
      * @param  array<string, mixed>  $input
+     *
+     * @throws ValidationException
      */
     public function __invoke(Organization $organization, array $input): Organization
     {
-        Validator::make($input, $this->rules())->validate();
+        /** @var array<string, mixed> $validated */
+        $validated = Validator::make($input, $this->rules())->validate();
 
-        return DB::transaction(function () use ($organization, $input) {
-            $organization->update([
-                'name' => $input['name'] ?? $organization->name,
-                'display_name' => $input['display_name'] ?? $organization->display_name,
-            ]);
-
-            return $organization;
+        DB::transaction(function () use ($organization, $validated) {
+            $organization->update($validated);
         });
+
+        return $organization;
     }
 
     /**

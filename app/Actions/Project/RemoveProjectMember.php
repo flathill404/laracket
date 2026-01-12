@@ -4,11 +4,14 @@ namespace App\Actions\Project;
 
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class RemoveProjectMember
 {
     public function __invoke(Project $project, User $user): void
     {
-        $project->assignedUsers()->detach($user);
+        DB::transaction(function () use ($project, $user) {
+            $project->assignedUsers()->detach($user);
+        });
     }
 }

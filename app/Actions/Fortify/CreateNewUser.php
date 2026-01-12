@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -19,19 +20,22 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
-        Validator::make($input, $this->rules())->validate();
+        /** @var array<string, string> $validated */
+        $validated = Validator::make($input, $this->rules())->validate();
 
-        return User::create([
-            'name' => $input['name'],
-            'display_name' => $input['display_name'],
-            'email' => $input['email'],
-            'password' => Hash::make($input['password']),
-        ]);
+        $user = DB::transaction(function () use ($validated) {
+            return User::create([
+                'name' => $validated['name'],
+                'display_name' => $validated['display_name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+            ]);
+        });
+
+        return $user;
     }
 
     /**
-     * Get the validation rules for creating a new user.
-     *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     protected function rules(): array

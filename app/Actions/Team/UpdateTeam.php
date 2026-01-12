@@ -3,32 +3,36 @@
 namespace App\Actions\Team;
 
 use App\Models\Team;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class UpdateTeam
 {
     /**
      * @param  array<string, mixed>  $input
+     *
+     * @throws ValidationException
      */
     public function __invoke(Team $team, array $input): Team
     {
-        Validator::make($input, $this->rules())->validate();
+        $validated = Validator::make($input, $this->rules())->validate();
 
-        return DB::transaction(function () use ($team, $input) {
-            $team->update([
-                'name' => $input['name'] ?? $team->name,
-                'display_name' => $input['display_name'] ?? $team->display_name,
-            ]);
+        DB::transaction(function () use ($team, $validated) {
+            $attributes = Arr::except($validated, ['members']);
 
-            if (isset($input['members'])) {
-                /** @var array<int|string> $members */
-                $members = $input['members'];
-                $team->users()->syncWithPivotValues($members, ['role' => 'member']);
+            if (! empty($attributes)) {
+                /** @var array<string, mixed> $attributes */
+                $team->update($attributes);
             }
 
-            return $team;
+            if (isset($validated['members'])) {
+                $team->users()->syncWithPivotValues((array) $validated['members'], ['role' => 'member']);
+            }
         });
+
+        return $team;
     }
 
     /**

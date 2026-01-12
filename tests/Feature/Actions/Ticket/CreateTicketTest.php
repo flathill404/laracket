@@ -15,6 +15,7 @@ uses(LazilyRefreshDatabase::class);
 it('creates a ticket', function () {
     $user = User::factory()->create();
     $project = Project::factory()->create();
+    $project->assignedUsers()->attach($user);
     $action = new CreateTicket;
 
     $input = [

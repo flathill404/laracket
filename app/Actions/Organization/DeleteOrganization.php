@@ -10,8 +10,10 @@ class DeleteOrganization
 {
     public function __invoke(User $actor, Organization $organization): bool
     {
-        return DB::transaction(function () use ($organization) {
+        $deleted = DB::transaction(function () use ($organization) {
             return (bool) $organization->delete();
         });
+
+        return $deleted;
     }
 }

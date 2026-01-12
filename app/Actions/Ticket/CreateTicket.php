@@ -10,33 +10,41 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class CreateTicket
 {
     /**
      * @param  array<string, mixed>  $input
+     *
+     * @throws ValidationException
      */
     public function __invoke(User $creator, Project $project, array $input): Ticket
     {
-        Validator::make($input, $this->rules())->validate();
+        /** @var array<string, mixed> $validated */
+        $validated = Validator::make($input, $this->rules())->validate();
 
-        return DB::transaction(function () use ($project, $input) {
+        if (isset($validated['assignee_id']) && is_string($validated['assignee_id'])) {
+            $this->validateAssigneeIsProjectMember($project, $validated['assignee_id']);
+        }
+
+        $ticket = DB::transaction(function () use ($project, $validated) {
             /** @var Ticket $ticket */
             $ticket = $project->tickets()->create([
-                'title' => $input['title'],
-                'description' => $input['description'] ?? null,
-                'status' => $input['status'] ?? TicketStatus::Open,
-                'display_order' => $input['display_order'] ?? 0,
+                'title' => $validated['title'],
+                'description' => $validated['description'] ?? null,
+                'status' => $validated['status'] ?? TicketStatus::Open->value,
+                'display_order' => $validated['display_order'] ?? 0,
             ]);
 
-            // Assign creator as assignee if requested, or maybe just log it?
-            // For now, let's say we might want to automatically assign the creator.
-            if (isset($input['assignee_id'])) {
-                $ticket->assignees()->attach($input['assignee_id'], ['type' => TicketUserType::Assignee]);
+            if (isset($validated['assignee_id'])) {
+                $ticket->assignees()->attach($validated['assignee_id'], ['type' => TicketUserType::Assignee->value]);
             }
 
             return $ticket;
         });
+
+        return $ticket;
     }
 
     /**
@@ -49,6 +57,21 @@ class CreateTicket
             'description' => ['nullable', 'string'],
             'status' => ['sometimes', Rule::enum(TicketStatus::class)],
             'display_order' => ['sometimes', 'integer'],
+            'assignee_id' => ['sometimes', 'uuid', 'exists:users,id'],
         ];
+    }
+
+    /**
+     * Check if the assigned user is a member of the project
+     *
+     * @throws ValidationException
+     */
+    protected function validateAssigneeIsProjectMember(Project $project, string $userId): void
+    {
+        if (! $project->assignedUsers()->where('user_id', $userId)->exists()) {
+            throw ValidationException::withMessages([
+                'assignee_id' => ['The assigned user is not a member of the project.'],
+            ]);
+        }
     }
 }
