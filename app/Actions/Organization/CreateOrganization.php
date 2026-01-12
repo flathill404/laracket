@@ -6,21 +6,24 @@ use App\Models\Organization;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class CreateOrganization
 {
     /**
      * @param  array<string, mixed>  $input
+     *
+     * @throws ValidationException
      */
     public function __invoke(User $creator, array $input): Organization
     {
-        Validator::make($input, $this->rules())->validate();
+        $validated = Validator::make($input, $this->rules())->validate();
 
-        return DB::transaction(function () use ($creator, $input) {
+        $organization = DB::transaction(function () use ($creator, $validated) {
             /** @var Organization $organization */
             $organization = Organization::create([
-                'name' => $input['name'],
-                'display_name' => $input['display_name'],
+                'name' => $validated['name'],
+                'display_name' => $validated['display_name'],
                 'owner_user_id' => $creator->id,
             ]);
 
@@ -29,6 +32,8 @@ class CreateOrganization
 
             return $organization;
         });
+
+        return $organization;
     }
 
     /**
