@@ -13,6 +13,8 @@ class UserController
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        return new UserResource($query($user));
+        $user = $query($user);
+
+        return new UserResource($user);
     }
 }

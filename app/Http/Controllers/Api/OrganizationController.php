@@ -19,7 +19,9 @@ class OrganizationController
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        return OrganizationResource::collection($query($user));
+        $organizations = $query($user);
+
+        return OrganizationResource::collection($organizations);
     }
 
     public function store(Request $request, CreateOrganization $action): \Illuminate\Http\JsonResponse
@@ -37,7 +39,9 @@ class OrganizationController
     {
         Gate::authorize('view', $organization);
 
-        return new OrganizationResource($query($organization));
+        $organization = $query($organization);
+
+        return new OrganizationResource($organization);
     }
 
     public function update(Request $request, Organization $organization, UpdateOrganization $action): \Illuminate\Http\JsonResponse

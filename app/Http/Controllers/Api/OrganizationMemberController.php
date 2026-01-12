@@ -18,7 +18,9 @@ class OrganizationMemberController
     {
         Gate::authorize('view', $org);
 
-        return UserResource::collection($query($org));
+        $members = $query($org);
+
+        return UserResource::collection($members);
     }
 
     public function store(Request $request, Organization $org, InviteOrganizationMember $action): \Illuminate\Http\Response

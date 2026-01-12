@@ -17,7 +17,9 @@ class ProjectMemberController
     {
         Gate::authorize('view', $project);
 
-        return UserResource::collection($query($project));
+        $members = $query($project);
+
+        return UserResource::collection($members);
     }
 
     public function store(Request $request, Project $project, AddProjectMember $action): \Illuminate\Http\Response

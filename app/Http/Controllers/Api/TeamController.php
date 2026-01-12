@@ -19,7 +19,9 @@ class TeamController
     {
         Gate::authorize('view', $org);
 
-        return TeamResource::collection($query($org));
+        $teams = $query($org);
+
+        return TeamResource::collection($teams);
     }
 
     public function store(Request $request, Organization $org, CreateTeam $action): \Illuminate\Http\JsonResponse
@@ -39,7 +41,9 @@ class TeamController
     {
         Gate::authorize('view', $team);
 
-        return new TeamResource($query($team));
+        $team = $query($team);
+
+        return new TeamResource($team);
     }
 
     public function update(Request $request, Team $team, UpdateTeam $action): \Illuminate\Http\JsonResponse

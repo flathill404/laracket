@@ -19,7 +19,9 @@ class ProjectController
     {
         Gate::authorize('view', $org);
 
-        return ProjectResource::collection($query($org));
+        $projects = $query($org);
+
+        return ProjectResource::collection($projects);
     }
 
     public function store(Request $request, Organization $org, CreateProject $action): \Illuminate\Http\JsonResponse
@@ -39,7 +41,9 @@ class ProjectController
     {
         Gate::authorize('view', $project);
 
-        return new ProjectResource($query($project));
+        $project = $query($project);
+
+        return new ProjectResource($project);
     }
 
     public function update(Request $request, Project $project, UpdateProject $action): \Illuminate\Http\JsonResponse

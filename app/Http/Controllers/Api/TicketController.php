@@ -19,7 +19,9 @@ class TicketController
     {
         Gate::authorize('view', $project);
 
-        return TicketResource::collection($query($project));
+        $tickets = $query($project);
+
+        return TicketResource::collection($tickets);
     }
 
     public function store(Request $request, Project $project, CreateTicket $action): \Illuminate\Http\JsonResponse
@@ -39,7 +41,9 @@ class TicketController
     {
         Gate::authorize('view', $ticket);
 
-        return new TicketResource($query($ticket));
+        $ticket = $query($ticket);
+
+        return new TicketResource($ticket);
     }
 
     public function update(Request $request, Ticket $ticket, UpdateTicket $action): \Illuminate\Http\JsonResponse

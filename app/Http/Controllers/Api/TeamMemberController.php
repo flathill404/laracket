@@ -18,7 +18,9 @@ class TeamMemberController
     {
         Gate::authorize('view', $team);
 
-        return UserResource::collection($query($team));
+        $members = $query($team);
+
+        return UserResource::collection($members);
     }
 
     public function store(Request $request, Team $team, AddTeamMember $action): \Illuminate\Http\Response
