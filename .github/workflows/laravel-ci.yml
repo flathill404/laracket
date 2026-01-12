@@ -41,7 +41,7 @@ jobs:
         with:
           php-version: '8.4'
           extensions: mbstring, dom, fileinfo, mysql
-          coverage: none
+          coverage: pcov
 
       - name: Copy .env
         run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -56,4 +56,10 @@ jobs:
         run: chmod -R 777 storage bootstrap/cache
 
       - name: Execute tests
-        run: php artisan test
+        run: php artisan test --coverage-text --coverage-html coverage-report
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-report
