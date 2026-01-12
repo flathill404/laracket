@@ -34,16 +34,18 @@ describe('index', function () {
 
         getJson('/api/organizations')
             ->assertOk()
-            ->assertJsonCount(3)
+            ->assertJsonCount(3, 'data')
             ->assertJsonStructure([
-                '*' => ['id', 'name', 'display_name'],
+                'data' => [
+                    '*' => ['id', 'name', 'display_name'],
+                ],
             ]);
     });
 
     it('returns empty list if user has no organizations', function () {
         getJson('/api/organizations')
             ->assertOk()
-            ->assertJsonCount(0);
+            ->assertJsonCount(0, 'data');
     });
 
     it('requires authentication', function () {
@@ -96,8 +98,10 @@ describe('show', function () {
         getJson("/api/organizations/{$organization->id}")
             ->assertOk()
             ->assertJson([
-                'id' => $organization->id,
-                'name' => $organization->name,
+                'data' => [
+                    'id' => $organization->id,
+                    'name' => $organization->name,
+                ],
             ]);
     });
 

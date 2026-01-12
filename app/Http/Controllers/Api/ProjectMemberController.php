@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\Project\AddProjectMember;
 use App\Actions\Project\RemoveProjectMember;
+use App\Http\Resources\UserResource;
 use App\Models\Project;
 use App\Models\User;
 use App\Queries\GetProjectMembers;
@@ -12,14 +13,13 @@ use Illuminate\Support\Facades\Gate;
 
 class ProjectMemberController
 {
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\User>
-     */
-    public function index(Project $project, GetProjectMembers $query): \Illuminate\Support\Collection
+    public function index(Project $project, GetProjectMembers $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
         Gate::authorize('view', $project);
 
-        return $query($project);
+        $members = $query($project);
+
+        return UserResource::collection($members);
     }
 
     public function store(Request $request, Project $project, AddProjectMember $action): \Illuminate\Http\Response

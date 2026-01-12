@@ -32,9 +32,11 @@ describe('index', function () {
 
         getJson("/api/organizations/{$organization->id}/teams")
             ->assertOk()
-            ->assertJsonCount(3)
+            ->assertJsonCount(3, 'data')
             ->assertJsonStructure([
-                '*' => ['id', 'name', 'display_name', 'organization_id'],
+                'data' => [
+                    '*' => ['id', 'name', 'display_name', 'organization_id'],
+                ],
             ]);
     });
 
@@ -107,8 +109,10 @@ describe('show', function () {
         getJson("/api/teams/{$team->id}")
             ->assertOk()
             ->assertJson([
-                'id' => $team->id,
-                'name' => $team->name,
+                'data' => [
+                    'id' => $team->id,
+                    'name' => $team->name,
+                ],
             ]);
     });
 

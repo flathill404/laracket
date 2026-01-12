@@ -12,14 +12,14 @@ use Illuminate\Support\Facades\Gate;
 
 class TicketCommentController
 {
-    public function index(Ticket $ticket, GetTicketComments $query): JsonResponse
+    public function index(Ticket $ticket, GetTicketComments $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
         // Ensure user has access to the project
         Gate::authorize('view', $ticket->project);
 
         $comments = $query($ticket);
 
-        return response()->json(CommentResource::collection($comments));
+        return CommentResource::collection($comments);
     }
 
     public function store(Request $request, Ticket $ticket, CreateComment $action): JsonResponse

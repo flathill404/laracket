@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Organization\CreateOrganization;
 use App\Actions\Organization\DeleteOrganization;
 use App\Actions\Organization\UpdateOrganization;
+use App\Http\Resources\OrganizationResource;
 use App\Models\Organization;
 use App\Queries\GetMyOrganizations;
 use App\Queries\GetOrganizationDetail;
@@ -13,15 +14,14 @@ use Illuminate\Support\Facades\Gate;
 
 class OrganizationController
 {
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Organization>
-     */
-    public function index(Request $request, GetMyOrganizations $query): \Illuminate\Database\Eloquent\Collection
+    public function index(Request $request, GetMyOrganizations $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        return $query($user);
+        $organizations = $query($user);
+
+        return OrganizationResource::collection($organizations);
     }
 
     public function store(Request $request, CreateOrganization $action): \Illuminate\Http\JsonResponse
@@ -32,17 +32,19 @@ class OrganizationController
         $input = $request->all();
         $organization = $action($user, $input);
 
-        return response()->json($organization, 201);
+        return response()->json(new OrganizationResource($organization), 201);
     }
 
-    public function show(Organization $organization, GetOrganizationDetail $query): Organization
+    public function show(Organization $organization, GetOrganizationDetail $query): OrganizationResource
     {
         Gate::authorize('view', $organization);
 
-        return $query($organization);
+        $organization = $query($organization);
+
+        return new OrganizationResource($organization);
     }
 
-    public function update(Request $request, Organization $organization, UpdateOrganization $action): \Illuminate\Http\JsonResponse
+    public function update(Request $request, Organization $organization, UpdateOrganization $action): OrganizationResource
     {
         Gate::authorize('update', $organization);
 
@@ -50,7 +52,7 @@ class OrganizationController
         $input = $request->all();
         $organization = $action($organization, $input);
 
-        return response()->json($organization);
+        return new OrganizationResource($organization);
     }
 
     public function destroy(Request $request, Organization $organization, DeleteOrganization $action): \Illuminate\Http\Response

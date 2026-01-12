@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\UserResource;
 use App\Queries\GetUserProfile;
 use Illuminate\Http\Request;
 
 class UserController
 {
-    public function show(Request $request, GetUserProfile $query): \App\Models\User
+    public function show(Request $request, GetUserProfile $query): UserResource
     {
         /** @var \App\Models\User $user */
         $user = $request->user();
 
-        return $query($user);
+        $user = $query($user);
+
+        return new UserResource($user);
     }
 }

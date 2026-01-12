@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Ticket\CreateTicket;
 use App\Actions\Ticket\DeleteTicket;
 use App\Actions\Ticket\UpdateTicket;
+use App\Http\Resources\TicketResource;
 use App\Models\Project;
 use App\Models\Ticket;
 use App\Queries\GetProjectTickets;
@@ -14,14 +15,13 @@ use Illuminate\Support\Facades\Gate;
 
 class TicketController
 {
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ticket>
-     */
-    public function index(Project $project, GetProjectTickets $query): \Illuminate\Support\Collection
+    public function index(Project $project, GetProjectTickets $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
         Gate::authorize('view', $project);
 
-        return $query($project);
+        $tickets = $query($project);
+
+        return TicketResource::collection($tickets);
     }
 
     public function store(Request $request, Project $project, CreateTicket $action): \Illuminate\Http\JsonResponse
@@ -34,17 +34,19 @@ class TicketController
         $input = $request->all();
         $ticket = $action($user, $project, $input);
 
-        return response()->json($ticket, 201);
+        return response()->json(new TicketResource($ticket), 201);
     }
 
-    public function show(Ticket $ticket, GetTicketDetail $query): Ticket
+    public function show(Ticket $ticket, GetTicketDetail $query): TicketResource
     {
         Gate::authorize('view', $ticket);
 
-        return $query($ticket);
+        $ticket = $query($ticket);
+
+        return new TicketResource($ticket);
     }
 
-    public function update(Request $request, Ticket $ticket, UpdateTicket $action): \Illuminate\Http\JsonResponse
+    public function update(Request $request, Ticket $ticket, UpdateTicket $action): TicketResource
     {
         Gate::authorize('update', $ticket);
 
@@ -52,7 +54,7 @@ class TicketController
         $input = $request->all();
         $ticket = $action($ticket, $input);
 
-        return response()->json($ticket);
+        return new TicketResource($ticket);
     }
 
     public function destroy(Request $request, Ticket $ticket, DeleteTicket $action): \Illuminate\Http\Response
