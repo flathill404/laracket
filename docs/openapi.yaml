@@ -76,6 +76,20 @@ components:
           type: string
           format: date-time
           nullable: true
+        owner:
+          $ref: '#/components/schemas/User'
+        projects:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+        teams:
+          type: array
+          items:
+            $ref: '#/components/schemas/Team'
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
 
     Project:
       type: object
@@ -123,6 +137,12 @@ components:
           type: string
           format: date-time
           nullable: true
+        organization:
+          $ref: '#/components/schemas/Organization'
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
 
     Ticket:
       type: object
@@ -151,6 +171,16 @@ components:
           type: string
           format: date-time
           nullable: true
+        project:
+          $ref: '#/components/schemas/Project'
+        assignees:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        reviewers:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
 
     Comment:
       type: object
@@ -192,6 +222,287 @@ security:
   - bearerAuth: []
 
 paths:
+  /login:
+    post:
+      summary: Login
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: value
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User' # Assuming login returns user or token structure, default fortify returns 200 OK or 302. API mode usually returns JSON.
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+
+  /logout:
+    post:
+      summary: Logout
+      tags: [Auth]
+      responses:
+        '204':
+          description: Logged out (No Content)
+
+  /register:
+    post:
+      summary: Register
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password, password_confirmation]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                password_confirmation:
+                  type: string
+      responses:
+        '201':
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /forgot-password:
+    post:
+      summary: Send password reset link
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Link sent
+
+  /reset-password:
+    post:
+      summary: Reset password
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, email, password, password_confirmation]
+              properties:
+                token:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                password_confirmation:
+                  type: string
+      responses:
+        '200':
+          description: Password reset
+
+  /two-factor-challenge:
+    post:
+      summary: Two-factor authentication challenge
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                recovery_code:
+                  type: string
+      responses:
+        '204':
+          description: Challenge confirmed (No Content)
+
+  /user/profile-information:
+    put:
+      summary: Update profile information
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /user/password:
+    put:
+      summary: Update password
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [current_password, password, password_confirmation]
+              properties:
+                current_password:
+                  type: string
+                password:
+                  type: string
+                password_confirmation:
+                  type: string
+      responses:
+        '204':
+          description: Password updated (No Content)
+
+  /user/two-factor-authentication:
+    post:
+      summary: Enable two-factor authentication
+      tags: [Auth]
+      responses:
+        '200':
+          description: 2FA enabled
+    delete:
+      summary: Disable two-factor authentication
+      tags: [Auth]
+      responses:
+        '204':
+          description: 2FA disabled (No Content)
+
+  /user/two-factor-qr-code:
+    get:
+      summary: Get two-factor QR code
+      tags: [Auth]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  svg:
+                    type: string
+
+  /user/two-factor-secret-key:
+    get:
+      summary: Get two-factor secret key
+      tags: [Auth]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  secretKey:
+                    type: string
+
+  /user/two-factor-recovery-codes:
+    get:
+      summary: Get two-factor recovery codes
+      tags: [Auth]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+    post:
+      summary: Regenerate two-factor recovery codes
+      tags: [Auth]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+
+  /user/confirm-password:
+    post:
+      summary: Confirm password
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [password]
+              properties:
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Password confirmed
+
+  /user/confirmed-password-status:
+    get:
+      summary: Get confirmed password status
+      tags: [Auth]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  confirmed:
+                    type: boolean
+
   /user:
     get:
       summary: Get authenticated user
