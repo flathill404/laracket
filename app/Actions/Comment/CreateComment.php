@@ -5,6 +5,7 @@ namespace App\Actions\Comment;
 use App\Models\Comment;
 use App\Models\Ticket;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -17,16 +18,25 @@ class CreateComment
      */
     public function __invoke(User $user, Ticket $ticket, array $data): Comment
     {
-        Validator::make($data, [
-            'content' => ['required', 'string', 'max:1000'],
-        ])->validate();
+        $validated = Validator::make($data, $this->rules())->validate();
 
-        /** @var Comment $comment */
-        $comment = $ticket->comments()->create([
-            'user_id' => $user->id,
-            'content' => $data['content'],
-        ]);
+        $comment = DB::transaction(function () use ($user, $ticket, $validated) {
+            return $ticket->comments()->create([
+                'user_id' => $user->id,
+                'content' => $validated['content'],
+            ]);
+        });
 
         return $comment;
+    }
+
+    /**
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    protected function rules(): array
+    {
+        return [
+            'content' => ['required', 'string', 'max:1000'],
+        ];
     }
 }

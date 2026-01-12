@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Fortify\Contracts\UpdatesUserPasswords;
@@ -18,13 +19,14 @@ class UpdateUserPassword implements UpdatesUserPasswords
      */
     public function update(User $user, array $input): void
     {
-        Validator::make($input, $this->rules(), [
-            'current_password.current_password' => __('The provided password does not match your current password.'),
-        ])->validateWithBag('updatePassword');
+        $validated = Validator::make($input, $this->rules(), $this->messages())
+            ->validateWithBag('updatePassword');
 
-        $user->forceFill([
-            'password' => Hash::make($input['password']),
-        ])->save();
+        DB::transaction(function () use ($user, $validated) {
+            $user->forceFill([
+                'password' => Hash::make($validated['password']),
+            ])->save();
+        });
     }
 
     /**
@@ -37,6 +39,18 @@ class UpdateUserPassword implements UpdatesUserPasswords
         return [
             'current_password' => ['required', 'string', 'current_password:web'],
             'password' => $this->passwordRules(),
+        ];
+    }
+
+    /**
+     * Get the validation messages.
+     *
+     * @return array<string, string>
+     */
+    protected function messages(): array
+    {
+        return [
+            'current_password.current_password' => __('The provided password does not match your current password.'),
         ];
     }
 }

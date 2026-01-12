@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Laravel\Fortify\Contracts\UpdatesUserProfileInformation;
@@ -17,17 +18,19 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      */
     public function update(User $user, array $input): void
     {
-        Validator::make($input, $this->rules($user))->validateWithBag('updateProfileInformation');
+        $validated = Validator::make($input, $this->rules($user))
+            ->validateWithBag('updateProfileInformation');
 
-        if ($input['email'] !== $user->email &&
-            $user instanceof MustVerifyEmail) {
-            $this->updateVerifiedUser($user, $input);
-        } else {
-            $user->forceFill([
-                'name' => $input['name'],
-                'email' => $input['email'],
-            ])->save();
-        }
+        DB::transaction(function () use ($user, $validated) {
+            if ($validated['email'] !== $user->email && $user instanceof MustVerifyEmail) {
+                $this->updateVerifiedUser($user, $validated);
+            } else {
+                $user->forceFill([
+                    'name' => $validated['name'],
+                    'email' => $validated['email'],
+                ])->save();
+            }
+        });
     }
 
     /**
@@ -47,8 +50,6 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
     }
 
     /**
-     * Get the validation rules for updating the user's profile information.
-     *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     protected function rules(User $user): array
@@ -60,7 +61,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('users')->ignore($user->id),
+                Rule::unique(User::class)->ignore($user->id),
             ],
         ];
     }
