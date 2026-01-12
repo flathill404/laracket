@@ -13,6 +13,7 @@ class CreateProject
 {
     /**
      * @param  array<string, mixed>  $input
+     *
      * @throws ValidationException
      */
     public function __invoke(User $creator, Organization $organization, array $input): Project

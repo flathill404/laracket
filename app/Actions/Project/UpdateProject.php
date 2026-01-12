@@ -3,6 +3,7 @@
 namespace App\Actions\Project;
 
 use App\Models\Project;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -11,6 +12,7 @@ class UpdateProject
 {
     /**
      * @param  array<string, mixed>  $input
+     *
      * @throws ValidationException
      */
     public function __invoke(Project $project, array $input): Project
@@ -18,7 +20,9 @@ class UpdateProject
         $validated = Validator::make($input, $this->rules())->validate();
 
         DB::transaction(function () use ($project, $validated) {
-            $project->update($validated);
+            $attributes = Arr::except($validated, ['assigned_users', 'assigned_teams']);
+
+            $project->update($attributes);
 
             if (isset($validated['assigned_users'])) {
                 $project->assignedUsers()->sync($validated['assigned_users']);
@@ -40,7 +44,7 @@ class UpdateProject
         return [
             'name' => ['sometimes', 'required', 'string', 'max:30', 'alpha_dash'],
             'display_name' => ['sometimes', 'required', 'string', 'max:50'],
-            'description' => ['nullable', 'string', 'max:1000'], 
+            'description' => ['nullable', 'string', 'max:1000'],
             'assigned_users' => ['sometimes', 'array'],
             'assigned_teams' => ['sometimes', 'array'],
         ];
