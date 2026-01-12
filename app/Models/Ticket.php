@@ -88,7 +88,7 @@ class Ticket extends Model
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Comment>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Comment, $this>
      */
     public function comments(): \Illuminate\Database\Eloquent\Relations\HasMany
     {

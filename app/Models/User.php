@@ -166,7 +166,7 @@ class User extends Authenticatable
     }
 
     /**
-     * @return HasMany<Comment>
+     * @return HasMany<Comment, $this>
      */
     public function comments(): HasMany
     {
