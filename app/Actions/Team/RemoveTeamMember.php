@@ -4,11 +4,14 @@ namespace App\Actions\Team;
 
 use App\Models\Team;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class RemoveTeamMember
 {
     public function __invoke(Team $team, User $user): void
     {
-        $team->users()->detach($user);
+        DB::transaction(function () use ($team, $user) {
+            $team->users()->detach($user);
+        });
     }
 }
