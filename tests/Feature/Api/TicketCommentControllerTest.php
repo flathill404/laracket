@@ -45,9 +45,11 @@ describe('index', function () {
 
         getJson("/api/tickets/{$ticket->id}/comments")
             ->assertOk()
-            ->assertJsonCount(2)
+            ->assertJsonCount(2, 'data')
             ->assertJsonStructure([
-                '*' => ['id', 'content', 'created_at', 'user' => ['id', 'name', 'display_name']],
+                'data' => [
+                    '*' => ['id', 'content', 'created_at', 'user' => ['id', 'name', 'display_name']],
+                ],
             ]);
     });
 

@@ -46,7 +46,7 @@ class ProjectController
         return new ProjectResource($project);
     }
 
-    public function update(Request $request, Project $project, UpdateProject $action): \Illuminate\Http\JsonResponse
+    public function update(Request $request, Project $project, UpdateProject $action): ProjectResource
     {
         Gate::authorize('update', $project);
 
@@ -54,7 +54,7 @@ class ProjectController
         $input = $request->all();
         $project = $action($project, $input);
 
-        return response()->json(new ProjectResource($project));
+        return new ProjectResource($project);
     }
 
     public function destroy(Request $request, Project $project, DeleteProject $action): \Illuminate\Http\Response

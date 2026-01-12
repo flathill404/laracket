@@ -46,7 +46,7 @@ class TicketController
         return new TicketResource($ticket);
     }
 
-    public function update(Request $request, Ticket $ticket, UpdateTicket $action): \Illuminate\Http\JsonResponse
+    public function update(Request $request, Ticket $ticket, UpdateTicket $action): TicketResource
     {
         Gate::authorize('update', $ticket);
 
@@ -54,7 +54,7 @@ class TicketController
         $input = $request->all();
         $ticket = $action($ticket, $input);
 
-        return response()->json(new TicketResource($ticket));
+        return new TicketResource($ticket);
     }
 
     public function destroy(Request $request, Ticket $ticket, DeleteTicket $action): \Illuminate\Http\Response

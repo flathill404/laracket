@@ -44,7 +44,7 @@ class OrganizationController
         return new OrganizationResource($organization);
     }
 
-    public function update(Request $request, Organization $organization, UpdateOrganization $action): \Illuminate\Http\JsonResponse
+    public function update(Request $request, Organization $organization, UpdateOrganization $action): OrganizationResource
     {
         Gate::authorize('update', $organization);
 
@@ -52,7 +52,7 @@ class OrganizationController
         $input = $request->all();
         $organization = $action($organization, $input);
 
-        return response()->json(new OrganizationResource($organization));
+        return new OrganizationResource($organization);
     }
 
     public function destroy(Request $request, Organization $organization, DeleteOrganization $action): \Illuminate\Http\Response

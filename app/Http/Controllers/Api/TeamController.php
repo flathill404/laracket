@@ -46,7 +46,7 @@ class TeamController
         return new TeamResource($team);
     }
 
-    public function update(Request $request, Team $team, UpdateTeam $action): \Illuminate\Http\JsonResponse
+    public function update(Request $request, Team $team, UpdateTeam $action): TeamResource
     {
         Gate::authorize('update', $team);
 
@@ -54,7 +54,7 @@ class TeamController
         $input = $request->all();
         $team = $action($team, $input);
 
-        return response()->json(new TeamResource($team));
+        return new TeamResource($team);
     }
 
     public function destroy(Request $request, Team $team, DeleteTeam $action): \Illuminate\Http\Response
