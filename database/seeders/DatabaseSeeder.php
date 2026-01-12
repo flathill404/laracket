@@ -23,19 +23,19 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('password'),
         ]);
 
-        $myOrg->users()->attach($me->id, ['role' => 'owner']);
+        $myOrg->users()->attach($me->id, ['role' => \App\Enums\OrganizationRole::Owner]);
 
         $members = User::factory(10)->create();
 
-        $myOrg->users()->attach($members->pluck('id'), ['role' => 'member']);
+        $myOrg->users()->attach($members->pluck('id'), ['role' => \App\Enums\OrganizationRole::Member]);
 
         $teamA = Team::factory()->create([
             'organization_id' => $myOrg->id,
             'name' => 'Development Team',
         ]);
 
-        $teamA->users()->attach($me->id, ['role' => 'leader']);
-        $teamA->users()->attach($members->random(3)->pluck('id'), ['role' => 'member']);
+        $teamA->users()->attach($me->id, ['role' => \App\Enums\TeamRole::Leader]);
+        $teamA->users()->attach($members->random(3)->pluck('id'), ['role' => \App\Enums\TeamRole::Member]);
 
         $teamB = Team::factory()->create([
             'organization_id' => $myOrg->id,
@@ -46,8 +46,8 @@ class DatabaseSeeder extends Seeder
 
         $potentialMembers = $members->where('id', '!=', $teamBLeader->id);
 
-        $teamB->users()->attach($teamBLeader->id, ['role' => 'leader']);
-        $teamB->users()->attach($potentialMembers->random(3)->pluck('id'), ['role' => 'member']);
+        $teamB->users()->attach($teamBLeader->id, ['role' => \App\Enums\TeamRole::Leader]);
+        $teamB->users()->attach($potentialMembers->random(3)->pluck('id'), ['role' => \App\Enums\TeamRole::Member]);
 
         $projects = Project::factory(3)->create([
             'organization_id' => $myOrg->id,
@@ -64,14 +64,20 @@ class DatabaseSeeder extends Seeder
 
             foreach ($tickets as $ticket) {
                 $assignee = $members->random();
-                $ticket->assignees()->attach($assignee->id, ['role' => 'assignee']);
+                $ticket->assignees()->attach($assignee->id, ['type' => \App\Enums\TicketUserType::Assignee]);
 
-                $ticket->reviewers()->attach($me->id, ['role' => 'reviewer']);
+                $ticket->reviewers()->attach($me->id, ['type' => \App\Enums\TicketUserType::Reviewer]);
+
+                // Comment seeding using correct relation
+                \App\Models\Comment::factory(3)->create([
+                    'ticket_id' => $ticket->id,
+                    'user_id' => $members->random()->id,
+                ]);
             }
         }
 
         $rivalOrg = Organization::factory()->create(['name' => 'Rival Organization']);
         $rivalUsers = User::factory(3)->create();
-        $rivalOrg->users()->attach($rivalUsers->pluck('id'), ['role' => 'member']);
+        $rivalOrg->users()->attach($rivalUsers->pluck('id'), ['role' => \App\Enums\OrganizationRole::Member]);
     }
 }
