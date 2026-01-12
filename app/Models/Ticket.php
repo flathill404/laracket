@@ -53,7 +53,6 @@ class Ticket extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'deadline' => 'datetime',
         'status' => TicketStatus::class,
     ];
 

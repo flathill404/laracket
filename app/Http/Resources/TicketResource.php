@@ -26,7 +26,6 @@ class TicketResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'project_id' => $this->project_id,
-            'deadline' => $this->deadline, // @phpstan-ignore-line
             'project' => new ProjectResource($this->whenLoaded('project')),
             'assignees' => UserResource::collection($this->whenLoaded('assignees')),
             'reviewers' => UserResource::collection($this->whenLoaded('reviewers')),

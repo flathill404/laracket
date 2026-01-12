@@ -74,7 +74,6 @@ describe('store', function () {
             'title' => 'New Ticket',
             'description' => 'Ticket Description',
             'priority' => 'high', // Assuming priority field exists or is ignored safely
-            'deadline' => now()->addDays(7)->toISOString(),
         ];
 
         postJson("/api/projects/{$project->id}/tickets", $data)
