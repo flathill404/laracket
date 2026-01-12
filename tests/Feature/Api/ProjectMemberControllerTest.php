@@ -35,9 +35,11 @@ describe('index', function () {
 
         getJson("/api/projects/{$project->id}/members")
             ->assertOk()
-            ->assertJsonCount(2)
+            ->assertJsonCount(2, 'data')
             ->assertJsonStructure([
-                '*' => ['id', 'name', 'email'],
+                'data' => [
+                    '*' => ['id', 'name', 'email'],
+                ],
             ]);
     });
 

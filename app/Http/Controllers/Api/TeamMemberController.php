@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Team\AddTeamMember;
 use App\Actions\Team\RemoveTeamMember;
 use App\Actions\Team\UpdateTeamMemberRole;
+use App\Http\Resources\UserResource;
 use App\Models\Team;
 use App\Models\User;
 use App\Queries\GetTeamMembers;
@@ -13,14 +14,11 @@ use Illuminate\Support\Facades\Gate;
 
 class TeamMemberController
 {
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\User>
-     */
-    public function index(Team $team, GetTeamMembers $query): \Illuminate\Support\Collection
+    public function index(Team $team, GetTeamMembers $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
         Gate::authorize('view', $team);
 
-        return $query($team);
+        return UserResource::collection($query($team));
     }
 
     public function store(Request $request, Team $team, AddTeamMember $action): \Illuminate\Http\Response

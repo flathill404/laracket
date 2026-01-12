@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Team\CreateTeam;
 use App\Actions\Team\DeleteTeam;
 use App\Actions\Team\UpdateTeam;
+use App\Http\Resources\TeamResource;
 use App\Models\Organization;
 use App\Models\Team;
 use App\Queries\GetOrganizationTeams;
@@ -14,14 +15,11 @@ use Illuminate\Support\Facades\Gate;
 
 class TeamController
 {
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team>
-     */
-    public function index(Organization $org, GetOrganizationTeams $query): \Illuminate\Database\Eloquent\Collection
+    public function index(Organization $org, GetOrganizationTeams $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
         Gate::authorize('view', $org);
 
-        return $query($org);
+        return TeamResource::collection($query($org));
     }
 
     public function store(Request $request, Organization $org, CreateTeam $action): \Illuminate\Http\JsonResponse
@@ -34,14 +32,14 @@ class TeamController
         $input = $request->all();
         $team = $action($user, $org, $input);
 
-        return response()->json($team, 201);
+        return response()->json(new TeamResource($team), 201);
     }
 
-    public function show(Team $team, GetTeamDetail $query): Team
+    public function show(Team $team, GetTeamDetail $query): TeamResource
     {
         Gate::authorize('view', $team);
 
-        return $query($team);
+        return new TeamResource($query($team));
     }
 
     public function update(Request $request, Team $team, UpdateTeam $action): \Illuminate\Http\JsonResponse
@@ -52,7 +50,7 @@ class TeamController
         $input = $request->all();
         $team = $action($team, $input);
 
-        return response()->json($team);
+        return response()->json(new TeamResource($team));
     }
 
     public function destroy(Request $request, Team $team, DeleteTeam $action): \Illuminate\Http\Response

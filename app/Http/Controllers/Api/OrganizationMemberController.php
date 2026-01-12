@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Organization\InviteOrganizationMember;
 use App\Actions\Organization\RemoveOrganizationMember;
 use App\Actions\Organization\UpdateOrganizationMemberRole;
+use App\Http\Resources\UserResource;
 use App\Models\Organization;
 use App\Models\User;
 use App\Queries\GetOrganizationMembers;
@@ -13,14 +14,11 @@ use Illuminate\Support\Facades\Gate;
 
 class OrganizationMemberController
 {
-    /**
-     * @return \Illuminate\Database\Eloquent\Collection<int, \App\Models\User>
-     */
-    public function index(Organization $org, GetOrganizationMembers $query): \Illuminate\Support\Collection
+    public function index(Organization $org, GetOrganizationMembers $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
         Gate::authorize('view', $org);
 
-        return $query($org);
+        return UserResource::collection($query($org));
     }
 
     public function store(Request $request, Organization $org, InviteOrganizationMember $action): \Illuminate\Http\Response

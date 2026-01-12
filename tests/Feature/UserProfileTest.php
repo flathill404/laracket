@@ -17,8 +17,10 @@ it('retrieves user profile', function () {
 
     $response->assertOk()
         ->assertJson([
-            'id' => $user->id,
-            'email' => $user->email,
+            'data' => [
+                'id' => $user->id,
+                'email' => $user->email,
+            ],
         ]);
 });
 
