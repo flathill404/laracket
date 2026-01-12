@@ -15,24 +15,24 @@ use Illuminate\Support\Facades\Gate;
 
 class TeamController
 {
-    public function index(Organization $org, GetOrganizationTeams $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Organization $organization, GetOrganizationTeams $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        Gate::authorize('view', $org);
+        Gate::authorize('view', $organization);
 
-        $teams = $query($org);
+        $teams = $query($organization);
 
         return TeamResource::collection($teams);
     }
 
-    public function store(Request $request, Organization $org, CreateTeam $action): \Illuminate\Http\JsonResponse
+    public function store(Request $request, Organization $organization, CreateTeam $action): \Illuminate\Http\JsonResponse
     {
-        Gate::authorize('create_team', $org);
+        Gate::authorize('create_team', $organization);
 
         /** @var \App\Models\User $user */
         $user = $request->user();
         /** @var array<string, mixed> $input */
         $input = $request->all();
-        $team = $action($user, $org, $input);
+        $team = $action($user, $organization, $input);
 
         return response()->json(new TeamResource($team), 201);
     }

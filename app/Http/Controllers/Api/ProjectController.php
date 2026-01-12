@@ -15,24 +15,24 @@ use Illuminate\Support\Facades\Gate;
 
 class ProjectController
 {
-    public function index(Organization $org, GetOrganizationProjects $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Organization $organization, GetOrganizationProjects $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        Gate::authorize('view', $org);
+        Gate::authorize('view', $organization);
 
-        $projects = $query($org);
+        $projects = $query($organization);
 
         return ProjectResource::collection($projects);
     }
 
-    public function store(Request $request, Organization $org, CreateProject $action): \Illuminate\Http\JsonResponse
+    public function store(Request $request, Organization $organization, CreateProject $action): \Illuminate\Http\JsonResponse
     {
-        Gate::authorize('create_project', $org);
+        Gate::authorize('create_project', $organization);
 
         /** @var \App\Models\User $user */
         $user = $request->user();
         /** @var array<string, mixed> $input */
         $input = $request->all();
-        $project = $action($user, $org, $input);
+        $project = $action($user, $organization, $input);
 
         return response()->json(new ProjectResource($project), 201);
     }

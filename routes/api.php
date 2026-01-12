@@ -26,14 +26,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/organizations/{organization}', [OrganizationController::class, 'destroy']);
 
     // Org Members (Sub)
-    Route::get('/organizations/{org}/members', [OrganizationMemberController::class, 'index']);
-    Route::post('/organizations/{org}/members', [OrganizationMemberController::class, 'store']);
-    Route::patch('/organizations/{org}/members/{user}', [OrganizationMemberController::class, 'update']);
-    Route::delete('/organizations/{org}/members/{user}', [OrganizationMemberController::class, 'destroy']);
+    Route::get('/organizations/{organization}/members', [OrganizationMemberController::class, 'index']);
+    Route::post('/organizations/{organization}/members', [OrganizationMemberController::class, 'store']);
+    Route::patch('/organizations/{organization}/members/{user}', [OrganizationMemberController::class, 'update']);
+    Route::delete('/organizations/{organization}/members/{user}', [OrganizationMemberController::class, 'destroy']);
 
     // Projects
-    Route::get('/organizations/{org}/projects', [ProjectController::class, 'index']);
-    Route::post('/organizations/{org}/projects', [ProjectController::class, 'store']);
+    Route::get('/organizations/{organization}/projects', [ProjectController::class, 'index']);
+    Route::post('/organizations/{organization}/projects', [ProjectController::class, 'store']);
     Route::get('/projects/{project}', [ProjectController::class, 'show']);
     Route::put('/projects/{project}', [ProjectController::class, 'update']);
     Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
@@ -46,8 +46,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/projects/{project}/teams/{team}', [ProjectTeamController::class, 'destroy']);
 
     // Teams
-    Route::get('/organizations/{org}/teams', [TeamController::class, 'index']);
-    Route::post('/organizations/{org}/teams', [TeamController::class, 'store']);
+    Route::get('/organizations/{organization}/teams', [TeamController::class, 'index']);
+    Route::post('/organizations/{organization}/teams', [TeamController::class, 'store']);
     Route::get('/teams/{team}', [TeamController::class, 'show']);
     Route::put('/teams/{team}', [TeamController::class, 'update']);
     Route::delete('/teams/{team}', [TeamController::class, 'destroy']);
