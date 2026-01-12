@@ -30,10 +30,14 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property-read int|null $assigned_projects_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ticket> $assignedTickets
  * @property-read int|null $assigned_tickets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Comment> $comments
+ * @property-read int|null $comments_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Organization> $organizations
  * @property-read int|null $organizations_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Organization> $ownedOrganizations
+ * @property-read int|null $owned_organizations_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ticket> $reviewingTickets
  * @property-read int|null $reviewing_tickets_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team> $teams

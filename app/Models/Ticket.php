@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $assignees
  * @property-read int|null $assignees_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Comment> $comments
+ * @property-read int|null $comments_count
  * @property-read \App\Models\Project $project
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $reviewers
  * @property-read int|null $reviewers_count
@@ -33,7 +35,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereDisplayOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereProjectId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereProjectId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereTitle($value)
