@@ -19,12 +19,13 @@ class UpdateUserPassword implements UpdatesUserPasswords
      */
     public function update(User $user, array $input): void
     {
+        /** @var array<string, string> $validated */
         $validated = Validator::make($input, $this->rules(), $this->messages())
             ->validateWithBag('updatePassword');
 
         DB::transaction(function () use ($user, $validated) {
             $user->forceFill([
-                'password' => Hash::make($validated['password']),
+                'password' => Hash::make((string) $validated['password']),
             ])->save();
         });
     }

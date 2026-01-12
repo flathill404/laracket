@@ -22,14 +22,15 @@ class UpdateProject
         DB::transaction(function () use ($project, $validated) {
             $attributes = Arr::except($validated, ['assigned_users', 'assigned_teams']);
 
+            /** @var array<string, mixed> $attributes */
             $project->update($attributes);
 
             if (isset($validated['assigned_users'])) {
-                $project->assignedUsers()->sync($validated['assigned_users']);
+                $project->assignedUsers()->sync((array) $validated['assigned_users']);
             }
 
             if (isset($validated['assigned_teams'])) {
-                $project->assignedTeams()->sync($validated['assigned_teams']);
+                $project->assignedTeams()->sync((array) $validated['assigned_teams']);
             }
         });
 

@@ -4,11 +4,14 @@ namespace App\Actions\Ticket;
 
 use App\Models\Ticket;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class UnassignUserFromTicket
 {
     public function __invoke(Ticket $ticket, User $user): void
     {
-        $ticket->assignees()->detach($user);
+        DB::transaction(function () use ($ticket, $user) {
+            $ticket->assignees()->detach($user);
+        });
     }
 }

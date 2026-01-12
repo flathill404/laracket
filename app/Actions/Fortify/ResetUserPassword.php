@@ -19,6 +19,7 @@ class ResetUserPassword implements ResetsUserPasswords
      */
     public function reset(User $user, array $input): void
     {
+        /** @var array<string, string> $validated */
         $validated = Validator::make($input, $this->rules())->validate();
 
         DB::transaction(function () use ($user, $validated) {

@@ -20,15 +20,15 @@ class UpdateTeam
         $validated = Validator::make($input, $this->rules())->validate();
 
         DB::transaction(function () use ($team, $validated) {
-            // リレーション用のキー(members)を除外して更新
             $attributes = Arr::except($validated, ['members']);
 
             if (! empty($attributes)) {
+                /** @var array<string, mixed> $attributes */
                 $team->update($attributes);
             }
 
             if (isset($validated['members'])) {
-                $team->users()->syncWithPivotValues($validated['members'], ['role' => 'member']);
+                $team->users()->syncWithPivotValues((array) $validated['members'], ['role' => 'member']);
             }
         });
 

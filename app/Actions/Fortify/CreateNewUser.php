@@ -20,6 +20,7 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
+        /** @var array<string, string> $validated */
         $validated = Validator::make($input, $this->rules())->validate();
 
         $user = DB::transaction(function () use ($validated) {

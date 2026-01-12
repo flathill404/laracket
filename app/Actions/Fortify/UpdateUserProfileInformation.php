@@ -18,6 +18,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
      */
     public function update(User $user, array $input): void
     {
+        /** @var array<string, string> $validated */
         $validated = Validator::make($input, $this->rules($user))
             ->validateWithBag('updateProfileInformation');
 

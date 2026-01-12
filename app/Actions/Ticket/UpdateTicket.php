@@ -5,43 +5,42 @@ namespace App\Actions\Ticket;
 use App\Enums\TicketStatus;
 use App\Enums\TicketUserType;
 use App\Models\Ticket;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class UpdateTicket
 {
     /**
      * @param  array<string, mixed>  $input
+     *
+     * @throws ValidationException
      */
     public function __invoke(Ticket $ticket, array $input): Ticket
     {
-        Validator::make($input, $this->rules())->validate();
+        $validated = Validator::make($input, $this->rules())->validate();
 
-        return DB::transaction(function () use ($ticket, $input) {
-            $ticket->update([
-                'title' => $input['title'] ?? $ticket->title,
-                'description' => $input['description'] ?? $ticket->description,
-                'display_order' => $input['display_order'] ?? $ticket->display_order,
-                'status' => $input['status'] ?? $ticket->status,
-            ]);
+        DB::transaction(function () use ($ticket, $validated) {
+            $attributes = Arr::except($validated, ['assignees', 'reviewers']);
 
-            if (isset($input['assignees'])) {
-                // Sync assignees, expecting array of user IDs
-                /** @var array<int|string> $assignees */
-                $assignees = $input['assignees'];
-                $ticket->assignees()->syncWithPivotValues($assignees, ['type' => TicketUserType::Assignee]);
+            if (! empty($attributes)) {
+                /** @var array<string, mixed> $attributes */
+                $ticket->update($attributes);
             }
 
-            if (isset($input['reviewers'])) {
-                // Sync reviewers
-                /** @var array<int|string> $reviewers */
-                $reviewers = $input['reviewers'];
-                $ticket->reviewers()->syncWithPivotValues($reviewers, ['type' => TicketUserType::Reviewer]);
+            if (isset($validated['assignees'])) {
+                // Enumのvalueを渡すのが確実じゃ
+                $ticket->assignees()->syncWithPivotValues((array) $validated['assignees'], ['type' => TicketUserType::Assignee->value]);
             }
 
-            return $ticket;
+            if (isset($validated['reviewers'])) {
+                $ticket->reviewers()->syncWithPivotValues((array) $validated['reviewers'], ['type' => TicketUserType::Reviewer->value]);
+            }
         });
+
+        return $ticket;
     }
 
     /**

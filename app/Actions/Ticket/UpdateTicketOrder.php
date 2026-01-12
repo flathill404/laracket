@@ -3,11 +3,14 @@
 namespace App\Actions\Ticket;
 
 use App\Models\Ticket;
+use Illuminate\Support\Facades\DB;
 
 class UpdateTicketOrder
 {
     public function __invoke(Ticket $ticket, float $order): void
     {
-        $ticket->update(['display_order' => $order]);
+        DB::transaction(function () use ($ticket, $order) {
+            $ticket->update(['display_order' => $order]);
+        });
     }
 }

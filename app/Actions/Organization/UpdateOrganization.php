@@ -16,6 +16,7 @@ class UpdateOrganization
      */
     public function __invoke(Organization $organization, array $input): Organization
     {
+        /** @var array<string, mixed> $validated */
         $validated = Validator::make($input, $this->rules())->validate();
 
         DB::transaction(function () use ($organization, $validated) {

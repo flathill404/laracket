@@ -39,7 +39,7 @@ class InviteOrganizationMember
      *
      * @throws ValidationException
      */
-    protected function validateUserIsAlreadyMemberOfOrganization(Organization $organization, string $email)
+    protected function validateUserIsAlreadyMemberOfOrganization(Organization $organization, string $email): void
     {
         $existingUser = User::where('email', $email)->first();
         if ($existingUser && $organization->users()->where('user_id', $existingUser->id)->exists()) {
@@ -54,7 +54,7 @@ class InviteOrganizationMember
      *
      * @throws ValidationException
      */
-    protected function validateInvitationAlreadyExists(Organization $organization, string $email)
+    protected function validateInvitationAlreadyExists(Organization $organization, string $email): void
     {
         // Check if invitation already exists
         $existingInvitation = OrganizationInvitation::where('organization_id', $organization->id)
