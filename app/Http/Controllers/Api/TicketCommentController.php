@@ -28,7 +28,9 @@ class TicketCommentController
 
         /** @var \App\Models\User $user */
         $user = $request->user();
-        $comment = $action($user, $ticket, $request->all());
+        /** @var array<string, mixed> $data */
+        $data = $request->all();
+        $comment = $action($user, $ticket, $data);
 
         return response()->json(new CommentResource($comment), 201);
     }
