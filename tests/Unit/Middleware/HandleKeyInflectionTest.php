@@ -2,15 +2,15 @@
 
 namespace Tests\Unit\Middleware;
 
-use App\Http\Middleware\KeyCaseConverter;
+use App\Http\Middleware\HandleKeyInflection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 test('request keys are converted to snake_case when header is present', function () {
-    $middleware = new KeyCaseConverter;
+    $middleware = new HandleKeyInflection;
 
     $request = Request::create('/', 'POST', ['camelKey' => 'value', 'nestedCamel' => ['innerKey' => 'innerValue']]);
-    $request->headers->set('Key-Format', 'camel');
+    $request->headers->set('Key-Inflection', 'camel');
 
     $middleware->handle($request, function ($req) {
         expect($req->all())->toBe([
@@ -23,10 +23,10 @@ test('request keys are converted to snake_case when header is present', function
 });
 
 test('response keys are converted to camelCase when header is present', function () {
-    $middleware = new KeyCaseConverter;
+    $middleware = new HandleKeyInflection;
 
     $request = Request::create('/', 'GET');
-    $request->headers->set('Key-Format', 'camel');
+    $request->headers->set('Key-Inflection', 'camel');
 
     $response = $middleware->handle($request, function () {
         return new JsonResponse(['snake_key' => 'value', 'nested_snake' => ['inner_key' => 'innerValue']]);
@@ -39,7 +39,7 @@ test('response keys are converted to camelCase when header is present', function
 });
 
 test('no conversion without header', function () {
-    $middleware = new KeyCaseConverter;
+    $middleware = new HandleKeyInflection;
 
     $request = Request::create('/', 'POST', ['camelKey' => 'value']);
 
@@ -53,7 +53,7 @@ test('no conversion without header', function () {
 });
 
 test('arrays are handled recursively', function () {
-    $middleware = new KeyCaseConverter;
+    $middleware = new HandleKeyInflection;
 
     $request = Request::create('/', 'POST', [
         'levelOne' => [
@@ -62,7 +62,7 @@ test('arrays are handled recursively', function () {
             ],
         ],
     ]);
-    $request->headers->set('Key-Format', 'camel');
+    $request->headers->set('Key-Inflection', 'camel');
 
     $middleware->handle($request, function ($req) {
         expect($req->all())->toBe([

@@ -7,14 +7,14 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class KeyCaseConverter
+class HandleKeyInflection
 {
     /**
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle(Request $request, Closure $next)
     {
-        $isCamelRequested = strtolower($request->header('Key-Format') ?? '') === 'camel';
+        $isCamelRequested = strtolower($request->header('Key-Inflection') ?? '') === 'camel';
 
         if ($isCamelRequested) {
             $request->replace(
