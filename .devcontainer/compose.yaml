@@ -9,6 +9,8 @@ services:
     environment:
       XDEBUG_MODE: debug
     command: sleep infinity
+    ports:
+      - "8000:8000"
 
   db:
     image: mysql:8.4
