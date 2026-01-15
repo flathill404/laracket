@@ -12,7 +12,7 @@ use function Pest\Laravel\postJson;
 uses(LazilyRefreshDatabase::class);
 
 it('retrieves sanctum csrf cookie', function () {
-    $response = get('/sanctum/csrf-cookie');
+    $response = get('/api/csrf-cookie');
 
     $response->assertNoContent();
 });
