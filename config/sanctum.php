@@ -81,4 +81,15 @@ return [
         'validate_csrf_token' => Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Sanctum Route Prefix
+    |--------------------------------------------------------------------------
+    |
+    | orogina value is `sanctum`
+    |
+    */
+
+    'prefix' => 'api',
+
 ];
