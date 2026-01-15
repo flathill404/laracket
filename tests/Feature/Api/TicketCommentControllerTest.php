@@ -32,14 +32,14 @@ describe('index', function () {
         Comment::create([
             'ticket_id' => $ticket->id,
             'user_id' => $otherUser->id,
-            'content' => 'First comment',
+            'body' => 'First comment',
             'created_at' => now()->subMinute(),
         ]);
 
         Comment::create([
             'ticket_id' => $ticket->id,
             'user_id' => $this->user->id,
-            'content' => 'Second comment',
+            'body' => 'Second comment',
             'created_at' => now(),
         ]);
 
@@ -48,7 +48,7 @@ describe('index', function () {
             ->assertJsonCount(2, 'data')
             ->assertJsonStructure([
                 'data' => [
-                    '*' => ['id', 'content', 'created_at', 'user' => ['id', 'name', 'display_name']],
+                    '*' => ['id', 'body', 'created_at', 'user' => ['id', 'name', 'display_name']],
                 ],
             ]);
     });
@@ -73,17 +73,17 @@ describe('store', function () {
 
         $ticket = Ticket::factory()->create(['project_id' => $project->id]);
 
-        $data = ['content' => 'My new comment'];
+        $data = ['body' => 'My new comment'];
 
         postJson("/api/tickets/{$ticket->id}/comments", $data)
             ->assertCreated()
-            ->assertJsonFragment(['content' => 'My new comment'])
-            ->assertJsonStructure(['id', 'content', 'created_at', 'user']);
+            ->assertJsonFragment(['body' => 'My new comment'])
+            ->assertJsonStructure(['id', 'body', 'created_at', 'user']);
 
         $this->assertDatabaseHas('comments', [
             'ticket_id' => $ticket->id,
             'user_id' => $this->user->id,
-            'content' => 'My new comment',
+            'body' => 'My new comment',
         ]);
     });
 
@@ -95,7 +95,7 @@ describe('store', function () {
 
         postJson("/api/tickets/{$ticket->id}/comments", [])
             ->assertUnprocessable()
-            ->assertJsonValidationErrors(['content']);
+            ->assertJsonValidationErrors(['body']);
     });
 
     it('denies creation if not authorized', function () {
@@ -103,7 +103,7 @@ describe('store', function () {
         $project = Project::factory()->create(['organization_id' => $organization->id]);
         $ticket = Ticket::factory()->create(['project_id' => $project->id]);
 
-        postJson("/api/tickets/{$ticket->id}/comments", ['content' => 'foo'])
+        postJson("/api/tickets/{$ticket->id}/comments", ['body' => 'foo'])
             ->assertForbidden();
     });
 });

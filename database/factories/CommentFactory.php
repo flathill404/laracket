@@ -19,7 +19,7 @@ class CommentFactory extends Factory
         return [
             'ticket_id' => \App\Models\Ticket::factory(),
             'user_id' => \App\Models\User::factory(),
-            'content' => $this->faker->sentence(),
+            'body' => $this->faker->sentence(),
         ];
     }
 }

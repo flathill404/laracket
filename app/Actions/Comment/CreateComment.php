@@ -23,7 +23,7 @@ class CreateComment
         $comment = DB::transaction(function () use ($user, $ticket, $validated) {
             return $ticket->comments()->create([
                 'user_id' => $user->id,
-                'content' => $validated['content'],
+                'body' => $validated['body'],
             ]);
         });
 
@@ -36,7 +36,7 @@ class CreateComment
     protected function rules(): array
     {
         return [
-            'content' => ['required', 'string', 'max:1000'],
+            'body' => ['required', 'string', 'max:1000'],
         ];
     }
 }

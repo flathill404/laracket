@@ -1,0 +1,430 @@
+organizations:
+  - name: acme
+    display_name: Acme Inc.
+
+projects:
+  - organization_name: acme
+    name: laracket
+    display_name: Laracket
+  - organization_name: acme
+    name: flowdocs
+    display_name: FlowDocs
+  - organization_name: acme
+    name: next-ec-base
+    display_name: Next-EC-Base
+
+teams:
+  - organization_name: acme
+    name: backend
+    display_name: Backend Team
+  - organization_name: acme
+    name: frontend
+    display_name: Frontend Team
+  - organization_name: acme
+    name: product
+    display_name: Product Team
+  - organization_name: acme
+    name: design
+    display_name: Design Team
+  - organization_name: acme
+    name: mobile-app
+    display_name: Mobile App Team
+  - organization_name: acme
+    name: qa
+    display_name: QA Team
+  - organization_name: acme
+    name: ops
+    display_name: Operations Team
+
+users:
+  # --- Product / Management ---
+  - organization_name: acme
+    name: emma
+    display_name: Emma Watson
+    email: emma.watson@acme.com
+    teams: [product]
+
+  - organization_name: acme
+    name: li
+    display_name: Li Wei
+    email: li.wei@acme.com
+    teams: [product, design]
+
+  # --- Backend (Core) ---
+  - organization_name: acme
+    name: james
+    display_name: James Smith
+    email: james.smith@acme.com
+    teams: [backend, product]
+
+  - organization_name: acme
+    name: michael
+    display_name: Michael Johnson
+    email: michael.johnson@acme.com
+    teams: [backend, ops]
+
+  - organization_name: acme
+    name: robert
+    display_name: Robert Brown
+    email: robert.brown@acme.com
+    teams: [backend]
+
+  - organization_name: acme
+    name: david
+    display_name: David Miller
+    email: david.miller@acme.com
+    teams: [backend]
+
+  # --- Frontend ---
+  - organization_name: acme
+    name: sarah
+    display_name: Sarah Davis
+    email: sarah.davis@acme.com
+    teams: [frontend, design]
+
+  - organization_name: acme
+    name: jennifer
+    display_name: Jennifer Wilson
+    email: jennifer.wilson@acme.com
+    teams: [frontend]
+
+  - organization_name: acme
+    name: daniel
+    display_name: Daniel Taylor
+    email: daniel.taylor@acme.com
+    teams: [frontend, mobile-app]
+
+  # --- Mobile App ---
+  - organization_name: acme
+    name: christopher
+    display_name: Christopher Anderson
+    email: christopher.anderson@acme.com
+    teams: [mobile-app]
+
+  - organization_name: acme
+    name: thomas
+    display_name: Thomas Martinez
+    email: thomas.martinez@acme.com
+    teams: [mobile-app, qa]
+
+  # --- Design ---
+  - organization_name: acme
+    name: jessica
+    display_name: Jessica White
+    email: jessica.white@acme.com
+    teams: [design]
+
+  - organization_name: acme
+    name: karen
+    display_name: Karen Lewis
+    email: karen.lewis@acme.com
+    teams: [design, frontend]
+
+  # --- QA ---
+  - organization_name: acme
+    name: nancy
+    display_name: Nancy Clark
+    email: nancy.clark@acme.com
+    teams: [qa]
+
+  - organization_name: acme
+    name: brian
+    display_name: Brian Hall
+    email: brian.hall@acme.com
+    teams: [qa, ops]
+
+  # --- Operations (SRE/DevOps) ---
+  - organization_name: acme
+    name: kevin
+    display_name: Kevin Allen
+    email: kevin.allen@acme.com
+    teams: [ops, backend]
+
+  - organization_name: acme
+    name: mark
+    display_name: Mark King
+    email: mark.king@acme.com
+    teams: [ops]
+
+tickets:
+  # ------------------------------------------------------------------
+  # Authentication & User Management
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Implement 2FA (Two-Factor Authentication)"
+    description: "Add support for Google Authenticator / TOTP. Require `pragmarx/google2fa-laravel` package."
+    status: "in_progress"
+    assignee_name: james
+    reviewer_name: emma
+    comments:
+      - user_name: james
+        body: "Database schema updated. Working on the UI now."
+
+  - project_name: laracket
+    title: "Password Reset Email going to Spam"
+    description: "Customers reporting that reset emails are marked as spam. Need to check DKIM/SPF records."
+    status: "resolved"
+    assignee_name: kevin
+    reviewer_name: mark
+    comments:
+      - user_name: kevin
+        body: "Fixed SPF record in Route53. It was missing an include for SES."
+      - user_name: nancy
+        body: "Confirmed. Received in Inbox."
+
+  - project_name: laracket
+    title: "Session timeout handling is too aggressive"
+    description: "Users are logged out after 15 mins of inactivity. Increase to 2 hours."
+    status: "closed"
+    assignee_name: robert
+    reviewer_name: james
+    comments:
+      - user_name: robert
+        body: "Changed `SESSION_LIFETIME` in .env.example and config."
+
+  # ------------------------------------------------------------------
+  # Core Features (Ticket System)
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Allow Markdown support in Comments"
+    description: "Users want to use bold, list, and code blocks in comments. Implement `marked.js` or similar."
+    status: "in_review"
+    assignee_name: sarah
+    reviewer_name: jennifer
+    comments:
+      - user_name: sarah
+        body: "Added a preview tab as well. Please review."
+      - user_name: jennifer
+        body: "Looks good, but XSS sanitization is missing. Please add DOMPurify."
+
+  - project_name: laracket
+    title: "Drag and Drop file upload for Tickets"
+    description: "Current file input is ugly. Implement a drag-and-drop zone using Dropzone.js or pure React."
+    status: "open"
+    assignee_name: daniel
+    reviewer_name: sarah
+    comments: []
+
+  - project_name: laracket
+    title: "Filter tickets by 'My Team'"
+    description: "Add a filter option to dashboard to see tickets assigned to anyone in my team."
+    status: "in_progress"
+    assignee_name: michael
+    reviewer_name: li
+    comments:
+      - user_name: michael
+        body: "I need to join `teams` table. Query performance might be tricky."
+
+  - project_name: laracket
+    title: "Bulk delete tickets"
+    description: "Admin needs to delete spam tickets in bulk."
+    status: "open"
+    assignee_name: david
+    reviewer_name: james
+    comments:
+      - user_name: james
+        body: "Make sure to implement Soft Delete, not Hard Delete."
+
+  # ------------------------------------------------------------------
+  # Billing & Payments (Stripe)
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Integrate Stripe Webhooks"
+    description: "Handle `invoice.payment_succeeded` and `customer.subscription.deleted`."
+    status: "in_review"
+    assignee_name: james
+    reviewer_name: kevin
+    comments:
+      - user_name: james
+        body: "Webhook signature verification is failing on local env using Stripe CLI."
+      - user_name: kevin
+        body: "You need to set `STRIPE_WEBHOOK_SECRET` correctly."
+
+  - project_name: laracket
+    title: "Update Pricing Page Design"
+    description: "Reflect the new pricing tiers (Starter, Pro, Enterprise)."
+    status: "resolved"
+    assignee_name: jessica
+    reviewer_name: li
+    comments:
+      - user_name: jessica
+        body: "Updated CSS. Responsive check passed."
+
+  # ------------------------------------------------------------------
+  # UI/UX & Frontend
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Dark mode flashes white on reload"
+    description: "FOUC (Flash of Unstyled Content) happening when dark mode is enabled."
+    status: "open"
+    assignee_name: sarah
+    reviewer_name: jennifer
+    comments:
+      - user_name: sarah
+        body: "We need to move the theme check script to the head tag, before body loads."
+
+  - project_name: laracket
+    title: "Mobile menu not closing on click"
+    description: "On mobile, clicking a menu item should close the drawer."
+    status: "resolved"
+    assignee_name: karen
+    reviewer_name: sarah
+    comments:
+      - user_name: karen
+        body: "Added an `onClick` handler to close the state."
+
+  - project_name: laracket
+    title: "Replace all FontAwesome icons with Heroicons"
+    description: "For better consistency with Tailwind UI components."
+    status: "open"
+    assignee_name: jennifer
+    reviewer_name: jessica
+    comments: []
+
+  # ------------------------------------------------------------------
+  # API & Integrations
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Expose GraphQL API for Enterprise Customers"
+    description: "Some clients are asking for GraphQL instead of REST."
+    status: "open"
+    assignee_name: james
+    reviewer_name: emma
+    comments:
+      - user_name: james
+        body: "This is a huge task. Maybe Q4?"
+      - user_name: emma
+        body: "Let's keep it in the backlog for now."
+
+  - project_name: laracket
+    title: "Slack Notification Integration"
+    description: "Notify channel when a ticket is created with 'Critical' priority."
+    status: "in_progress"
+    assignee_name: robert
+    reviewer_name: michael
+    comments:
+      - user_name: robert
+        body: "Using Laravel Notifications channel. Need a Slack App Webhook URL for testing."
+
+  # ------------------------------------------------------------------
+  # Infrastructure & Performance
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Migrate Assets to CDN (CloudFront)"
+    description: "Serve static assets (JS, CSS, Images) via CloudFront to reduce load on EC2."
+    status: "resolved"
+    assignee_name: kevin
+    reviewer_name: mark
+    comments:
+      - user_name: kevin
+        body: "Configured `ASSET_URL` in environment variables."
+
+  - project_name: laracket
+    title: "Database Backup Automation"
+    description: "Set up daily snapshots for RDS and retain for 30 days."
+    status: "closed"
+    assignee_name: mark
+    reviewer_name: kevin
+    comments: []
+
+  - project_name: laracket
+    title: "Slow query in DashboardController"
+    description: "The analytics widget takes 3 seconds to load."
+    status: "in_review"
+    assignee_name: michael
+    reviewer_name: james
+    comments:
+      - user_name: michael
+        body: "Added an index on `tickets.created_at`. Query time is down to 200ms."
+
+  # ------------------------------------------------------------------
+  # Mobile App (Flutter/React Native)
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "App crashes on splash screen (Android 14)"
+    description: "Reports from Pixel users. App crashes immediately on launch."
+    status: "resolved"
+    assignee_name: christopher
+    reviewer_name: thomas
+    comments:
+      - user_name: christopher
+        body: "Updated the splash screen library. It was incompatible with the new Android API."
+
+  - project_name: laracket
+    title: "Biometric Login (FaceID / TouchID)"
+    description: "Implement biometric auth using `react-native-biometrics`."
+    status: "open"
+    assignee_name: thomas
+    reviewer_name: christopher
+    comments:
+      - user_name: thomas
+        body: "Should we allow fallback to PIN code?"
+
+  # ------------------------------------------------------------------
+  # QA & Bugs
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Search bar returns 500 on special characters"
+    description: "Searching for `%` or `'` crashes the search query."
+    status: "in_progress"
+    assignee_name: david
+    reviewer_name: nancy
+    comments:
+      - user_name: nancy
+        body: "Found during exploratory testing."
+      - user_name: david
+        body: "Escaping issue in the raw SQL query. Fixing it now."
+
+  - project_name: laracket
+    title: "User Avatar not updating immediately"
+    description: "After uploading a new avatar, the old one is still shown until hard refresh."
+    status: "open"
+    assignee_name: karen
+    reviewer_name: sarah
+    comments:
+      - user_name: sarah
+        body: "Cache busting issue. Append a timestamp to the image URL."
+
+  # ------------------------------------------------------------------
+  # Refactoring & Tech Debt
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Upgrade PHP to 8.4"
+    description: "Prepare codebase for the next PHP version."
+    status: "open"
+    assignee_name: james
+    reviewer_name: michael
+    comments: []
+
+  - project_name: laracket
+    title: "Remove legacy jQuery code"
+    description: "There are still some blades using jQuery. Replace with Alpine.js."
+    status: "open"
+    assignee_name: jennifer
+    reviewer_name: sarah
+    comments:
+      - user_name: jennifer
+        body: "Found 15 files. Will tackle them one by one."
+
+  # ------------------------------------------------------------------
+  # Documentation & Others
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Update API Documentation"
+    description: "Swagger file is outdated. Missing the new `v2/tickets` endpoints."
+    status: "in_review"
+    assignee_name: li
+    reviewer_name: james
+    comments:
+      - user_name: li
+        body: "Updated using Scribe generator."
+
+  - project_name: laracket
+    title: "Typo in Terms of Service"
+    description: "Section 3.2 says 'Larocket' instead of 'Laracket'."
+    status: "closed"
+    assignee_name: emma
+    reviewer_name: -
+    comments:
+      - user_name: emma
+        body: "Fixed. How embarrassing!"
