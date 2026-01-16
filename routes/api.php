@@ -12,12 +12,15 @@ use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TicketOrderController;
 use App\Http\Controllers\Api\TicketStatusController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\UserProjectController;
+use App\Http\Controllers\Api\UserTeamController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     // User Scope
     Route::get('/user', [UserController::class, 'show']);
-    Route::get('/users/{user}/projects', [\App\Http\Controllers\Api\UserProjectController::class, 'index']);
+    Route::get('/users/{user}/projects', [UserProjectController::class, 'index']);
+    Route::get('/users/{user}/teams', [UserTeamController::class, 'index']);
 
     // Organization Scope
     Route::get('/organizations', [OrganizationController::class, 'index']);
