@@ -2,6 +2,7 @@
 
 namespace App\Queries;
 
+use App\Enums\OrganizationRole;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -20,7 +21,7 @@ class GetUserProjects
                     $q->where('owner_user_id', $user->id)
                         ->orWhereHas('users', function ($mq) use ($user) {
                             $mq->where('user_id', $user->id)
-                                ->where('role', \App\Enums\OrganizationRole::Admin);
+                                ->where('role', OrganizationRole::Admin);
                         });
                 });
 
