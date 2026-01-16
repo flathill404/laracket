@@ -146,6 +146,12 @@ users:
     email: mark.king@acme.com
     teams: [ops]
 
+  - organization_name: acme
+    name: jeison
+    display_name: Jeison Stethem
+    email: jeison.stethem@acme.com
+    teams: [backend, frontend, product, design, mobile-app, qa, ops]
+
 tickets:
   # ------------------------------------------------------------------
   # Authentication & User Management
