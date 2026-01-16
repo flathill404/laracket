@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
     // User Scope
     Route::get('/user', [UserController::class, 'show']);
+    Route::get('/users/{user}/projects', [\App\Http\Controllers\Api\UserProjectController::class, 'index']);
 
     // Organization Scope
     Route::get('/organizations', [OrganizationController::class, 'index']);
