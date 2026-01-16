@@ -27,7 +27,43 @@ class DemoSeeder extends Seeder
 
         $data = \Symfony\Component\Yaml\Yaml::parseFile($yamlPath);
 
-        // 1. Organizations
+        // 1. Users (Jeison First)
+        $users = [];
+        
+        // 1.1 Create Jeison manually to ensure ID 1
+        $jeison = User::factory()->create([
+            'name' => 'jeison',
+            'display_name' => 'Jeison Stethem',
+            'email' => 'jeison.stethem@acme.com',
+            'password' => bcrypt('password'),
+        ]);
+        $users['jeison'] = $jeison;
+
+        // 1.2 Create other users from YAML
+        foreach ($data['users'] ?? [] as $userData) {
+            if ($userData['email'] === 'jeison.stethem@acme.com') {
+                continue;
+            }
+
+            $user = User::factory()->create([
+                'name' => $userData['name'],
+                'display_name' => $userData['display_name'],
+                'email' => $userData['email'],
+                'password' => bcrypt('password'),
+            ]);
+            $users[$userData['name']] = $user;
+        }
+
+        // 2. Personal Projects (Actions)
+        $createOrganization = app(CreateOrganization::class);
+        foreach ($users as $user) {
+            $org = $createOrganization($user, [
+                'name' => 'the-'.$user->name.'-project',
+                'display_name' => 'The '.$user->display_name.' Project',
+            ]);
+        }
+
+        // 3. Organizations (YAML)
         $organizations = [];
         foreach ($data['organizations'] ?? [] as $orgData) {
             $organizations[$orgData['name']] = Organization::factory()->create([
@@ -36,7 +72,7 @@ class DemoSeeder extends Seeder
             ]);
         }
 
-        // 2. Teams
+        // 4. Teams
         $teams = [];
         foreach ($data['teams'] ?? [] as $teamData) {
             if (! isset($organizations[$teamData['organization_name']])) {
@@ -49,7 +85,7 @@ class DemoSeeder extends Seeder
             ]);
         }
 
-        // 3. Projects
+        // 5. Projects (YAML)
         $projects = [];
         foreach ($data['projects'] ?? [] as $projectData) {
             if (! isset($organizations[$projectData['organization_name']])) {
@@ -61,21 +97,26 @@ class DemoSeeder extends Seeder
                 'display_name' => $projectData['display_name'],
             ]);
         }
+        
+        // Link Projects to Teams (All teams in Org get access to all projects in Org for demo)
+        foreach ($projects as $project) {
+            $orgTeams = $project->organization->teams;
+            $project->assignedTeams()->sync($orgTeams);
+        }
 
-        // 4. Users
-        $users = [];
+        // 6. Attach Users to Orgs and Teams
         foreach ($data['users'] ?? [] as $userData) {
-            $user = User::factory()->create([
-                'name' => $userData['name'],
-                'display_name' => $userData['display_name'],
-                'email' => $userData['email'],
-                'password' => bcrypt('password'), // Explicitly set password for demo
-            ]);
-            $users[$userData['name']] = $user;
-
+            if (! isset($users[$userData['name']])) {
+                continue;
+            }
+            $user = $users[$userData['name']];
             $orgName = $userData['organization_name'];
+
             if (isset($organizations[$orgName])) {
-                $organizations[$orgName]->users()->attach($user->id, ['role' => OrganizationRole::Member]);
+                // Check if already attached (CreateOrganization might have attached creator to something, but here we attach to ACME)
+                if (! $organizations[$orgName]->users()->where('user_id', $user->id)->exists()) {
+                    $organizations[$orgName]->users()->attach($user->id, ['role' => OrganizationRole::Member]);
+                }
             }
 
             foreach ($userData['teams'] ?? [] as $teamName) {
@@ -85,31 +126,14 @@ class DemoSeeder extends Seeder
             }
         }
 
-        // 4.1 Personal Projects
-        $createOrganization = app(CreateOrganization::class);
-        foreach ($users as $user) {
-            $createOrganization($user, [
-                'name' => 'the-'.$user->name.'-project',
-                'display_name' => 'The '.$user->display_name.' Project',
-            ]);
-        }
-
-        // 5. Tickets
+        // 7. Tickets
         foreach ($data['tickets'] ?? [] as $ticketData) {
             if (! isset($projects[$ticketData['project_name']])) {
                 continue;
             }
 
             $project = $projects[$ticketData['project_name']];
-
-            // Normalize status string to case or lower
-            // Assuming TicketStatus enum matching. If existing enum is PascalCase, we might need mapping.
-            // Let's assume the string in YAML matches the Enum value or name case-insensitively.
-            // The YAML has 'in_progress', 'resolved', 'open', 'closed', 'in_review'.
-            // I need to check TicketStatus enum values. 
-            // For now I'll try to find a matching backing value or case name.
-            
-            $status = $this->parseTicketStatus($ticketData['status']);
+            $status = TicketStatus::from($ticketData['status']);
 
             $ticket = Ticket::factory()->create([
                 'project_id' => $project->id,
@@ -136,24 +160,5 @@ class DemoSeeder extends Seeder
                 }
             }
         }
-    }
-
-    private function parseTicketStatus(string $statusString): TicketStatus
-    {
-        // Try to match Enum value first
-        $status = TicketStatus::tryFrom($statusString);
-        if ($status) {
-            return $status;
-        }
-
-        // Map YAML common strings to likely Enum cases if direct match fails
-        // You might need to adjust this depending on TicketStatus definition
-        return match($statusString) {
-            'in_progress' => TicketStatus::InProgress,
-            'in_review' => TicketStatus::InReview,
-            'resolved' => TicketStatus::Resolved,
-            'closed' => TicketStatus::Closed,
-            default => TicketStatus::Open,
-        };
     }
 }
