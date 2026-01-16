@@ -12,7 +12,7 @@ class UserProjectController
 {
     public function index(Request $request, User $user, GetUserProjects $query): AnonymousResourceCollection
     {
-        if ($request->user()->id !== $user->id) {
+        if ($request->user()?->id !== $user->id) {
             abort(403);
         }
 

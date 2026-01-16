@@ -1,10 +1,10 @@
 <?php
 
+use App\Enums\OrganizationRole;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Team;
 use App\Models\User;
-use App\Enums\OrganizationRole;
 use App\Queries\GetUserProjects;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -15,7 +15,7 @@ test('organization owner can see all projects', function () {
     $org = Organization::factory()->create(['owner_user_id' => $owner->id]);
     $project = Project::factory()->create(['organization_id' => $org->id]);
 
-    $query = new GetUserProjects();
+    $query = new GetUserProjects;
     $projects = $query($owner);
 
     expect($projects)->toHaveCount(1)
@@ -28,7 +28,7 @@ test('organization admin can see all projects', function () {
     $org->users()->attach($admin, ['role' => OrganizationRole::Admin]);
     $project = Project::factory()->create(['organization_id' => $org->id]);
 
-    $query = new GetUserProjects();
+    $query = new GetUserProjects;
     $projects = $query($admin);
 
     expect($projects)->toHaveCount(1)
@@ -41,7 +41,7 @@ test('organization member cannot see projects not assigned', function () {
     $org->users()->attach($member, ['role' => OrganizationRole::Member]);
     $project = Project::factory()->create(['organization_id' => $org->id]);
 
-    $query = new GetUserProjects();
+    $query = new GetUserProjects;
     $projects = $query($member);
 
     expect($projects)->toHaveCount(0);
@@ -55,7 +55,7 @@ test('assigned user can see project', function () {
     $project = Project::factory()->create(['organization_id' => $org->id]);
     $project->assignedUsers()->attach($user);
 
-    $query = new GetUserProjects();
+    $query = new GetUserProjects;
     $projects = $query($user);
 
     expect($projects)->toHaveCount(1)
@@ -67,11 +67,11 @@ test('assigned team member can see project', function () {
     $org = Organization::factory()->create();
     $team = Team::factory()->create(['organization_id' => $org->id]);
     $team->users()->attach($user, ['role' => OrganizationRole::Member]); // Role in team doesn't matter for visibility usually
-    
+
     $project = Project::factory()->create(['organization_id' => $org->id]);
     $project->assignedTeams()->attach($team);
 
-    $query = new GetUserProjects();
+    $query = new GetUserProjects;
     $projects = $query($user);
 
     expect($projects)->toHaveCount(1)
@@ -83,7 +83,7 @@ test('unrelated user cannot see project', function () {
     $org = Organization::factory()->create();
     $project = Project::factory()->create(['organization_id' => $org->id]);
 
-    $query = new GetUserProjects();
+    $query = new GetUserProjects;
     $projects = $query($user);
 
     expect($projects)->toHaveCount(0);

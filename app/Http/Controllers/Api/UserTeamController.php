@@ -12,7 +12,7 @@ class UserTeamController
 {
     public function index(Request $request, User $user, GetUserTeams $query): AnonymousResourceCollection
     {
-        if ($request->user()->id !== $user->id) {
+        if ($request->user()?->id !== $user->id) {
             abort(403);
         }
 

@@ -52,7 +52,7 @@ class UserTeamControllerTest extends TestCase
     {
         $organization = Organization::factory()->create();
         $user = User::factory()->create();
-        
+
         // Make user admin
         $organization->users()->attach($user, ['role' => \App\Enums\OrganizationRole::Admin]);
 

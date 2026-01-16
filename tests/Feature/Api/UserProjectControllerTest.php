@@ -69,7 +69,7 @@ class UserProjectControllerTest extends TestCase
 
         $response->assertOk()
             ->assertJsonCount(2, 'data');
-            
+
         // Assert contains both IDs
         $ids = collect($response->json('data'))->pluck('id');
         $this->assertTrue($ids->contains($project1->id));
@@ -81,7 +81,7 @@ class UserProjectControllerTest extends TestCase
     {
         $organization = Organization::factory()->create();
         $user = User::factory()->create();
-        
+
         // Make user admin
         $organization->users()->attach($user, ['role' => \App\Enums\OrganizationRole::Admin]);
 

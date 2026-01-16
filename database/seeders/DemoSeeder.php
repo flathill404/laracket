@@ -3,25 +3,26 @@
 namespace Database\Seeders;
 
 use App\Actions\Organization\CreateOrganization;
+use App\Enums\OrganizationRole;
+use App\Enums\TeamRole;
+use App\Enums\TicketStatus;
+use App\Enums\TicketUserType;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use App\Enums\OrganizationRole;
-use App\Enums\TeamRole;
-use App\Enums\TicketUserType;
-use App\Enums\TicketStatus;
 
 class DemoSeeder extends Seeder
 {
     public function run(): void
     {
         $yamlPath = database_path('seeders/demo.yaml');
-        
+
         if (! file_exists($yamlPath)) {
             $this->command->error("File not found: $yamlPath");
+
             return;
         }
 
@@ -29,7 +30,7 @@ class DemoSeeder extends Seeder
 
         // 1. Users (Jeison First)
         $users = [];
-        
+
         // 1.1 Create Jeison manually to ensure ID 1
         $jeison = User::factory()->create([
             'name' => 'jeison',
@@ -97,7 +98,7 @@ class DemoSeeder extends Seeder
                 'display_name' => $projectData['display_name'],
             ]);
         }
-        
+
         // Link Projects to Teams (All teams in Org get access to all projects in Org for demo)
         foreach ($projects as $project) {
             $orgTeams = $project->organization->teams;

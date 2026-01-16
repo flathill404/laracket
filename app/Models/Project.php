@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OrganizationRole;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -98,23 +99,30 @@ class Project extends Model
     /**
      * Scope the query to projects visible to the given user.
      */
-    public function scopeVisibleToUser($query, User $user): void
+    /**
+     * Scope the query to projects visible to the given user.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<Project>  $query
+     */
+    public function scopeVisibleToUser(Builder $query, User $user): void
     {
-        $query->where(function ($q) use ($user) {
+        $query->where(function (Builder $q) use ($user) {
             $q->whereOrganizationAccessibleByUser($user)
-                ->orWhere(fn ($q) => $q->whereDirectlyAssignedToUser($user))
-                ->orWhere(fn ($q) => $q->whereAssignedToUserViaTeam($user));
+                ->orWhere(fn (Builder $q) => $q->whereDirectlyAssignedToUser($user))
+                ->orWhere(fn (Builder $q) => $q->whereAssignedToUserViaTeam($user));
         });
     }
 
     /**
      * Scope the query to projects that are in an organization accessible to the user (Owner or Admin).
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<Project>  $query
      */
-    public function scopeWhereOrganizationAccessibleByUser($query, User $user): void
+    public function scopeWhereOrganizationAccessibleByUser(Builder $query, User $user): void
     {
-        $query->whereHas('organization', function ($q) use ($user) {
+        $query->whereHas('organization', function (Builder $q) use ($user) {
             $q->where('owner_user_id', $user->id)
-                ->orWhereHas('users', function ($mq) use ($user) {
+                ->orWhereHas('users', function (Builder $mq) use ($user) {
                     $mq->where('user_id', $user->id)
                         ->where('role', OrganizationRole::Admin);
                 });
@@ -123,20 +131,24 @@ class Project extends Model
 
     /**
      * Scope the query to projects directly assigned to the user.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<Project>  $query
      */
-    public function scopeWhereDirectlyAssignedToUser($query, User $user): void
+    public function scopeWhereDirectlyAssignedToUser(Builder $query, User $user): void
     {
-        $query->whereHas('assignedUsers', function ($q) use ($user) {
+        $query->whereHas('assignedUsers', function (Builder $q) use ($user) {
             $q->where('users.id', $user->id);
         });
     }
 
     /**
      * Scope the query to projects assigned to the user via a team.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder<Project>  $query
      */
-    public function scopeWhereAssignedToUserViaTeam($query, User $user): void
+    public function scopeWhereAssignedToUserViaTeam(Builder $query, User $user): void
     {
-        $query->whereHas('assignedTeams.members', function ($q) use ($user) {
+        $query->whereHas('assignedTeams.members', function (Builder $q) use ($user) {
             $q->where('users.id', $user->id);
         });
     }

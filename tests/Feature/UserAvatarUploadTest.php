@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\User;
 use App\Jobs\OptimizeUserAvatar;
+use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
@@ -27,7 +27,7 @@ test('user can upload avatar', function () {
     $user->refresh();
     expect($user->avatar_path)->not->toBeNull();
     Storage::disk('public')->assertExists($user->avatar_path);
-    
+
     // Check if URL is correct in response
     $expectedUrl = Storage::disk('public')->url($user->avatar_path);
     expect($response->json('data.avatar_url'))->toBe($expectedUrl);
@@ -50,7 +50,7 @@ test('upload fails with invalid data', function () {
 
 test('upload fails with unsupported image type', function () {
     $user = User::factory()->create();
-    
+
     // bmp is not in allow list
     $base64Image = 'data:image/bmp;base64,Qk02AAAAAAAAADYAAAAoAAAAAQAAAAEAAAABABgAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAA/wAA';
 
@@ -67,7 +67,7 @@ test('old avatar is deleted when new one is uploaded', function () {
     Queue::fake();
 
     $user = User::factory()->create();
-    $oldPath = 'avatars/' . $user->id . '/old.png';
+    $oldPath = 'avatars/'.$user->id.'/old.png';
     Storage::disk('public')->put($oldPath, 'content');
     $user->update(['avatar_path' => $oldPath]);
 

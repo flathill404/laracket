@@ -18,6 +18,7 @@ class UserAvatarController
 
         /** @var \App\Models\User $user */
         $user = $request->user();
+        /** @var string $data */
         $data = $request->input('avatar');
 
         // Parse Data URI
@@ -32,9 +33,9 @@ class UserAvatarController
             abort(422, 'Unsupported image type');
         }
 
-        $data = base64_decode($data);
+        $decodedData = base64_decode($data, true);
 
-        if ($data === false) {
+        if ($decodedData === false) {
             abort(422, 'Base64 decode failed');
         }
 
@@ -48,7 +49,7 @@ class UserAvatarController
         }
 
         // Store new avatar
-        Storage::disk('public')->put($path, $data);
+        Storage::disk('public')->put($path, $decodedData);
 
         // Update user
         $user->forceFill([
