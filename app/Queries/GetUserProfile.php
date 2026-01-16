@@ -8,6 +8,6 @@ class GetUserProfile
 {
     public function __invoke(User $user): User
     {
-        return $user;
+        return User::findOrFail($user->id);
     }
 }

@@ -54,9 +54,6 @@ class UserAvatarController
         $user->forceFill([
             'avatar_path' => $path,
         ])->save();
-
-        \Illuminate\Database\Eloquent\Model::preventAccessingMissingAttributes(false);
-
         // Dispatch job
         OptimizeUserAvatar::dispatch($user);
 

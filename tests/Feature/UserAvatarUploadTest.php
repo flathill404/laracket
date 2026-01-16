@@ -2,8 +2,11 @@
 
 use App\Models\User;
 use App\Jobs\OptimizeUserAvatar;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
+
+uses(LazilyRefreshDatabase::class);
 
 test('user can upload avatar', function () {
     Storage::fake('public');
