@@ -20,6 +20,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $email
  * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property string $password
+ * @property string|null $avatar_path
  * @property string|null $remember_token
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
@@ -80,6 +81,7 @@ class User extends Authenticatable
         'display_name',
         'email',
         'password',
+        'avatar_path',
     ];
 
     /**
