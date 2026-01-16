@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Actions\Organization\CreateOrganization;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Team;
@@ -82,6 +83,15 @@ class DemoSeeder extends Seeder
                     $teams[$teamName]->users()->attach($user->id, ['role' => TeamRole::Member]);
                 }
             }
+        }
+
+        // 4.1 Personal Projects
+        $createOrganization = app(CreateOrganization::class);
+        foreach ($users as $user) {
+            $createOrganization($user, [
+                'name' => 'the-'.$user->name.'-project',
+                'display_name' => 'The '.$user->display_name.' Project',
+            ]);
         }
 
         // 5. Tickets
