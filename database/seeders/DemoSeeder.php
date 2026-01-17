@@ -32,12 +32,19 @@ class DemoSeeder extends Seeder
         $users = [];
 
         // 1.1 Create Jeison manually to ensure ID 1
-        $jeison = User::factory()->create([
+        $jeisonData = [
             'name' => 'jeison',
             'display_name' => 'Jeison Stethem',
             'email' => 'jeison.stethem@acme.com',
             'password' => bcrypt('password'),
-        ]);
+        ];
+
+        $jeisonAvatarFile = database_path('seeders/imgaes/avatars/jeison.webp');
+        if (file_exists($jeisonAvatarFile)) {
+            $jeisonData['avatar_path'] = \Illuminate\Support\Facades\Storage::disk('public')->putFile('avatars', new \Illuminate\Http\File($jeisonAvatarFile));
+        }
+
+        $jeison = User::factory()->create($jeisonData);
         $users['jeison'] = $jeison;
 
         // 1.2 Create other users from YAML
@@ -46,12 +53,19 @@ class DemoSeeder extends Seeder
                 continue;
             }
 
-            $user = User::factory()->create([
+            $input = [
                 'name' => $userData['name'],
                 'display_name' => $userData['display_name'],
                 'email' => $userData['email'],
                 'password' => bcrypt('password'),
-            ]);
+            ];
+
+            $avatarFile = database_path('seeders/imgaes/avatars/' . $userData['name'] . '.webp');
+            if (file_exists($avatarFile)) {
+                $input['avatar_path'] = \Illuminate\Support\Facades\Storage::disk('public')->putFile('avatars', new \Illuminate\Http\File($avatarFile));
+            }
+
+            $user = User::factory()->create($input);
             $users[$userData['name']] = $user;
         }
 
