@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\ProjectMemberController;
 use App\Http\Controllers\Api\ProjectTeamController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TeamMemberController;
+use App\Http\Controllers\Api\TeamTicketsController;
 use App\Http\Controllers\Api\TicketAssigneeController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TicketOrderController;
@@ -66,6 +67,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/teams/{team}/members', [TeamMemberController::class, 'store']);
     Route::patch('/teams/{team}/members/{user}', [TeamMemberController::class, 'update']);
     Route::delete('/teams/{team}/members/{user}', [TeamMemberController::class, 'destroy']);
+    Route::get('/teams/{team}/tickets', [TeamTicketsController::class, 'index']);
 
     // Tickets
     Route::get('/projects/{project}/tickets', [TicketController::class, 'index']);
