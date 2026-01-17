@@ -60,7 +60,7 @@ class DemoSeeder extends Seeder
                 'password' => bcrypt('password'),
             ];
 
-            $avatarFile = database_path('seeders/imgaes/avatars/' . $userData['name'] . '.webp');
+            $avatarFile = database_path('seeders/imgaes/avatars/'.$userData['name'].'.webp');
             if (file_exists($avatarFile)) {
                 $input['avatar_path'] = \Illuminate\Support\Facades\Storage::disk('public')->putFile('avatars', new \Illuminate\Http\File($avatarFile));
             }

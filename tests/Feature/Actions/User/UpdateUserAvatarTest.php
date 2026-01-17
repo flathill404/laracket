@@ -18,7 +18,7 @@ class UpdateUserAvatarTest extends TestCase
         Storage::fake('public');
 
         $user = User::factory()->create();
-        $action = new UpdateUserAvatar();
+        $action = new UpdateUserAvatar;
 
         $input = [
             'avatar' => 'data:image/png;base64,'.base64_encode('fake-image-content'),
@@ -33,7 +33,7 @@ class UpdateUserAvatarTest extends TestCase
     public function test_throws_validation_exception_for_invalid_data_uri(): void
     {
         $user = User::factory()->create();
-        $action = new UpdateUserAvatar();
+        $action = new UpdateUserAvatar;
 
         $input = [
             'avatar' => 'invalid-data-uri',
@@ -48,7 +48,7 @@ class UpdateUserAvatarTest extends TestCase
     public function test_throws_validation_exception_for_unsupported_image_type(): void
     {
         $user = User::factory()->create();
-        $action = new UpdateUserAvatar();
+        $action = new UpdateUserAvatar;
 
         $input = [
             'avatar' => 'data:image/bmp;base64,'.base64_encode('fake-image-content'),
@@ -69,7 +69,7 @@ class UpdateUserAvatarTest extends TestCase
         ]);
         Storage::disk('public')->put('avatars/old-avatar.png', 'old-content');
 
-        $action = new UpdateUserAvatar();
+        $action = new UpdateUserAvatar;
         $input = [
             'avatar' => 'data:image/png;base64,'.base64_encode('new-image-content'),
         ];

@@ -28,7 +28,7 @@ class UserAvatarControllerTest extends TestCase
                 'avatar_url',
             ],
         ]);
-        
+
         $this->assertNotNull($user->refresh()->avatar_path);
     }
 

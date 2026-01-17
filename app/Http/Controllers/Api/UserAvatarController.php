@@ -12,7 +12,7 @@ class UserAvatarController
     {
         /** @var \App\Models\User $user */
         $user = $request->user();
-        
+
         /** @var array<string, mixed> $input */
         $input = $request->all();
 
