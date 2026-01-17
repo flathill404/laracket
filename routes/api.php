@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\UserAvatarController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\UserProjectController;
 use App\Http\Controllers\Api\UserTeamController;
+use App\Http\Controllers\Api\UserTicketsController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -24,6 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/user/avatar', [UserAvatarController::class, 'destroy']);
     Route::get('/users/{user}/projects', [UserProjectController::class, 'index']);
     Route::get('/users/{user}/teams', [UserTeamController::class, 'index']);
+    Route::get('/users/{user}/tickets', [UserTicketsController::class, 'index']);
 
     // Organization Scope
     Route::get('/organizations', [OrganizationController::class, 'index']);
