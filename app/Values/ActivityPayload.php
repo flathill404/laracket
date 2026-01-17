@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 class ActivityPayload implements \JsonSerializable, Arrayable, Castable, Jsonable
 {
     /**
-     * @param  array<string, mixed>  $attributes
+     * @param  array<array-key, mixed>  $attributes
      */
     public function __construct(
         protected array $attributes = []
@@ -55,7 +55,10 @@ class ActivityPayload implements \JsonSerializable, Arrayable, Castable, Jsonabl
      */
     public function toArray()
     {
-        return $this->attributes;
+        /** @var array<string, mixed> $attributes */
+        $attributes = $this->attributes;
+
+        return $attributes;
     }
 
     public function toJson($options = 0)
@@ -70,7 +73,7 @@ class ActivityPayload implements \JsonSerializable, Arrayable, Castable, Jsonabl
 }
 
 /**
- * @implements CastsAttributes<ActivityPayload, ActivityPayload>
+ * @implements CastsAttributes<ActivityPayload, mixed>
  */
 class ActivityPayloadCast implements CastsAttributes
 {
