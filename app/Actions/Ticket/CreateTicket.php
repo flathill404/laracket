@@ -34,6 +34,7 @@ class CreateTicket
                 'title' => $validated['title'],
                 'description' => $validated['description'] ?? null,
                 'status' => $validated['status'] ?? TicketStatus::Open->value,
+                'due_date' => $validated['due_date'] ?? null,
                 'display_order' => $validated['display_order'] ?? 0,
             ]);
 
@@ -56,6 +57,7 @@ class CreateTicket
             'title' => ['required', 'string', 'max:100'],
             'description' => ['nullable', 'string'],
             'status' => ['sometimes', Rule::enum(TicketStatus::class)],
+            'due_date' => ['nullable', 'date'],
             'display_order' => ['sometimes', 'integer'],
             'assignee_id' => ['sometimes', 'uuid', 'exists:users,id'],
         ];

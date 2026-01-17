@@ -20,6 +20,7 @@ it('updates a ticket', function () {
 
     $input = [
         'title' => 'Updated Title',
+        'due_date' => '2026-12-31',
         'assignees' => [$assignee->id],
         'reviewers' => [$reviewer->id],
     ];
@@ -27,6 +28,7 @@ it('updates a ticket', function () {
     $updatedTicket = $action($ticket, $input);
 
     expect($updatedTicket->title)->toBe('Updated Title');
+    expect($updatedTicket->due_date->format('Y-m-d'))->toBe('2026-12-31');
 
     assertDatabaseHas('ticket_user', [
         'ticket_id' => $ticket->id,

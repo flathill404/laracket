@@ -22,6 +22,7 @@ it('creates a ticket', function () {
         'title' => 'Test Ticket',
         'description' => 'Test Description',
         'assignee_id' => $user->id,
+        'due_date' => '2026-01-01',
     ];
 
     $ticket = $action($user, $project, $input);
@@ -31,6 +32,7 @@ it('creates a ticket', function () {
         'title' => 'Test Ticket',
         'description' => 'Test Description',
         'status' => TicketStatus::Open,
+        'due_date' => '2026-01-01 00:00:00',
     ]);
 
     assertDatabaseHas('ticket_user', [

@@ -51,6 +51,7 @@ class UpdateTicket
         return [
             'title' => ['sometimes', 'required', 'string', 'max:100'],
             'description' => ['sometimes', 'nullable', 'string'],
+            'due_date' => ['sometimes', 'nullable', 'date'],
             'display_order' => ['sometimes', 'integer'],
             'status' => ['sometimes', Rule::enum(TicketStatus::class)],
             'assignees' => ['sometimes', 'array'],

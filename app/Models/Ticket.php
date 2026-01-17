@@ -55,6 +55,7 @@ class Ticket extends Model
 
     protected $casts = [
         'status' => TicketStatus::class,
+        'due_date' => 'date',
     ];
 
     /**
