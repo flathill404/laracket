@@ -15,6 +15,7 @@ class GetProjectTickets
         $project->load('tickets');
         $project->tickets->load('assignees');
         $project->tickets->load('reviewers');
+
         return $project->tickets;
     }
 }

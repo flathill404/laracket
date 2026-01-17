@@ -11,6 +11,7 @@ class GetTicketDetail
         $ticket->load('assignees');
         $ticket->load('reviewers');
         $ticket->load('comments');
+
         return $ticket;
     }
 }

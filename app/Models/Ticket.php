@@ -95,4 +95,12 @@ class Ticket extends Model
     {
         return $this->hasMany(Comment::class)->orderBy('created_at', 'asc');
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<TicketActivity, $this>
+     */
+    public function activities(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TicketActivity::class)->orderBy('created_at', 'desc');
+    }
 }

@@ -1,6 +1,5 @@
 <?php
 
-use App\Jobs\OptimizeUserAvatar;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Queue;
