@@ -12,6 +12,9 @@ class GetProjectTickets
      */
     public function __invoke(Project $project): Collection
     {
+        $project->load('tickets');
+        $project->tickets->load('assignees');
+        $project->tickets->load('reviewers');
         return $project->tickets;
     }
 }
