@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Models\Comment;
 use App\Models\Ticket;
+use App\Observers\CommentObserver;
+use App\Observers\TicketObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 
