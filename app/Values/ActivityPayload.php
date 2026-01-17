@@ -11,14 +11,27 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @implements Arrayable<string, mixed>
  */
-class ActivityPayload implements Castable, Arrayable, Jsonable, \JsonSerializable
+class ActivityPayload implements \JsonSerializable, Arrayable, Castable, Jsonable
 {
     /**
-     * @param array<string, mixed> $attributes
+     * @param  array<string, mixed>  $attributes
      */
     public function __construct(
         protected array $attributes = []
     ) {
+        foreach ($attributes as $key => $value) {
+            if (! is_string($key)) {
+                throw new \InvalidArgumentException('ActivityPayload attributes keys must be strings.');
+            }
+
+            if (is_array($value)) {
+                $keys = array_keys($value);
+                $diff = array_diff($keys, ['from', 'to']);
+                if (! empty($diff)) {
+                    throw new \InvalidArgumentException("ActivityPayload nested array for key '{$key}' can only contain 'from' and 'to'.");
+                }
+            }
+        }
     }
 
     /**
@@ -30,7 +43,6 @@ class ActivityPayload implements Castable, Arrayable, Jsonable, \JsonSerializabl
     }
 
     /**
-     * @param string $key
      * @return mixed
      */
     public function __get(string $key)
@@ -50,7 +62,7 @@ class ActivityPayload implements Castable, Arrayable, Jsonable, \JsonSerializabl
     {
         return (string) json_encode($this->attributes, $options);
     }
-    
+
     public function jsonSerialize(): mixed
     {
         return $this->attributes;
@@ -63,16 +75,13 @@ class ActivityPayload implements Castable, Arrayable, Jsonable, \JsonSerializabl
 class ActivityPayloadCast implements CastsAttributes
 {
     /**
-     * @param Model $model
-     * @param string $key
-     * @param mixed $value
-     * @param array<string, mixed> $attributes
+     * @param  array<string, mixed>  $attributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): ActivityPayload
     {
         $json = is_string($value) ? $value : '{}';
         $data = json_decode($json, true);
-        
+
         if (! is_array($data)) {
             $data = [];
         }
@@ -82,10 +91,7 @@ class ActivityPayloadCast implements CastsAttributes
     }
 
     /**
-     * @param Model $model
-     * @param string $key
-     * @param mixed $value
-     * @param array<string, mixed> $attributes
+     * @param  array<string, mixed>  $attributes
      */
     public function set(Model $model, string $key, mixed $value, array $attributes): ?string
     {
