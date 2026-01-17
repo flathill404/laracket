@@ -42,4 +42,17 @@ class UserAvatarControllerTest extends TestCase
 
         $response->assertStatus(422);
     }
+
+    public function test_can_delete_avatar_api(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->create(['avatar_path' => 'avatars/delete-me.png']);
+        Storage::disk('public')->put('avatars/delete-me.png', 'content');
+
+        $response = $this->actingAs($user)->deleteJson('/api/user/avatar');
+
+        $response->assertNoContent();
+        $this->assertNull($user->refresh()->avatar_path);
+        Storage::disk('public')->assertMissing('avatars/delete-me.png');
+    }
 }

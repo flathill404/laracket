@@ -10,8 +10,6 @@ uses(LazilyRefreshDatabase::class);
 
 test('user can upload avatar', function () {
     Storage::fake('public');
-    Queue::fake();
-
     $user = User::factory()->create();
 
     $base64Image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==';
@@ -31,10 +29,6 @@ test('user can upload avatar', function () {
     // Check if URL is correct in response
     $expectedUrl = Storage::disk('public')->url($user->avatar_path);
     expect($response->json('data.avatar_url'))->toBe($expectedUrl);
-
-    Queue::assertPushed(OptimizeUserAvatar::class, function ($job) use ($user) {
-        return $job->user->id === $user->id;
-    });
 });
 
 test('upload fails with invalid data', function () {

@@ -21,6 +21,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // User Scope
     Route::get('/user', [UserController::class, 'show']);
     Route::post('/user/avatar', [UserAvatarController::class, 'update']);
+    Route::delete('/user/avatar', [UserAvatarController::class, 'destroy']);
     Route::get('/users/{user}/projects', [UserProjectController::class, 'index']);
     Route::get('/users/{user}/teams', [UserTeamController::class, 'index']);
 
