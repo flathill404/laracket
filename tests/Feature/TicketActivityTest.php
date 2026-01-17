@@ -43,7 +43,7 @@ it('logs activity when ticket is updated', function () {
 
     $activity = $ticket->activities()->where('type', 'updated')->first();
 
-    expect($activity->payload)->toBe([
+    expect($activity->payload->toArray())->toBe([
         'title' => ['from' => 'Old Title', 'to' => 'New Title'],
         'status' => ['from' => 'open', 'to' => 'in_progress'],
     ]);
@@ -87,5 +87,5 @@ it('logs activity when comment is posted', function () {
     ]);
 
     $activity = $ticket->activities()->where('type', 'commented')->first();
-    expect($activity->payload)->toBe(['body' => 'This is a comment']);
+    expect($activity->payload->toArray())->toBe(['body' => 'This is a comment']);
 });
