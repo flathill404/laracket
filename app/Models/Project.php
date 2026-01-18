@@ -110,9 +110,6 @@ class Project extends Model
 
     /**
      * Scope the query to projects visible to the given user.
-     */
-    /**
-     * Scope the query to projects visible to the given user.
      *
      * @param  \Illuminate\Database\Eloquent\Builder<Project>  $query
      */
