@@ -16,12 +16,12 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 /**
  * @property string $id
  * @property string $name
- * @property string $display_name
  * @property string $email
  * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property string $password
- * @property string|null $avatar_path
  * @property string|null $remember_token
+ * @property string $display_name
+ * @property string|null $avatar_path
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
  * @property string|null $two_factor_confirmed_at
@@ -48,6 +48,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereAvatarPath($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDisplayName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmail($value)

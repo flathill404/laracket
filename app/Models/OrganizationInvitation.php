@@ -7,12 +7,25 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * @property string $id
+ * @property string $organization_id
+ * @property string $email
  * @property \App\Enums\OrganizationRole $role
- * @property-read \App\Models\Organization|null $organization
+ * @property string $token
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Organization $organization
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereOrganizationId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation whereUpdatedAt($value)
  *
  * @mixin \Eloquent
  */
