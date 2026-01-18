@@ -47,6 +47,14 @@ class Team extends Model
 
     protected $guarded = [];
 
+    protected function casts(): array
+    {
+        return [
+            'updated_at' => 'immutable_datetime',
+            'created_at' => 'immutable_datetime',
+        ];
+    }
+
     /**
      * @return BelongsTo<Organization, $this>
      */

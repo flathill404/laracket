@@ -11,7 +11,7 @@ class CommentObserver
      */
     public function created(Comment $comment): void
     {
-        if (auth()->check() && $comment->ticket) {
+        if (auth()->check()) {
             $comment->ticket->activities()->create([
                 'user_id' => auth()->id(),
                 'type' => 'commented',

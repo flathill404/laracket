@@ -34,6 +34,8 @@ class TicketActivity extends Model
     protected $guarded = [];
 
     protected $casts = [
+        'updated_at' => 'immutable_datetime',
+        'created_at' => 'immutable_datetime',
         'payload' => ActivityPayload::class,
     ];
 

@@ -49,6 +49,17 @@ class Organization extends Model
     protected $guarded = [];
 
     /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'updated_at' => 'immutable_datetime',
+            'created_at' => 'immutable_datetime',
+        ];
+    }
+
+    /**
      * @return BelongsToMany<User, $this>
      */
     public function users(): BelongsToMany

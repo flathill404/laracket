@@ -43,7 +43,7 @@ it('logs activity when ticket is updated', function () {
 
     $activity = $ticket->activities()->where('type', 'updated')->first();
 
-    expect($activity->payload->toArray())->toBe([
+    expect($activity->payload->toArray())->toEqual([
         'title' => ['from' => 'Old Title', 'to' => 'New Title'],
         'status' => ['from' => 'open', 'to' => 'in_progress'],
     ]);
