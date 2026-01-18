@@ -4,4 +4,4 @@
 awslocal s3 mb s3://local-bucket
 
 # Verify SES identity
-awslocal ses verify-email-identity --email-identity hello@example.com
+awslocal ses verify-email-identity --email-address hello@example.com
