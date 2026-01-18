@@ -5,16 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Resources\ProjectResource;
 use App\Models\User;
 use App\Queries\GetUserProjects;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Gate;
 
 class UserProjectController
 {
-    public function index(Request $request, User $user, GetUserProjects $query): AnonymousResourceCollection
+    public function index(User $user, GetUserProjects $query): AnonymousResourceCollection
     {
-        if ($request->user()?->id !== $user->id) {
-            abort(403);
-        }
+        Gate::authorize('view', $user);
 
         return ProjectResource::collection($query($user));
     }
