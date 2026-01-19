@@ -32,6 +32,11 @@ class SetupDemoData extends Command
             return;
         }
 
+        $this->info('Recreating avatars directory...');
+        Storage::disk('public')->deleteDirectory('avatars');
+        Storage::disk('public')->makeDirectory('avatars');
+        $this->info('Avatars directory recreated.');
+
         $this->info('Truncating tables...');
 
         Schema::disableForeignKeyConstraints();
