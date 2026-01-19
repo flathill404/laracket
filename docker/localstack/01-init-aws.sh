@@ -34,4 +34,4 @@ awslocal s3api put-bucket-cors --bucket local-bucket --cors-configuration '{
 }'
 
 # Verify SES identity
-awslocal ses verify-email-identity --email-address hello@example.com
+awslocal ses verify-email-identity --email-address no-reply@example.com
