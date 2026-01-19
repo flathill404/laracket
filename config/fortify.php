@@ -101,7 +101,7 @@ return [
     |
     */
 
-    'middleware' => ['web'],
+    'middleware' => [\App\Http\Middleware\HandleKeyInflection::class, 'web'],
 
     /*
     |--------------------------------------------------------------------------
