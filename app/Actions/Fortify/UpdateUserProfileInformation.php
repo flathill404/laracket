@@ -3,7 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\User;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -23,7 +23,7 @@ class UpdateUserProfileInformation implements UpdatesUserProfileInformation
             ->validateWithBag('updateProfileInformation');
 
         DB::transaction(function () use ($user, $validated) {
-            if ($validated['email'] !== $user->email && $user instanceof MustVerifyEmail) {
+            if ($validated['email'] !== $user->email) {
                 $this->updateVerifiedUser($user, $validated);
             } else {
                 $user->forceFill([
