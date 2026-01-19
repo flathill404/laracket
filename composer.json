@@ -67,6 +67,10 @@
             "@php artisan ide-helper:models -RW",
             "pint"
         ],
+        "demo": [
+            "@php artisan migrate:fresh --force",
+            "@php artisan db:demo --force"
+        ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
