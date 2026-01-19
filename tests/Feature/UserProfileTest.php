@@ -29,14 +29,14 @@ it('updates profile information', function () {
 
     $response = actingAs($user)
         ->putJson('/api/user/profile-information', [
-            'name' => 'Super Power',
+            'display_name' => 'Super Power',
             'email' => 'super_power@example.com',
         ]);
 
     $response->assertOk();
     assertDatabaseHas('users', [
         'id' => $user->id,
-        'name' => 'Super Power',
+        'display_name' => 'Super Power',
         'email' => 'super_power@example.com',
     ]);
 });
