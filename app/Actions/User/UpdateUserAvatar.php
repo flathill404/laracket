@@ -25,7 +25,7 @@ class UpdateUserAvatar
         [$decodedData, $extension] = $this->validateAndParseAvatar($data);
 
         // Generate filename
-        $filename = Str::uuid() . '.' . $extension;
+        $filename = Str::uuid().'.'.$extension;
         $path = "avatars/{$user->id}/{$filename}";
 
         // Delete old avatar if exists

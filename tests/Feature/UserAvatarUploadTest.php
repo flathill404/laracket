@@ -60,7 +60,7 @@ test('old avatar is deleted when new one is uploaded', function () {
     Queue::fake();
 
     $user = User::factory()->create();
-    $oldPath = 'avatars/' . $user->id . '/old.png';
+    $oldPath = 'avatars/'.$user->id.'/old.png';
     Storage::put($oldPath, 'content');
     $user->update(['avatar_path' => $oldPath]);
 

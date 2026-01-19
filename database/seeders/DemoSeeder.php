@@ -62,7 +62,7 @@ class DemoSeeder extends Seeder
                 'password' => bcrypt('password'),
             ];
 
-            $avatarFile = database_path('seeders/imgaes/avatars/' . $userData['name'] . '.webp');
+            $avatarFile = database_path('seeders/imgaes/avatars/'.$userData['name'].'.webp');
             if (file_exists($avatarFile)) {
                 $input['avatar_path'] = Storage::putFile('avatars', new File($avatarFile));
             }
@@ -75,8 +75,8 @@ class DemoSeeder extends Seeder
         $createOrganization = app(CreateOrganization::class);
         foreach ($users as $user) {
             $org = $createOrganization($user, [
-                'name' => 'the-' . $user->name . '-project',
-                'display_name' => 'The ' . $user->display_name . ' Project',
+                'name' => 'the-'.$user->name.'-project',
+                'display_name' => 'The '.$user->display_name.' Project',
             ]);
         }
 

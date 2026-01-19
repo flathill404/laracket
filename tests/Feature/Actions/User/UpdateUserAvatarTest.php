@@ -21,7 +21,7 @@ class UpdateUserAvatarTest extends TestCase
         $action = new UpdateUserAvatar;
 
         $input = [
-            'avatar' => 'data:image/png;base64,' . base64_encode('fake-image-content'),
+            'avatar' => 'data:image/png;base64,'.base64_encode('fake-image-content'),
         ];
 
         $updatedUser = $action($user, $input);
@@ -51,7 +51,7 @@ class UpdateUserAvatarTest extends TestCase
         $action = new UpdateUserAvatar;
 
         $input = [
-            'avatar' => 'data:image/bmp;base64,' . base64_encode('fake-image-content'),
+            'avatar' => 'data:image/bmp;base64,'.base64_encode('fake-image-content'),
         ];
 
         $this->expectException(ValidationException::class);
@@ -71,7 +71,7 @@ class UpdateUserAvatarTest extends TestCase
 
         $action = new UpdateUserAvatar;
         $input = [
-            'avatar' => 'data:image/png;base64,' . base64_encode('new-image-content'),
+            'avatar' => 'data:image/png;base64,'.base64_encode('new-image-content'),
         ];
 
         $action($user, $input);

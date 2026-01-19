@@ -17,7 +17,7 @@ class UserAvatarControllerTest extends TestCase
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->postJson('/api/user/avatar', [
-            'avatar' => 'data:image/png;base64,' . base64_encode('fake-image-content'),
+            'avatar' => 'data:image/png;base64,'.base64_encode('fake-image-content'),
         ]);
 
         $response->assertOk();
