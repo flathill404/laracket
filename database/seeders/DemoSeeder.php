@@ -13,6 +13,8 @@ use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Http\File;
+use Illuminate\Support\Facades\Storage;
 
 class DemoSeeder extends Seeder
 {
@@ -41,7 +43,7 @@ class DemoSeeder extends Seeder
 
         $jeisonAvatarFile = database_path('seeders/imgaes/avatars/jeison.webp');
         if (file_exists($jeisonAvatarFile)) {
-            $jeisonData['avatar_path'] = \Illuminate\Support\Facades\Storage::disk('public')->putFile('avatars', new \Illuminate\Http\File($jeisonAvatarFile));
+            $jeisonData['avatar_path'] = Storage::disk('public')->putFile('avatars', new File($jeisonAvatarFile));
         }
 
         $jeison = User::factory()->create($jeisonData);
@@ -62,7 +64,7 @@ class DemoSeeder extends Seeder
 
             $avatarFile = database_path('seeders/imgaes/avatars/'.$userData['name'].'.webp');
             if (file_exists($avatarFile)) {
-                $input['avatar_path'] = \Illuminate\Support\Facades\Storage::disk('public')->putFile('avatars', new \Illuminate\Http\File($avatarFile));
+                $input['avatar_path'] = Storage::disk('public')->putFile('avatars', new File($avatarFile));
             }
 
             $user = User::factory()->create($input);

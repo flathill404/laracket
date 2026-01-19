@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class SetupDemoData extends Command
 {
@@ -55,6 +56,10 @@ class SetupDemoData extends Command
         }
 
         Schema::enableForeignKeyConstraints();
+
+        Storage::disk('public')->deleteDirectory('avatars');
+        Storage::disk('public')->makeDirectory('avatars');
+        $this->info('Avatars directory recreated.');
 
         $this->info('Tables truncated.');
         $this->info('Seeding demo data...');
