@@ -23,7 +23,7 @@ class UserResource extends JsonResource
             'name' => $this->name,
             'display_name' => $this->display_name,
             'email' => $this->email,
-            'avatar_url' => $this->avatar_path ? Storage::disk('public')->url($this->avatar_path) : null,
+            'avatar_url' => $this->avatar_path ? Storage::url($this->avatar_path) : null,
             'created_at' => $this->created_at,
             'role' => $this->whenPivotLoaded('organization_user', function () {
                 return $this->pivot->role; // @phpstan-ignore-line

@@ -33,8 +33,8 @@ class SetupDemoData extends Command
         }
 
         $this->info('Recreating avatars directory...');
-        Storage::disk('public')->deleteDirectory('avatars');
-        Storage::disk('public')->makeDirectory('avatars');
+        Storage::deleteDirectory('avatars');
+        Storage::makeDirectory('avatars');
         $this->info('Avatars directory recreated.');
 
         $this->info('Truncating tables...');
@@ -62,8 +62,8 @@ class SetupDemoData extends Command
 
         Schema::enableForeignKeyConstraints();
 
-        Storage::disk('public')->deleteDirectory('avatars');
-        Storage::disk('public')->makeDirectory('avatars');
+        Storage::deleteDirectory('avatars');
+        Storage::makeDirectory('avatars');
         $this->info('Avatars directory recreated.');
 
         $this->info('Tables truncated.');

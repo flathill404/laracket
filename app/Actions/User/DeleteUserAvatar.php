@@ -13,8 +13,8 @@ class DeleteUserAvatar
             return;
         }
 
-        if (Storage::disk('public')->exists($user->avatar_path)) {
-            Storage::disk('public')->delete($user->avatar_path);
+        if (Storage::exists($user->avatar_path)) {
+            Storage::delete($user->avatar_path);
         }
 
         $user->forceFill([

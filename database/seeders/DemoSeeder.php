@@ -43,7 +43,7 @@ class DemoSeeder extends Seeder
 
         $jeisonAvatarFile = database_path('seeders/imgaes/avatars/jeison.webp');
         if (file_exists($jeisonAvatarFile)) {
-            $jeisonData['avatar_path'] = Storage::disk('public')->putFile('avatars', new File($jeisonAvatarFile));
+            $jeisonData['avatar_path'] = Storage::putFile('avatars', new File($jeisonAvatarFile));
         }
 
         $jeison = User::factory()->create($jeisonData);
@@ -62,9 +62,9 @@ class DemoSeeder extends Seeder
                 'password' => bcrypt('password'),
             ];
 
-            $avatarFile = database_path('seeders/imgaes/avatars/'.$userData['name'].'.webp');
+            $avatarFile = database_path('seeders/imgaes/avatars/' . $userData['name'] . '.webp');
             if (file_exists($avatarFile)) {
-                $input['avatar_path'] = Storage::disk('public')->putFile('avatars', new File($avatarFile));
+                $input['avatar_path'] = Storage::putFile('avatars', new File($avatarFile));
             }
 
             $user = User::factory()->create($input);
@@ -75,8 +75,8 @@ class DemoSeeder extends Seeder
         $createOrganization = app(CreateOrganization::class);
         foreach ($users as $user) {
             $org = $createOrganization($user, [
-                'name' => 'the-'.$user->name.'-project',
-                'display_name' => 'The '.$user->display_name.' Project',
+                'name' => 'the-' . $user->name . '-project',
+                'display_name' => 'The ' . $user->display_name . ' Project',
             ]);
         }
 

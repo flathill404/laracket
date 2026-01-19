@@ -25,16 +25,16 @@ class UpdateUserAvatar
         [$decodedData, $extension] = $this->validateAndParseAvatar($data);
 
         // Generate filename
-        $filename = Str::uuid().'.'.$extension;
+        $filename = Str::uuid() . '.' . $extension;
         $path = "avatars/{$user->id}/{$filename}";
 
         // Delete old avatar if exists
-        if ($user->avatar_path && Storage::disk('public')->exists($user->avatar_path)) {
-            Storage::disk('public')->delete($user->avatar_path);
+        if ($user->avatar_path && Storage::exists($user->avatar_path)) {
+            Storage::delete($user->avatar_path);
         }
 
         // Store new avatar
-        Storage::disk('public')->put($path, $decodedData);
+        Storage::put($path, $decodedData);
 
         // Update user
         $user->forceFill([

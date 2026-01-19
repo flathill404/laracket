@@ -15,19 +15,19 @@ class UpdateUserAvatarTest extends TestCase
 
     public function test_can_update_user_avatar(): void
     {
-        Storage::fake('public');
+        Storage::fake();
 
         $user = User::factory()->create();
         $action = new UpdateUserAvatar;
 
         $input = [
-            'avatar' => 'data:image/png;base64,'.base64_encode('fake-image-content'),
+            'avatar' => 'data:image/png;base64,' . base64_encode('fake-image-content'),
         ];
 
         $updatedUser = $action($user, $input);
 
         $this->assertNotNull($updatedUser->avatar_path);
-        Storage::disk('public')->assertExists($updatedUser->avatar_path);
+        Storage::assertExists($updatedUser->avatar_path);
     }
 
     public function test_throws_validation_exception_for_invalid_data_uri(): void
@@ -51,7 +51,7 @@ class UpdateUserAvatarTest extends TestCase
         $action = new UpdateUserAvatar;
 
         $input = [
-            'avatar' => 'data:image/bmp;base64,'.base64_encode('fake-image-content'),
+            'avatar' => 'data:image/bmp;base64,' . base64_encode('fake-image-content'),
         ];
 
         $this->expectException(ValidationException::class);
@@ -62,21 +62,21 @@ class UpdateUserAvatarTest extends TestCase
 
     public function test_deletes_old_avatar_when_updating(): void
     {
-        Storage::fake('public');
+        Storage::fake();
 
         $user = User::factory()->create([
             'avatar_path' => 'avatars/old-avatar.png',
         ]);
-        Storage::disk('public')->put('avatars/old-avatar.png', 'old-content');
+        Storage::put('avatars/old-avatar.png', 'old-content');
 
         $action = new UpdateUserAvatar;
         $input = [
-            'avatar' => 'data:image/png;base64,'.base64_encode('new-image-content'),
+            'avatar' => 'data:image/png;base64,' . base64_encode('new-image-content'),
         ];
 
         $action($user, $input);
 
-        Storage::disk('public')->assertMissing('avatars/old-avatar.png');
-        Storage::disk('public')->assertExists($user->refresh()->avatar_path);
+        Storage::assertMissing('avatars/old-avatar.png');
+        Storage::assertExists($user->refresh()->avatar_path);
     }
 }

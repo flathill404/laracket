@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Storage;
 uses(LazilyRefreshDatabase::class);
 
 test('user can upload avatar', function () {
-    Storage::fake('public');
+    Storage::fake();
     $user = User::factory()->create();
 
     $base64Image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==';
@@ -23,10 +23,10 @@ test('user can upload avatar', function () {
 
     $user->refresh();
     expect($user->avatar_path)->not->toBeNull();
-    Storage::disk('public')->assertExists($user->avatar_path);
+    Storage::assertExists($user->avatar_path);
 
     // Check if URL is correct in response
-    $expectedUrl = Storage::disk('public')->url($user->avatar_path);
+    $expectedUrl = Storage::url($user->avatar_path);
     expect($response->json('data.avatar_url'))->toBe($expectedUrl);
 });
 
@@ -56,12 +56,12 @@ test('upload fails with unsupported image type', function () {
 });
 
 test('old avatar is deleted when new one is uploaded', function () {
-    Storage::fake('public');
+    Storage::fake();
     Queue::fake();
 
     $user = User::factory()->create();
-    $oldPath = 'avatars/'.$user->id.'/old.png';
-    Storage::disk('public')->put($oldPath, 'content');
+    $oldPath = 'avatars/' . $user->id . '/old.png';
+    Storage::put($oldPath, 'content');
     $user->update(['avatar_path' => $oldPath]);
 
     $base64Image = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==';
@@ -71,7 +71,7 @@ test('old avatar is deleted when new one is uploaded', function () {
             'avatar' => $base64Image,
         ]);
 
-    Storage::disk('public')->assertMissing($oldPath);
+    Storage::assertMissing($oldPath);
     $user->refresh();
-    Storage::disk('public')->assertExists($user->avatar_path);
+    Storage::assertExists($user->avatar_path);
 });

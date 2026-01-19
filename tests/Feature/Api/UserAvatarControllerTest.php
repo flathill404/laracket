@@ -13,11 +13,11 @@ class UserAvatarControllerTest extends TestCase
 
     public function test_can_update_avatar_api(): void
     {
-        Storage::fake('public');
+        Storage::fake();
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->postJson('/api/user/avatar', [
-            'avatar' => 'data:image/png;base64,'.base64_encode('fake-image-content'),
+            'avatar' => 'data:image/png;base64,' . base64_encode('fake-image-content'),
         ]);
 
         $response->assertOk();
@@ -45,14 +45,14 @@ class UserAvatarControllerTest extends TestCase
 
     public function test_can_delete_avatar_api(): void
     {
-        Storage::fake('public');
+        Storage::fake();
         $user = User::factory()->create(['avatar_path' => 'avatars/delete-me.png']);
-        Storage::disk('public')->put('avatars/delete-me.png', 'content');
+        Storage::put('avatars/delete-me.png', 'content');
 
         $response = $this->actingAs($user)->deleteJson('/api/user/avatar');
 
         $response->assertNoContent();
         $this->assertNull($user->refresh()->avatar_path);
-        Storage::disk('public')->assertMissing('avatars/delete-me.png');
+        Storage::assertMissing('avatars/delete-me.png');
     }
 }

@@ -14,24 +14,24 @@ class DeleteUserAvatarTest extends TestCase
 
     public function test_can_delete_user_avatar(): void
     {
-        Storage::fake('public');
+        Storage::fake();
 
         $user = User::factory()->create([
             'avatar_path' => 'avatars/test-avatar.png',
         ]);
-        Storage::disk('public')->put('avatars/test-avatar.png', 'content');
+        Storage::put('avatars/test-avatar.png', 'content');
 
         $action = new DeleteUserAvatar;
 
         $action($user);
 
         $this->assertNull($user->refresh()->avatar_path);
-        Storage::disk('public')->assertMissing('avatars/test-avatar.png');
+        Storage::assertMissing('avatars/test-avatar.png');
     }
 
     public function test_handles_user_without_avatar(): void
     {
-        Storage::fake('public');
+        Storage::fake();
 
         $user = User::factory()->create([
             'avatar_path' => null,
