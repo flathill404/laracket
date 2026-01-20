@@ -3,41 +3,31 @@
 namespace App\Queries;
 
 use App\Models\Project;
+use App\Values\TicketQuery;
 
 class GetProjectTickets
 {
-    /**
-     * @param  array<\App\Enums\TicketStatus>  $statuses
-     */
-    public function __invoke(Project $project, array $statuses = [], ?string $sort = 'id', int $perPage = 25): \Illuminate\Contracts\Pagination\CursorPaginator
+    public function __invoke(Project $project, TicketQuery $ticketQuery): \Illuminate\Contracts\Pagination\CursorPaginator
     {
         $query = $project->tickets()
             ->with(['assignees', 'reviewers']);
 
-        if (! empty($statuses)) {
-            $query->whereIn('status', $statuses);
+        if (! empty($ticketQuery->statuses)) {
+            $query->whereIn('status', $ticketQuery->statuses);
         }
 
         // Sorting
         $allowedSorts = ['id', 'created_at', 'updated_at', 'due_date'];
-        $direction = 'asc';
 
-        if ($sort) {
-            if (str_starts_with($sort, '-')) {
-                $direction = 'desc';
-                $sort = substr($sort, 1);
-            }
-
-            if (in_array($sort, $allowedSorts)) {
-                $query->orderBy($sort, $direction);
-            }
+        if ($ticketQuery->sort && in_array($ticketQuery->sort, $allowedSorts)) {
+            $query->orderBy($ticketQuery->sort, $ticketQuery->direction);
         }
 
         // Ensure deterministic order
-        if ($sort !== 'id') {
+        if ($ticketQuery->sort !== 'id') {
             $query->orderBy('id', 'asc');
         }
 
-        return $query->cursorPaginate($perPage);
+        return $query->cursorPaginate($ticketQuery->perPage);
     }
 }

@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Ticket\CreateTicket;
 use App\Actions\Ticket\DeleteTicket;
 use App\Actions\Ticket\UpdateTicket;
-use App\Enums\TicketStatus;
 use App\Http\Resources\TicketResource;
 use App\Models\Project;
 use App\Models\Ticket;
 use App\Queries\GetProjectTickets;
 use App\Queries\GetTicketDetail;
+use App\Values\TicketQuery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -20,23 +20,9 @@ class TicketController
     {
         Gate::authorize('view', $project);
 
-        /** @var string|array<string>|null $statusInput */
-        $statusInput = $request->input('status');
-        $statuses = TicketStatus::fromValues($statusInput);
+        $ticketQuery = new TicketQuery($request->query());
 
-        // Validation for per_page
-        $perPage = (int) $request->input('per_page', 25);
-        if ($perPage < 1) {
-            $perPage = 1;
-        }
-        if ($perPage > 100) {
-            $perPage = 100;
-        }
-
-        /** @var string|null $sort */
-        $sort = $request->input('sort');
-
-        $tickets = $query($project, $statuses, $sort, $perPage);
+        $tickets = $query($project, $ticketQuery);
 
         return TicketResource::collection($tickets);
     }

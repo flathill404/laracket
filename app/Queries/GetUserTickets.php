@@ -5,14 +5,12 @@ namespace App\Queries;
 use App\Models\Project;
 use App\Models\Ticket;
 use App\Models\User;
+use App\Values\TicketQuery;
 use Illuminate\Database\Eloquent\Builder;
 
 class GetUserTickets
 {
-    /**
-     * @param  array<\App\Enums\TicketStatus>  $statuses
-     */
-    public function __invoke(User $user, array $statuses = [], ?string $sort = 'id', int $perPage = 25): \Illuminate\Contracts\Pagination\CursorPaginator
+    public function __invoke(User $user, TicketQuery $ticketQuery): \Illuminate\Contracts\Pagination\CursorPaginator
     {
         $query = Ticket::query()
             ->whereHas('project', function ($query) use ($user) {
@@ -21,28 +19,20 @@ class GetUserTickets
                 $query->visibleToUser($user);
             })
             ->with(['project', 'assignees', 'reviewers'])
-            ->when($statuses, fn (Builder $query) => $query->whereIn('status', $statuses));
+            ->when($ticketQuery->statuses, fn (Builder $query) => $query->whereIn('status', $ticketQuery->statuses));
 
         // Sorting
         $allowedSorts = ['id', 'created_at', 'updated_at', 'due_date'];
-        $direction = 'asc';
 
-        if ($sort) {
-            if (str_starts_with($sort, '-')) {
-                $direction = 'desc';
-                $sort = substr($sort, 1);
-            }
-
-            if (in_array($sort, $allowedSorts)) {
-                $query->orderBy($sort, $direction);
-            }
+        if ($ticketQuery->sort && in_array($ticketQuery->sort, $allowedSorts)) {
+            $query->orderBy($ticketQuery->sort, $ticketQuery->direction);
         }
 
         // Ensure deterministic order
-        if ($sort !== 'id') {
+        if ($ticketQuery->sort !== 'id') {
             $query->orderBy('id', 'asc');
         }
 
-        return $query->cursorPaginate($perPage);
+        return $query->cursorPaginate($ticketQuery->perPage);
     }
 }
