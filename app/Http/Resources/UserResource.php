@@ -18,13 +18,13 @@ class UserResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $isOwner = $request->user()?->id === $this->id;
+
         return [
             'id' => $this->id,
             'name' => $this->name,
             'display_name' => $this->display_name,
             'email' => $this->email,
-            'email_verified_at' => $this->email_verified_at,
-            'two_factor_status' => $this->twoFactorStatus(),
             'avatar_url' => $this->avatar_path ? Storage::url($this->avatar_path) : null,
             'created_at' => $this->created_at,
             'role' => $this->whenPivotLoaded('organization_user', function () {
@@ -33,6 +33,14 @@ class UserResource extends JsonResource
             'team_role' => $this->whenPivotLoaded('team_user', function () {
                 return $this->pivot->role; // @phpstan-ignore-line
             }),
+
+            $this->mergeWhen(
+                $isOwner,
+                [
+                    'email_verified_at' => $this->email_verified_at,
+                    'two_factor_status' => $this->twoFactorStatus(),
+                ],
+            ),
         ];
     }
 }
