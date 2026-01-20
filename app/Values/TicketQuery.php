@@ -16,12 +16,15 @@ class TicketQuery
     public private(set) int $perPage = 25;
 
     /**
-     * @param  array<string, mixed>  $params
+     * @param  array<mixed>  $params
      */
     public function __construct(array $params)
     {
-        $this->statuses = TicketStatus::fromValues($params['status'] ?? null);
+        /** @var string|array<string>|null $status */
+        $status = $params['status'] ?? null;
+        $this->statuses = TicketStatus::fromValues($status);
 
+        /** @var mixed $sort */
         $sort = $params['sort'] ?? null;
         $allowedSorts = ['id', 'created_at', 'updated_at', 'due_date'];
 
@@ -40,7 +43,10 @@ class TicketQuery
             }
         }
 
-        $perPage = (int) ($params['per_page'] ?? 25);
+        /** @var mixed $perPageInput */
+        $perPageInput = $params['per_page'] ?? 25;
+        $perPage = is_numeric($perPageInput) ? (int) $perPageInput : 25;
+
         $this->perPage = max(1, min(100, $perPage));
     }
 }

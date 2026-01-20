@@ -17,7 +17,7 @@ class TeamTicketsController
             abort(403);
         }
 
-        $ticketQuery = new TicketQuery($request->query());
+        $ticketQuery = new TicketQuery((array) $request->query());
 
         $tickets = $query($team, $ticketQuery);
 

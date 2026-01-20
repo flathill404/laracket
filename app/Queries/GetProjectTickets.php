@@ -7,6 +7,9 @@ use App\Values\TicketQuery;
 
 class GetProjectTickets
 {
+    /**
+     * @return \Illuminate\Contracts\Pagination\CursorPaginator<int, \App\Models\Ticket>
+     */
     public function __invoke(Project $project, TicketQuery $ticketQuery): \Illuminate\Contracts\Pagination\CursorPaginator
     {
         $query = $project->tickets()

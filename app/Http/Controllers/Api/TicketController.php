@@ -20,7 +20,7 @@ class TicketController
     {
         Gate::authorize('view', $project);
 
-        $ticketQuery = new TicketQuery($request->query());
+        $ticketQuery = new TicketQuery((array) $request->query());
 
         $tickets = $query($project, $ticketQuery);
 

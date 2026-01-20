@@ -10,6 +10,9 @@ use Illuminate\Database\Eloquent\Builder;
 
 class GetUserTickets
 {
+    /**
+     * @return \Illuminate\Contracts\Pagination\CursorPaginator<int, \App\Models\Ticket>
+     */
     public function __invoke(User $user, TicketQuery $ticketQuery): \Illuminate\Contracts\Pagination\CursorPaginator
     {
         $query = Ticket::query()
