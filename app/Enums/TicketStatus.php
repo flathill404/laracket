@@ -19,7 +19,7 @@ enum TicketStatus: string
         $values = (array) $values;
 
         return collect($values)
-            ->map(fn(string $s) => self::tryFrom($s))
+            ->map(fn (string $s) => self::tryFrom($s))
             ->filter()
             ->values()
             ->all();
