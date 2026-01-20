@@ -4,14 +4,16 @@ namespace App\Queries;
 
 use App\Models\Team;
 use App\Models\Ticket;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class GetTeamTickets
 {
     /**
+     * @param  array<\App\Enums\TicketStatus>  $statuses
      * @return Collection<int, Ticket>
      */
-    public function __invoke(Team $team): Collection
+    public function __invoke(Team $team, array $statuses = []): Collection
     {
         $query = Ticket::query()
             ->whereHas('project', function ($query) use ($team) {
@@ -19,7 +21,8 @@ class GetTeamTickets
                     $q->where('teams.id', $team->id);
                 });
             })
-            ->with(['project', 'assignees', 'reviewers']);
+            ->with(['project', 'assignees', 'reviewers'])
+            ->when($statuses, fn (Builder $query) => $query->whereIn('status', $statuses));
 
         return $query->get();
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\TicketStatus;
 use App\Http\Resources\TicketResource;
 use App\Models\Team;
 use App\Queries\GetTeamTickets;
@@ -16,6 +17,10 @@ class TeamTicketsController
             abort(403);
         }
 
-        return TicketResource::collection($query($team));
+        /** @var string|array<string>|null $statusInput */
+        $statusInput = $request->input('status');
+        $statuses = TicketStatus::fromValues($statusInput);
+
+        return TicketResource::collection($query($team, $statuses));
     }
 }

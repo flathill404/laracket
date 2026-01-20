@@ -23,7 +23,7 @@ class GetUserTickets
                 $query->visibleToUser($user);
             })
             ->with(['project', 'assignees', 'reviewers'])
-            ->when($statuses, fn(Builder $query) => $query->whereIn('status', $statuses));
+            ->when($statuses, fn (Builder $query) => $query->whereIn('status', $statuses));
 
         return $query->get();
     }

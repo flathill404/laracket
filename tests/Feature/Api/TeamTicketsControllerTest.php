@@ -14,6 +14,41 @@ class TeamTicketsControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_team_member_can_list_tickets_filtered_by_status(): void
+    {
+        $organization = Organization::factory()->create();
+        $user = User::factory()->create();
+        $project = Project::factory()->for($organization)->create();
+        $team = Team::factory()->for($organization)->create();
+
+        // User is member of team
+        $team->members()->attach($user, ['role' => \App\Enums\TeamRole::Member]);
+
+        // Team is assigned to project
+        $project->assignedTeams()->attach($team);
+
+        // Tickets
+        $ticketOpen = Ticket::factory()->for($project)->create(['status' => \App\Enums\TicketStatus::Open]);
+        $ticketInProgress = Ticket::factory()->for($project)->create(['status' => \App\Enums\TicketStatus::InProgress]);
+        $ticketClosed = Ticket::factory()->for($project)->create(['status' => \App\Enums\TicketStatus::Closed]);
+
+        $response = $this->actingAs($user)->getJson("/api/teams/{$team->id}/tickets?status=open");
+
+        $response->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $ticketOpen->id);
+
+        $responseMultiple = $this->actingAs($user)->getJson("/api/teams/{$team->id}/tickets?status[]=open&status[]=in_progress");
+
+        $responseMultiple->assertOk()
+            ->assertJsonCount(2, 'data');
+
+        $ids = collect($responseMultiple->json('data'))->pluck('id');
+        $this->assertTrue($ids->contains($ticketOpen->id));
+        $this->assertTrue($ids->contains($ticketInProgress->id));
+        $this->assertFalse($ids->contains($ticketClosed->id));
+    }
+
     public function test_team_member_can_list_tickets_from_project_assigned_to_team(): void
     {
         $organization = Organization::factory()->create();
