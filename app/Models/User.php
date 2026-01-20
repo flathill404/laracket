@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\TicketUserType;
+use App\Enums\TwoFactorStatus;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -218,5 +219,18 @@ class User extends Authenticatable implements MustVerifyEmail
             ->where('team_id', $team->id)
             ->wherePivot('role', \App\Enums\TeamRole::Leader)
             ->exists();
+    }
+
+    public function twoFactorStatus(): TwoFactorStatus
+    {
+        if (is_null($this->two_factor_secret)) {
+            return TwoFactorStatus::Disabled;
+        }
+
+        if (is_null($this->two_factor_confirmed_at)) {
+            return TwoFactorStatus::Pending;
+        }
+
+        return TwoFactorStatus::Enabled;
     }
 }
