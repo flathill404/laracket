@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\TicketStatus;
 use App\Http\Resources\TicketResource;
 use App\Models\User;
 use App\Queries\GetUserTickets;
@@ -16,7 +17,9 @@ class UserTicketsController
             abort(403);
         }
 
-        $statuses = \App\Enums\TicketStatus::fromValues($request->input('status'));
+        /** @var string|array<string>|null $statusInput */
+        $statusInput = $request->input('status');
+        $statuses = TicketStatus::fromValues($statusInput);
 
         return TicketResource::collection($query($user, $statuses));
     }

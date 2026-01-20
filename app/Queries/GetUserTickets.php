@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 class GetUserTickets
 {
     /**
-     * @param  array<string>  $statuses
+     * @param  array<\App\Enums\TicketStatus>  $statuses
      * @return Collection<int, Ticket>
      */
     public function __invoke(User $user, array $statuses = []): Collection
@@ -23,7 +23,7 @@ class GetUserTickets
                 $query->visibleToUser($user);
             })
             ->with(['project', 'assignees', 'reviewers'])
-            ->when($statuses, fn (Builder $query) => $query->whereIn('status', $statuses));
+            ->when($statuses, fn(Builder $query) => $query->whereIn('status', $statuses));
 
         return $query->get();
     }

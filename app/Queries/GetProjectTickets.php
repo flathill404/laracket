@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 class GetProjectTickets
 {
     /**
-     * @param  array<int, \App\Enums\TicketStatus>  $statuses
+     * @param  array<\App\Enums\TicketStatus>  $statuses
      * @return Collection<int, \App\Models\Ticket>
      */
     public function __invoke(Project $project, array $statuses = []): Collection

@@ -20,7 +20,9 @@ class TicketController
     {
         Gate::authorize('view', $project);
 
-        $statuses = TicketStatus::fromValues($request->input('status'));
+        /** @var string|array<string>|null $statusInput */
+        $statusInput = $request->input('status');
+        $statuses = TicketStatus::fromValues($statusInput);
 
         $tickets = $query($project, $statuses);
 
