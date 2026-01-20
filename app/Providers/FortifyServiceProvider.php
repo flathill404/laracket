@@ -27,6 +27,7 @@ class FortifyServiceProvider extends ServiceProvider
         {
             public function toResponse($request): RedirectResponse
             {
+                /** @var string $frontendUrl */
                 $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
 
                 return redirect()->away($frontendUrl.'/dashboard?verified=true');

@@ -26,13 +26,13 @@ class HandleKeyInflection
         $response = $next($request);
 
         if ($isCamelRequested && $response instanceof JsonResponse) {
-            /** @var array<mixed> $data */
+            /** @var mixed $data */
             $data = $response->getData(true);
 
             // Some responses, such as those from Laravel Fortify, may return objects (e.g., Eloquent models) instead of arrays.
             // In such cases, getData(true) returns the object as-is, so we need to convert it to an array.
             if (! is_array($data)) {
-                $data = json_decode(json_encode($data), true);
+                $data = json_decode((string) json_encode($data), true);
             }
 
             if (is_array($data)) {
