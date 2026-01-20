@@ -25,7 +25,7 @@ class UpdateUserAvatar
         [$decodedData, $extension] = $this->validateAndParseAvatar($data);
 
         // Generate filename
-        $filename = Str::uuid().'.'.$extension;
+        $filename = Str::uuid() . '.' . $extension;
         $path = "avatars/{$user->id}/{$filename}";
 
         // Delete old avatar if exists
@@ -69,7 +69,7 @@ class UpdateUserAvatar
         }
 
         $dataContent = substr($data, strpos($data, ',') + 1);
-        $extension = strtolower($type[1]); // jpg, png, gif
+        $extension = strtolower($type[1]);
 
         if (! in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
             throw ValidationException::withMessages([
