@@ -2,20 +2,26 @@
 
 namespace App\Queries;
 
+use App\Enums\TicketStatus;
 use App\Models\Project;
 use Illuminate\Database\Eloquent\Collection;
 
 class GetProjectTickets
 {
     /**
+     * @param  array<int, \App\Enums\TicketStatus>|\App\Enums\TicketStatus|null  $statuses
      * @return Collection<int, \App\Models\Ticket>
      */
-    public function __invoke(Project $project): Collection
+    public function __invoke(Project $project, array|TicketStatus|null $statuses = null): Collection
     {
-        $project->load('tickets');
-        $project->tickets->load('assignees');
-        $project->tickets->load('reviewers');
+        $query = $project->tickets()
+            ->with(['assignees', 'reviewers']);
 
-        return $project->tickets;
+        if ($statuses) {
+            $statuses = is_array($statuses) ? $statuses : [$statuses];
+            $query->whereIn('status', $statuses);
+        }
+
+        return $query->get();
     }
 }

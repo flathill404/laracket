@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Ticket\CreateTicket;
 use App\Actions\Ticket\DeleteTicket;
 use App\Actions\Ticket\UpdateTicket;
+use App\Enums\TicketStatus;
 use App\Http\Resources\TicketResource;
 use App\Models\Project;
 use App\Models\Ticket;
@@ -15,11 +16,13 @@ use Illuminate\Support\Facades\Gate;
 
 class TicketController
 {
-    public function index(Project $project, GetProjectTickets $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Request $request, Project $project, GetProjectTickets $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
         Gate::authorize('view', $project);
 
-        $tickets = $query($project);
+        $statuses = TicketStatus::fromValues($request->input('status'));
+
+        $tickets = $query($project, $statuses);
 
         return TicketResource::collection($tickets);
     }
