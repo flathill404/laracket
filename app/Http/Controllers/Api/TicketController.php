@@ -24,7 +24,19 @@ class TicketController
         $statusInput = $request->input('status');
         $statuses = TicketStatus::fromValues($statusInput);
 
-        $tickets = $query($project, $statuses);
+        // Validation for per_page
+        $perPage = (int) $request->input('per_page', 25);
+        if ($perPage < 1) {
+            $perPage = 1;
+        }
+        if ($perPage > 100) {
+            $perPage = 100;
+        }
+
+        /** @var string|null $sort */
+        $sort = $request->input('sort');
+
+        $tickets = $query($project, $statuses, $sort, $perPage);
 
         return TicketResource::collection($tickets);
     }

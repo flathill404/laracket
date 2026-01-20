@@ -21,6 +21,18 @@ class TeamTicketsController
         $statusInput = $request->input('status');
         $statuses = TicketStatus::fromValues($statusInput);
 
-        return TicketResource::collection($query($team, $statuses));
+        // Validation for per_page
+        $perPage = (int) $request->input('per_page', 25);
+        if ($perPage < 1) {
+            $perPage = 1;
+        }
+        if ($perPage > 100) {
+            $perPage = 100;
+        }
+
+        /** @var string|null $sort */
+        $sort = $request->input('sort');
+
+        return TicketResource::collection($query($team, $statuses, $sort, $perPage));
     }
 }

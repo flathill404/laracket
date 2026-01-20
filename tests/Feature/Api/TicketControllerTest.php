@@ -48,6 +48,37 @@ describe('index', function () {
             ]);
     });
 
+    it('can paginate and sort tickets', function () {
+        $organization = Organization::factory()->create();
+        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+
+        $project = Project::factory()->create(['organization_id' => $organization->id]);
+        $project->members()->attach($this->user);
+
+        // Create tickets with specific dates
+        $ticket1 = Ticket::factory()->for($project)->create(['created_at' => now()->subDays(3)]);
+        $ticket2 = Ticket::factory()->for($project)->create(['created_at' => now()->subDays(1)]);
+        $ticket3 = Ticket::factory()->for($project)->create(['created_at' => now()->subDays(2)]);
+
+        // Sort asc
+        $responseAsc = getJson("/api/projects/{$project->id}/tickets?sort=created_at&per_page=10");
+        $responseAsc->assertOk();
+        $idsAsc = collect($responseAsc->json('data'))->pluck('id');
+        $this->assertEquals([$ticket1->id, $ticket3->id, $ticket2->id], $idsAsc->toArray());
+
+        // Sort desc
+        $responseDesc = getJson("/api/projects/{$project->id}/tickets?sort=-created_at&per_page=10");
+        $responseDesc->assertOk();
+        $idsDesc = collect($responseDesc->json('data'))->pluck('id');
+        $this->assertEquals([$ticket2->id, $ticket3->id, $ticket1->id], $idsDesc->toArray());
+
+        // Pagination
+        $responsePage = getJson("/api/projects/{$project->id}/tickets?sort=id&per_page=2");
+        $responsePage->assertOk()->assertJsonCount(2, 'data');
+        $this->assertArrayHasKey('meta', $responsePage->json());
+        $this->assertArrayHasKey('links', $responsePage->json());
+    });
+
     it('denies access if not a member', function () {
         $organization = Organization::factory()->create();
         $project = Project::factory()->create([
