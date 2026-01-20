@@ -7,14 +7,6 @@ services:
       - '8000:8000'
     volumes:
       - .:/var/www/html
-    environment:
-      DB_CONNECTION: mysql
-      DB_HOST: db
-      DB_PORT: 3306
-      DB_DATABASE: laracket
-      DB_USERNAME: user
-      DB_PASSWORD: password
-      REDIS_HOST: redis
   db:
     image: 'mysql:8.4'
     ports:
