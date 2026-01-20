@@ -28,7 +28,7 @@ class SetupDemoData extends Command
      */
     public function handle(): void
     {
-        if (! $this->confirm('This will truncate all data. Do you wish to continue?', $this->option('force'))) {
+        if (! $this->option('force') && ! $this->confirm('This will truncate all data. Do you wish to continue?')) {
             return;
         }
 
