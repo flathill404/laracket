@@ -23,12 +23,20 @@ class TicketQuery
         $this->statuses = TicketStatus::fromValues($params['status'] ?? null);
 
         $sort = $params['sort'] ?? null;
+        $allowedSorts = ['id', 'created_at', 'updated_at', 'due_date'];
+
         if (is_string($sort)) {
+            $column = $sort;
+            $direction = 'asc';
+
             if (str_starts_with($sort, '-')) {
-                $this->direction = 'desc';
-                $this->sort = substr($sort, 1);
-            } else {
-                $this->sort = $sort;
+                $direction = 'desc';
+                $column = substr($sort, 1);
+            }
+
+            if (in_array($column, $allowedSorts)) {
+                $this->sort = $column;
+                $this->direction = $direction;
             }
         }
 

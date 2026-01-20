@@ -20,10 +20,7 @@ class GetTeamTickets
             ->with(['project', 'assignees', 'reviewers'])
             ->when($ticketQuery->statuses, fn (Builder $query) => $query->whereIn('status', $ticketQuery->statuses));
 
-        // Sorting
-        $allowedSorts = ['id', 'created_at', 'updated_at', 'due_date'];
-
-        if ($ticketQuery->sort && in_array($ticketQuery->sort, $allowedSorts)) {
+        if ($ticketQuery->sort) {
             $query->orderBy($ticketQuery->sort, $ticketQuery->direction);
         }
 
