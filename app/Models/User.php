@@ -103,6 +103,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'immutable_datetime',
             'password' => 'hashed',
+            'two_factor_confirmed_at' => 'immutable_datetime',
             'updated_at' => 'immutable_datetime',
             'created_at' => 'immutable_datetime',
         ];

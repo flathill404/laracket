@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y \
   && pecl install pcov \
   && docker-php-ext-enable pcov
 
+RUN git config --global --add safe.directory /var/www/html
+
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 CMD ["php", "artisan", "serve", "--host=0.0.0.0"]
