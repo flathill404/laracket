@@ -13,7 +13,7 @@ class GetUserTeams
      */
     public function __invoke(User $user): Collection
     {
-        return Team::query()
+        $query = Team::query()
             ->where(function ($query) use ($user) {
                 // Direct Membership
                 $query->whereHas('users', function ($q) use ($user) {
@@ -28,7 +28,8 @@ class GetUserTeams
                                 ->where('role', \App\Enums\OrganizationRole::Admin);
                         });
                 });
-            })
-            ->get();
+            });
+
+        return $query->get();
     }
 }

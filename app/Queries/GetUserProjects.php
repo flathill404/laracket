@@ -13,8 +13,9 @@ class GetUserProjects
      */
     public function __invoke(User $user): Collection
     {
-        return Project::query()
-            ->visibleToUser($user)
-            ->get();
+        $query = Project::query()
+            ->visibleToUser($user);
+
+        return $query->get();
     }
 }

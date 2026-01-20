@@ -16,14 +16,15 @@ class GetUserTickets
      */
     public function __invoke(User $user, array $statuses = []): Collection
     {
-        return Ticket::query()
+        $query = Ticket::query()
             ->whereHas('project', function ($query) use ($user) {
                 /** @var Builder<Project> $query */
                 // @phpstan-ignore varTag.nativeType
                 $query->visibleToUser($user);
             })
             ->with(['project', 'assignees', 'reviewers'])
-            ->when($statuses, fn (Builder $query) => $query->whereIn('status', $statuses))
-            ->get();
+            ->when($statuses, fn (Builder $query) => $query->whereIn('status', $statuses));
+
+        return $query->get();
     }
 }

@@ -13,13 +13,14 @@ class GetTeamTickets
      */
     public function __invoke(Team $team): Collection
     {
-        return Ticket::query()
+        $query = Ticket::query()
             ->whereHas('project', function ($query) use ($team) {
                 $query->whereHas('assignedTeams', function ($q) use ($team) {
                     $q->where('teams.id', $team->id);
                 });
             })
-            ->with(['project', 'assignees', 'reviewers'])
-            ->get();
+            ->with(['project', 'assignees', 'reviewers']);
+
+        return $query->get();
     }
 }

@@ -12,8 +12,9 @@ class GetTicketComments
      */
     public function __invoke(Ticket $ticket): Collection
     {
-        return $ticket->comments()
-            ->with('user')
-            ->get();
+        $query = $ticket->comments()
+            ->with('user');
+
+        return $query->get();
     }
 }
