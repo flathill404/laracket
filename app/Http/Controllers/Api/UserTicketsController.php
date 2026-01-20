@@ -16,6 +16,8 @@ class UserTicketsController
             abort(403);
         }
 
-        return TicketResource::collection($query($user));
+        $statuses = \App\Enums\TicketStatus::fromValues($request->input('status'));
+
+        return TicketResource::collection($query($user, $statuses));
     }
 }
