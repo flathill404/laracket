@@ -434,3 +434,275 @@ tickets:
     comments:
       - user_name: emma
         body: "Fixed. How embarrassing!"
+
+  # ------------------------------------------------------------------
+  # Search & Navigation
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Improve global search performance"
+    description: "Search queries taking > 2s when using wildcards. Consider migrating to Elasticsearch or Meilisearch."
+    status: "in_progress"
+    assignee_name: Michael
+    reviewer_name: james
+    comments:
+      - user_name: Michael
+        body: "Profiling shows the LIKE query is efficient but the dataset is growing too fast."
+
+  - project_name: laracket
+    title: "Add keyboard shortcuts (Ctrl+K)"
+    description: "Power users want a command palette to navigate quickly between projects and tickets."
+    status: "open"
+    assignee_name: sarah
+    reviewer_name: jennifer
+    comments: []
+
+  - project_name: laracket
+    title: "Recent visited tickets history"
+    description: "Show the last 5 visited tickets in the sidebar for quick access."
+    status: "open"
+    assignee_name: daniel
+    reviewer_name: sarah
+    comments: []
+
+  # ------------------------------------------------------------------
+  # Accessibility (a11y)
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Fix color contrast on primary buttons"
+    description: "The white text on light blue background fails WCAG AA standards."
+    status: "resolved"
+    assignee_name: jessica
+    reviewer_name: karen
+    comments:
+      - user_name: jessica
+        body: "Darkened the blue to #3b82f6. Now passes AAA."
+
+  - project_name: laracket
+    title: "Add aria-labels to sidebar icons"
+    description: "Screen readers announce 'unlabeled button' for navigation items."
+    status: "in_review"
+    assignee_name: jennifer
+    reviewer_name: nancy
+    comments:
+      - user_name: nancy
+        body: "Tested with NVDA, works great now."
+
+  - project_name: laracket
+    title: "Keyboard navigation trap in modals"
+    description: "Tab key filters out of the modal to the background content."
+    status: "open"
+    assignee_name: sarah
+    reviewer_name: daniel
+    comments: []
+
+  # ------------------------------------------------------------------
+  # Integrations
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "GitHub Integration: Link PRs to Tickets"
+    description: "Automatically move ticket status when a PR with 'Fixes #ID' is merged."
+    status: "in_progress"
+    assignee_name: james
+    reviewer_name: emma
+    comments:
+      - user_name: james
+        body: "Waiting on GitHub App verification."
+
+  - project_name: laracket
+    title: "Discord Webhook support"
+    description: "Send notifications to a specific channel when a ticket is created."
+    status: "open"
+    assignee_name: robert
+    reviewer_name: michael
+    comments: []
+
+  - project_name: laracket
+    title: "Jira Import Tool"
+    description: "Allow customers to migrate their existing issues from Jira via CSV."
+    status: "open"
+    assignee_name: david
+    reviewer_name: li
+    comments: []
+
+  # ------------------------------------------------------------------
+  # Localization (i18n)
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Add Japanese (ja-JP) locale support"
+    description: "Translate all UI strings to Japanese. Need to setup generic language files."
+    status: "in_progress"
+    assignee_name: li
+    reviewer_name: emma
+    comments:
+      - user_name: li
+        body: "Hired a translation agency. ETA next week."
+
+  - project_name: laracket
+    title: "Fix timezone display issues for UTC+9"
+    description: "Timestamps are showing in UTC regardless of user preference settings."
+    status: "resolved"
+    assignee_name: david
+    reviewer_name: james
+    comments:
+      - user_name: david
+        body: "Moment.js was not configured with the user timezone."
+
+  # ------------------------------------------------------------------
+  # Mobile App Excellence
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Offline mode support"
+    description: "Cache tickets locally (SQLite) so users can view them without internet."
+    status: "in_progress"
+    assignee_name: christopher
+    reviewer_name: thomas
+    comments:
+      - user_name: christopher
+        body: "Sync logic is complex. Handling conflicts is the main blocker."
+
+  - project_name: laracket
+    title: "Fix layout on iPad Pro"
+    description: "The split view is broken on 12.9 inch screens in landscape mode."
+    status: "open"
+    assignee_name: thomas
+    reviewer_name: jessica
+    comments: []
+
+  - project_name: laracket
+    title: "Push Notifications deep linking"
+    description: "Tapping a notification should open the specific ticket, not the home screen."
+    status: "in_review"
+    assignee_name: christopher
+    reviewer_name: thomas
+    comments: []
+
+  # ------------------------------------------------------------------
+  # Refactoring & Maintenance
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Refactor UserController"
+    description: "The update method is 400 lines long. Split into Service classes."
+    status: "in_review"
+    assignee_name: james
+    reviewer_name: robert
+    comments:
+      - user_name: robert
+        body: "Much cleaner. Don't forget to add unit tests for the new service."
+
+  - project_name: laracket
+    title: "Update npm dependencies"
+    description: "React and several other packages have security vulnerabilities."
+    status: "closed"
+    assignee_name: kevin
+    reviewer_name: jennifer
+    comments:
+      - user_name: kevin
+        body: "Updated via Renovate bot."
+
+  - project_name: laracket
+    title: "Remove dead code in CSS"
+    description: "PurgeCSS is reporting 30% unused styles."
+    status: "open"
+    assignee_name: sarah
+    reviewer_name: jennifer
+    comments: []
+
+  # ------------------------------------------------------------------
+  # Security
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Audit dependent packages"
+    description: "Run `composer audit` and `npm audit` and fix high severity issues."
+    status: "in_progress"
+    assignee_name: kevin
+    reviewer_name: mark
+    comments: []
+
+  - project_name: laracket
+    title: "Implement Rate Limiting on API"
+    description: "Prevent abuse by limiting requests to 60 per minute per IP."
+    status: "resolved"
+    assignee_name: michael
+    reviewer_name: kevin
+    comments:
+      - user_name: michael
+        body: "Configured `throttle:api` middleware."
+
+  - project_name: laracket
+    title: "Sanitize user inputs in Bio field"
+    description: "Potential XSS vulnerability in the user profile bio."
+    status: "resolved"
+    assignee_name: james
+    reviewer_name: nancy
+    comments:
+      - user_name: nancy
+        body: "Verified with a standard XSS payload."
+
+  # ------------------------------------------------------------------
+  # Performance
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Optimize image assets"
+    description: "Serve WebP instead of PNG/JPG where supported."
+    status: "open"
+    assignee_name: daniel
+    reviewer_name: jessica
+    comments: []
+
+  - project_name: laracket
+    title: "Reduce bundle size"
+    description: "Main bundle is 4MB. Use code splitting for routes."
+    status: "in_progress"
+    assignee_name: jennifer
+    reviewer_name: sarah
+    comments:
+      - user_name: jennifer
+        body: "Split the dashboard chart libraries into a separate chunk."
+
+  # ------------------------------------------------------------------
+  # Customer Support Enhancements
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Ticket Auto-responder"
+    description: "Send an email acknowledgment immediately after ticket creation."
+    status: "closed"
+    assignee_name: robert
+    reviewer_name: li
+    comments: []
+
+  - project_name: laracket
+    title: "Canned Responses"
+    description: "Allow support agents to insert pre-written replies."
+    status: "open"
+    assignee_name: david
+    reviewer_name: emma
+    comments: []
+
+  - project_name: laracket
+    title: "Satisfaction Survey"
+    description: "Send a CSAT survey email when a ticket is resolved."
+    status: "open"
+    assignee_name: li
+    reviewer_name: emma
+    comments: []
+
+  # ------------------------------------------------------------------
+  # Internal Tools
+  # ------------------------------------------------------------------
+  - project_name: laracket
+    title: "Admin Dashboard Stats"
+    description: "Add a graph showing new tickets vs resolved tickets over time."
+    status: "in_review"
+    assignee_name: michael
+    reviewer_name: li
+    comments: []
+
+  - project_name: laracket
+    title: "User Impersonation"
+    description: "Admins need to ability to log in as users to debug issues."
+    status: "in_progress"
+    assignee_name: james
+    reviewer_name: mark
+    comments:
+      - user_name: mark
+        body: "Make sure this is logged in the audit trail."
