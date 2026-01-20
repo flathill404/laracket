@@ -4,89 +4,77 @@ namespace Tests\Unit\Values;
 
 use App\Enums\TicketStatus;
 use App\Values\TicketQuery;
-use Tests\TestCase;
 
-class TicketQueryTest extends TestCase
-{
-    public function test_it_sets_defaults_when_no_params_provided()
-    {
-        $query = new TicketQuery([]);
+describe('TicketQuery', function () {
+  it('sets defaults when no params provided', function () {
+    $query = new TicketQuery([]);
 
-        $this->assertEmpty($query->statuses);
-        $this->assertEquals('id', $query->sort);
-        $this->assertEquals('asc', $query->direction);
-        $this->assertEquals(25, $query->perPage);
-    }
+    expect($query->statuses)->toBeEmpty()
+      ->and($query->sort)->toBe('id')
+      ->and($query->direction)->toBe('asc')
+      ->and($query->perPage)->toBe(25);
+  });
 
-    public function test_it_parses_statuses()
-    {
-        $query = new TicketQuery(['status' => ['open', 'in_progress']]);
+  it('parses statuses', function () {
+    $query = new TicketQuery(['status' => ['open', 'in_progress']]);
 
-        $this->assertCount(2, $query->statuses);
-        $this->assertTrue(in_array(TicketStatus::Open, $query->statuses));
-        $this->assertTrue(in_array(TicketStatus::InProgress, $query->statuses));
-    }
+    expect($query->statuses)->toHaveCount(2)
+      ->and($query->statuses)->toContain(TicketStatus::Open)
+      ->and($query->statuses)->toContain(TicketStatus::InProgress);
+  });
 
-    public function test_it_parses_status_string()
-    {
-        $query = new TicketQuery(['status' => 'closed']);
+  it('parses status string', function () {
+    $query = new TicketQuery(['status' => 'closed']);
 
-        $this->assertCount(1, $query->statuses);
-        $this->assertTrue(in_array(TicketStatus::Closed, $query->statuses));
-    }
+    expect($query->statuses)->toHaveCount(1)
+      ->and($query->statuses)->toContain(TicketStatus::Closed);
+  });
 
-    public function test_it_parses_sort_ascending()
-    {
-        $query = new TicketQuery(['sort' => 'created_at']);
+  it('parses sort ascending', function () {
+    $query = new TicketQuery(['sort' => 'created_at']);
 
-        $this->assertEquals('created_at', $query->sort);
-        $this->assertEquals('asc', $query->direction);
-    }
+    expect($query->sort)->toBe('created_at')
+      ->and($query->direction)->toBe('asc');
+  });
 
-    public function test_it_parses_sort_descending()
-    {
-        $query = new TicketQuery(['sort' => '-updated_at']);
+  it('parses sort descending', function () {
+    $query = new TicketQuery(['sort' => '-updated_at']);
 
-        $this->assertEquals('updated_at', $query->sort);
-        $this->assertEquals('desc', $query->direction);
-    }
+    expect($query->sort)->toBe('updated_at')
+      ->and($query->direction)->toBe('desc');
+  });
 
-    public function test_it_ignores_invalid_sort_columns()
-    {
-        $query = new TicketQuery(['sort' => 'invalid_column']);
+  it('ignores invalid sort columns', function () {
+    $query = new TicketQuery(['sort' => 'invalid_column']);
 
-        // Should fallback to default
-        $this->assertEquals('id', $query->sort);
-        $this->assertEquals('asc', $query->direction);
-    }
+    // Should fallback to default
+    expect($query->sort)->toBe('id')
+      ->and($query->direction)->toBe('asc');
+  });
 
-    public function test_it_ignores_invalid_sort_columns_with_direction()
-    {
-        $query = new TicketQuery(['sort' => '-invalid_column']);
+  it('ignores invalid sort columns with direction', function () {
+    $query = new TicketQuery(['sort' => '-invalid_column']);
 
-        // Should fallback to default
-        $this->assertEquals('id', $query->sort);
-        $this->assertEquals('asc', $query->direction);
-    }
+    // Should fallback to default
+    expect($query->sort)->toBe('id')
+      ->and($query->direction)->toBe('asc');
+  });
 
-    public function test_it_parses_per_page()
-    {
-        $query = new TicketQuery(['per_page' => 50]);
+  it('parses per page', function () {
+    $query = new TicketQuery(['per_page' => 50]);
 
-        $this->assertEquals(50, $query->perPage);
-    }
+    expect($query->perPage)->toBe(50);
+  });
 
-    public function test_it_clamps_per_page_min()
-    {
-        $query = new TicketQuery(['per_page' => 0]);
+  it('clamps per page min', function () {
+    $query = new TicketQuery(['per_page' => 0]);
 
-        $this->assertEquals(1, $query->perPage);
-    }
+    expect($query->perPage)->toBe(1);
+  });
 
-    public function test_it_clamps_per_page_max()
-    {
-        $query = new TicketQuery(['per_page' => 101]);
+  it('clamps per page max', function () {
+    $query = new TicketQuery(['per_page' => 101]);
 
-        $this->assertEquals(100, $query->perPage);
-    }
-}
+    expect($query->perPage)->toBe(100);
+  });
+});
