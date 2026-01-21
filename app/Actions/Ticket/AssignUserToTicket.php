@@ -30,7 +30,7 @@ class AssignUserToTicket
      */
     protected function validateUserIsMemberOfProject(Ticket $ticket, User $user): void
     {
-        if (! $ticket->project->assignedUsers()->where('user_id', $user->id)->exists()) {
+        if (! $ticket->project->hasMember($user)) {
             throw ValidationException::withMessages([
                 'user' => ['This user is not a member of the project.'],
             ]);

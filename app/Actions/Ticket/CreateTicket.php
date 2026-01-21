@@ -70,7 +70,9 @@ class CreateTicket
      */
     protected function validateAssigneeIsProjectMember(Project $project, string $userId): void
     {
-        if (! $project->assignedUsers()->where('user_id', $userId)->exists()) {
+        $user = User::find($userId);
+
+        if (! $user || ! $project->hasMember($user)) {
             throw ValidationException::withMessages([
                 'assignee_id' => ['The assigned user is not a member of the project.'],
             ]);

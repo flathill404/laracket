@@ -129,6 +129,22 @@ class Project extends Model
     }
 
     /**
+     * Check if a user is a member of this project (directly or via team).
+     */
+    public function hasMember(User $user): bool
+    {
+        $isDirectMember = $this->assignedUsers()->where('user_id', $user->id)->exists();
+
+        if ($isDirectMember) {
+            return true;
+        }
+
+        return $this->assignedTeams()->whereHas('members', function (Builder $q) use ($user) {
+            $q->where('users.id', $user->id);
+        })->exists();
+    }
+
+    /**
      * Scope the query to projects directly assigned to the user.
      *
      * @param  \Illuminate\Database\Eloquent\Builder<Project>  $query
