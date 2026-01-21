@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\TeamTicketsController;
 use App\Http\Controllers\Api\TicketAssigneeController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TicketOrderController;
+use App\Http\Controllers\Api\TicketReviewerController;
 use App\Http\Controllers\Api\TicketStatusController;
 use App\Http\Controllers\Api\UserAvatarController;
 use App\Http\Controllers\Api\UserController;
@@ -81,6 +82,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/tickets/{ticket}/order', [TicketOrderController::class, 'update']);
     Route::post('/tickets/{ticket}/assignees', [TicketAssigneeController::class, 'store']);
     Route::delete('/tickets/{ticket}/assignees/{user}', [TicketAssigneeController::class, 'destroy']);
+    Route::post('/tickets/{ticket}/reviewers', [TicketReviewerController::class, 'store']);
+    Route::delete('/tickets/{ticket}/reviewers/{user}', [TicketReviewerController::class, 'destroy']);
 
     // Comments
     Route::get('/tickets/{ticket}/comments', [\App\Http\Controllers\Api\TicketCommentController::class, 'index']);

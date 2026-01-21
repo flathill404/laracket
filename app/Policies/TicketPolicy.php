@@ -75,4 +75,20 @@ class TicketPolicy
     {
         return $this->update($user, $ticket);
     }
+
+    /**
+     * Determine whether the user can add a reviewer to the ticket.
+     */
+    public function add_reviewer(User $user, Ticket $ticket): bool
+    {
+        return $this->update($user, $ticket);
+    }
+
+    /**
+     * Determine whether the user can remove a reviewer from the ticket.
+     */
+    public function remove_reviewer(User $user, Ticket $ticket): bool
+    {
+        return $this->update($user, $ticket);
+    }
 }
