@@ -25,7 +25,10 @@ class GetProjectMembers
             })
             ->pluck('id');
 
-        return User::whereIn('id', $directUserIds->merge($teamUserIds)->unique())
-            ->get();
+        $userIds = $directUserIds->merge($teamUserIds)->unique();
+
+        $query = User::whereIn('id', $userIds);
+
+        return $query->get();
     }
 }
