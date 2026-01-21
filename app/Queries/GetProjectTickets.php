@@ -25,7 +25,7 @@ class GetProjectTickets
 
         // Ensure deterministic order
         if ($ticketQuery->sort !== 'id') {
-            $query->orderBy('id', 'asc');
+            $query->orderBy('id', 'desc');
         }
 
         return $query->cursorPaginate($ticketQuery->perPage);

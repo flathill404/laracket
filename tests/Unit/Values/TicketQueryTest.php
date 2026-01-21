@@ -11,7 +11,7 @@ describe('TicketQuery', function () {
 
         expect($query->statuses)->toBeEmpty()
             ->and($query->sort)->toBe('id')
-            ->and($query->direction)->toBe('asc')
+            ->and($query->direction)->toBe('desc')
             ->and($query->perPage)->toBe(25);
     });
 
@@ -49,7 +49,7 @@ describe('TicketQuery', function () {
 
         // Should fallback to default
         expect($query->sort)->toBe('id')
-            ->and($query->direction)->toBe('asc');
+            ->and($query->direction)->toBe('desc');
     });
 
     it('ignores invalid sort columns with direction', function () {
@@ -57,7 +57,7 @@ describe('TicketQuery', function () {
 
         // Should fallback to default
         expect($query->sort)->toBe('id')
-            ->and($query->direction)->toBe('asc');
+            ->and($query->direction)->toBe('desc');
     });
 
     it('parses per page', function () {

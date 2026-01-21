@@ -11,7 +11,7 @@ class TicketQuery
 
     public private(set) string $sort = 'id';
 
-    public private(set) string $direction = 'asc';
+    public private(set) string $direction = 'desc';
 
     public private(set) int $perPage = 25;
 
