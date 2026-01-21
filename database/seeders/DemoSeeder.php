@@ -62,7 +62,7 @@ class DemoSeeder extends Seeder
                 'password' => bcrypt('password'),
             ];
 
-            $avatarFile = database_path('seeders/imgaes/avatars/'.$userData['name'].'.webp');
+            $avatarFile = database_path('seeders/imgaes/avatars/' . $userData['name'] . '.webp');
             if (file_exists($avatarFile)) {
                 $input['avatar_path'] = Storage::putFile('avatars', new File($avatarFile));
             }
@@ -75,8 +75,8 @@ class DemoSeeder extends Seeder
         $createOrganization = app(CreateOrganization::class);
         foreach ($users as $user) {
             $org = $createOrganization($user, [
-                'name' => 'the-'.$user->name.'-project',
-                'display_name' => 'The '.$user->display_name.' Project',
+                'name' => 'the-' . $user->name . '-project',
+                'display_name' => 'The ' . $user->display_name . ' Project',
             ]);
         }
 
@@ -152,11 +152,15 @@ class DemoSeeder extends Seeder
             $project = $projects[$ticketData['project_name']];
             $status = TicketStatus::from($ticketData['status']);
 
+            // Generate due_date with random distribution
+            $dueDate = $this->generateRandomDueDate();
+
             $ticket = Ticket::factory()->create([
                 'project_id' => $project->id,
                 'title' => $ticketData['title'],
                 'description' => $ticketData['description'],
                 'status' => $status,
+                'due_date' => $dueDate,
             ]);
 
             if (isset($ticketData['assignee_name']) && isset($users[$ticketData['assignee_name']])) {
@@ -177,5 +181,36 @@ class DemoSeeder extends Seeder
                 }
             }
         }
+    }
+
+    /**
+     * Generate a random due date with realistic distribution.
+     *
+     * - ~20% chance of null (no due date)
+     * - ~15% chance of past date (overdue)
+     * - ~10% chance of today
+     * - ~55% chance of future date
+     */
+    private function generateRandomDueDate(): ?\Carbon\Carbon
+    {
+        $rand = rand(1, 100);
+
+        if ($rand <= 20) {
+            // 20%: No due date
+            return null;
+        }
+
+        if ($rand <= 35) {
+            // 15%: Past date (1-30 days ago)
+            return now()->subDays(rand(1, 30));
+        }
+
+        if ($rand <= 45) {
+            // 10%: Today
+            return now();
+        }
+
+        // 55%: Future date (1-90 days from now)
+        return now()->addDays(rand(1, 90));
     }
 }
