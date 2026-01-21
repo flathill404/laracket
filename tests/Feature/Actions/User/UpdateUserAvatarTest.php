@@ -1,20 +1,15 @@
 <?php
 
-namespace Tests\Feature\Actions\User;
-
 use App\Actions\User\UpdateUserAvatar;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
-use Tests\TestCase;
 
-class UpdateUserAvatarTest extends TestCase
-{
-    use RefreshDatabase;
+uses(LazilyRefreshDatabase::class);
 
-    public function test_can_update_user_avatar(): void
-    {
+describe('UpdateUserAvatar', function () {
+    it('can update user avatar', function () {
         Storage::fake();
 
         $user = User::factory()->create();
@@ -26,12 +21,11 @@ class UpdateUserAvatarTest extends TestCase
 
         $updatedUser = $action($user, $input);
 
-        $this->assertNotNull($updatedUser->avatar_path);
+        expect($updatedUser->avatar_path)->not->toBeNull();
         Storage::assertExists($updatedUser->avatar_path);
-    }
+    });
 
-    public function test_throws_validation_exception_for_invalid_data_uri(): void
-    {
+    it('throws validation exception for invalid data uri', function () {
         $user = User::factory()->create();
         $action = new UpdateUserAvatar;
 
@@ -39,14 +33,10 @@ class UpdateUserAvatarTest extends TestCase
             'avatar' => 'invalid-data-uri',
         ];
 
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('Invalid Image Data URI');
-
         $action($user, $input);
-    }
+    })->throws(ValidationException::class, 'Invalid Image Data URI');
 
-    public function test_throws_validation_exception_for_unsupported_image_type(): void
-    {
+    it('throws validation exception for unsupported image type', function () {
         $user = User::factory()->create();
         $action = new UpdateUserAvatar;
 
@@ -54,14 +44,10 @@ class UpdateUserAvatarTest extends TestCase
             'avatar' => 'data:image/bmp;base64,'.base64_encode('fake-image-content'),
         ];
 
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('Unsupported image type');
-
         $action($user, $input);
-    }
+    })->throws(ValidationException::class, 'Unsupported image type');
 
-    public function test_deletes_old_avatar_when_updating(): void
-    {
+    it('deletes old avatar when updating', function () {
         Storage::fake();
 
         $user = User::factory()->create([
@@ -78,5 +64,5 @@ class UpdateUserAvatarTest extends TestCase
 
         Storage::assertMissing('avatars/old-avatar.png');
         Storage::assertExists($user->refresh()->avatar_path);
-    }
-}
+    });
+});

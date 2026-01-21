@@ -1,27 +1,26 @@
 <?php
 
-namespace Tests\Feature\Api;
-
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Team;
 use App\Models\Ticket;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
-class TeamTicketsControllerTest extends TestCase
-{
-    use RefreshDatabase;
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\getJson;
 
-    public function test_team_member_can_list_tickets_filtered_by_status(): void
-    {
+uses(LazilyRefreshDatabase::class);
+
+describe('index', function () {
+    it('allows team member to list tickets filtered by status', function () {
         $organization = Organization::factory()->create();
         $user = User::factory()->create();
         $project = Project::factory()->for($organization)->create();
         $team = Team::factory()->for($organization)->create();
 
-        // User is member of team
+        // User is member of organization and team
+        $organization->users()->attach($user);
         $team->members()->attach($user, ['role' => \App\Enums\TeamRole::Member]);
 
         // Team is assigned to project
@@ -32,31 +31,33 @@ class TeamTicketsControllerTest extends TestCase
         $ticketInProgress = Ticket::factory()->for($project)->create(['status' => \App\Enums\TicketStatus::InProgress]);
         $ticketClosed = Ticket::factory()->for($project)->create(['status' => \App\Enums\TicketStatus::Closed]);
 
-        $response = $this->actingAs($user)->getJson("/api/teams/{$team->id}/tickets?status=open");
+        actingAs($user);
+
+        $response = getJson("/api/teams/{$team->id}/tickets?status=open");
 
         $response->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $ticketOpen->id);
 
-        $responseMultiple = $this->actingAs($user)->getJson("/api/teams/{$team->id}/tickets?status[]=open&status[]=in_progress");
+        $responseMultiple = getJson("/api/teams/{$team->id}/tickets?status[]=open&status[]=in_progress");
 
         $responseMultiple->assertOk()
             ->assertJsonCount(2, 'data');
 
         $ids = collect($responseMultiple->json('data'))->pluck('id');
-        $this->assertTrue($ids->contains($ticketOpen->id));
-        $this->assertTrue($ids->contains($ticketInProgress->id));
-        $this->assertFalse($ids->contains($ticketClosed->id));
-    }
+        expect($ids->contains($ticketOpen->id))->toBeTrue();
+        expect($ids->contains($ticketInProgress->id))->toBeTrue();
+        expect($ids->contains($ticketClosed->id))->toBeFalse();
+    });
 
-    public function test_team_member_can_list_tickets_from_project_assigned_to_team(): void
-    {
+    it('allows team member to list tickets from project assigned to team', function () {
         $organization = Organization::factory()->create();
         $user = User::factory()->create();
         $project = Project::factory()->for($organization)->create();
         $team = Team::factory()->for($organization)->create();
 
-        // User is member of team
+        // User is member of organization and team
+        $organization->users()->attach($user);
         $team->members()->attach($user, ['role' => \App\Enums\TeamRole::Member]);
 
         // Team is assigned to project
@@ -68,23 +69,26 @@ class TeamTicketsControllerTest extends TestCase
         $otherProject = Project::factory()->for($organization)->create();
         $otherTicket = Ticket::factory()->for($otherProject)->create();
 
-        $response = $this->actingAs($user)->getJson("/api/teams/{$team->id}/tickets");
+        actingAs($user);
+
+        $response = getJson("/api/teams/{$team->id}/tickets");
 
         $response->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $ticket->id);
-    }
+    });
 
-    public function test_non_team_member_cannot_list_team_tickets(): void
-    {
+    it('denies non team member from listing team tickets', function () {
         $organization = Organization::factory()->create();
         $user = User::factory()->create();
         $team = Team::factory()->for($organization)->create();
 
         // User is NOT member of team
 
-        $response = $this->actingAs($user)->getJson("/api/teams/{$team->id}/tickets");
+        actingAs($user);
+
+        $response = getJson("/api/teams/{$team->id}/tickets");
 
         $response->assertForbidden();
-    }
-}
+    });
+});

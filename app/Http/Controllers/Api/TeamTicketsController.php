@@ -8,14 +8,13 @@ use App\Queries\GetTeamTickets;
 use App\Values\TicketQuery;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Gate;
 
 class TeamTicketsController
 {
     public function index(Request $request, Team $team, GetTeamTickets $query): AnonymousResourceCollection
     {
-        if (! $request->user()?->teams->contains($team)) {
-            abort(403);
-        }
+        Gate::authorize('view', $team);
 
         $ticketQuery = new TicketQuery((array) $request->query());
 

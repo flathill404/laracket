@@ -1,22 +1,23 @@
 <?php
 
-namespace Tests\Feature\Api;
-
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
 
-class UserAvatarControllerTest extends TestCase
-{
-    use RefreshDatabase;
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\deleteJson;
+use function Pest\Laravel\postJson;
 
-    public function test_can_update_avatar_api(): void
-    {
+uses(LazilyRefreshDatabase::class);
+
+describe('store', function () {
+    it('can update avatar via API', function () {
         Storage::fake();
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->postJson('/api/user/avatar', [
+        actingAs($user);
+
+        $response = postJson('/api/user/avatar', [
             'avatar' => 'data:image/png;base64,'.base64_encode('fake-image-content'),
         ]);
 
@@ -29,30 +30,34 @@ class UserAvatarControllerTest extends TestCase
             ],
         ]);
 
-        $this->assertNotNull($user->refresh()->avatar_path);
-    }
+        expect($user->refresh()->avatar_path)->not->toBeNull();
+    });
 
-    public function test_validation_error_api(): void
-    {
+    it('returns validation error for invalid data', function () {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->postJson('/api/user/avatar', [
+        actingAs($user);
+
+        $response = postJson('/api/user/avatar', [
             'avatar' => 'invalid-data',
         ]);
 
         $response->assertStatus(422);
-    }
+    });
+});
 
-    public function test_can_delete_avatar_api(): void
-    {
+describe('destroy', function () {
+    it('can delete avatar via API', function () {
         Storage::fake();
         $user = User::factory()->create(['avatar_path' => 'avatars/delete-me.png']);
         Storage::put('avatars/delete-me.png', 'content');
 
-        $response = $this->actingAs($user)->deleteJson('/api/user/avatar');
+        actingAs($user);
+
+        $response = deleteJson('/api/user/avatar');
 
         $response->assertNoContent();
-        $this->assertNull($user->refresh()->avatar_path);
+        expect($user->refresh()->avatar_path)->toBeNull();
         Storage::assertMissing('avatars/delete-me.png');
-    }
-}
+    });
+});

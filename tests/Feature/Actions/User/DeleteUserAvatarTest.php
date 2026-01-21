@@ -1,19 +1,14 @@
 <?php
 
-namespace Tests\Feature\Actions\User;
-
 use App\Actions\User\DeleteUserAvatar;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
 
-class DeleteUserAvatarTest extends TestCase
-{
-    use RefreshDatabase;
+uses(LazilyRefreshDatabase::class);
 
-    public function test_can_delete_user_avatar(): void
-    {
+describe('DeleteUserAvatar', function () {
+    it('can delete user avatar', function () {
         Storage::fake();
 
         $user = User::factory()->create([
@@ -25,12 +20,11 @@ class DeleteUserAvatarTest extends TestCase
 
         $action($user);
 
-        $this->assertNull($user->refresh()->avatar_path);
+        expect($user->refresh()->avatar_path)->toBeNull();
         Storage::assertMissing('avatars/test-avatar.png');
-    }
+    });
 
-    public function test_handles_user_without_avatar(): void
-    {
+    it('handles user without avatar', function () {
         Storage::fake();
 
         $user = User::factory()->create([
@@ -41,6 +35,6 @@ class DeleteUserAvatarTest extends TestCase
 
         $action($user);
 
-        $this->assertNull($user->refresh()->avatar_path);
-    }
-}
+        expect($user->refresh()->avatar_path)->toBeNull();
+    });
+});
