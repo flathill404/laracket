@@ -3,15 +3,29 @@
 namespace App\Queries;
 
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 
 class GetProjectMembers
 {
     /**
-     * @return Collection<int, \App\Models\User>
+     * Get all members of a project (directly assigned + via teams).
+     *
+     * @return Collection<int, User>
      */
     public function __invoke(Project $project): Collection
     {
-        return $project->members;
+        $directUserIds = $project->assignedUsers()->pluck('users.id');
+
+        $teamUserIds = User::query()
+            ->whereHas('teams', function ($query) use ($project) {
+                $query->whereHas('assignedProjects', function ($q) use ($project) {
+                    $q->where('projects.id', $project->id);
+                });
+            })
+            ->pluck('id');
+
+        return User::whereIn('id', $directUserIds->merge($teamUserIds)->unique())
+            ->get();
     }
 }

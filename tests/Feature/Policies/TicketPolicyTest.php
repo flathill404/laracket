@@ -22,7 +22,7 @@ it('allows project member to view the ticket', function () {
     $project = Project::factory()->for($organization)->create();
     $ticket = Ticket::factory()->for($project)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('view', $ticket))->toBeTrue();
 });
@@ -40,7 +40,7 @@ it('allows project member to create tickets', function () {
     $organization = Organization::factory()->create();
     $project = Project::factory()->for($organization)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('create', [Ticket::class, $project]))->toBeTrue();
 });
@@ -50,7 +50,7 @@ it('allows project member to update the ticket', function () {
     $project = Project::factory()->for($organization)->create();
     $ticket = Ticket::factory()->for($project)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('update', $ticket))->toBeTrue();
 });
@@ -69,7 +69,7 @@ it('allows reviewer to delete the ticket', function () {
     $project = Project::factory()->for($organization)->create();
     $ticket = Ticket::factory()->for($project)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
     $ticket->reviewers()->attach($user, ['type' => App\Enums\TicketUserType::Reviewer]);
 
     expect($user->can('delete', $ticket))->toBeTrue();
@@ -80,7 +80,7 @@ it('denies regular project member to delete the ticket', function () {
     $project = Project::factory()->for($organization)->create();
     $ticket = Ticket::factory()->for($project)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('delete', $ticket))->toBeFalse();
 });
@@ -90,7 +90,7 @@ it('allows project member to assign user', function () {
     $project = Project::factory()->for($organization)->create();
     $ticket = Ticket::factory()->for($project)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('assign_user', $ticket))->toBeTrue();
 });
@@ -100,7 +100,7 @@ it('allows project member to unassign user', function () {
     $project = Project::factory()->for($organization)->create();
     $ticket = Ticket::factory()->for($project)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('unassign_user', $ticket))->toBeTrue();
 });

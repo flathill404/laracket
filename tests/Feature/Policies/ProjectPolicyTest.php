@@ -32,7 +32,7 @@ it('allows project member to view the project', function () {
     // Assuming project member logic, usually implies org membership too for this context,
     // but specific logic for hasProjectAccess should be covered.
     // Assuming simple project membership here:
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('view', $project))->toBeTrue();
 });
@@ -58,7 +58,7 @@ it('denies project member to update the project', function () {
     $organization = Organization::factory()->create();
     $project = Project::factory()->for($organization)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('update', $project))->toBeFalse();
 });
@@ -84,7 +84,7 @@ it('denies project member to delete the project', function () {
     $organization = Organization::factory()->create();
     $project = Project::factory()->for($organization)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('delete', $project))->toBeFalse();
 });
@@ -94,7 +94,7 @@ it('allows project member to create tickets', function () {
     $organization = Organization::factory()->create();
     $project = Project::factory()->for($organization)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('create_ticket', $project))->toBeTrue();
 });
@@ -111,7 +111,7 @@ it('denies project member to add members', function () {
     $organization = Organization::factory()->create();
     $project = Project::factory()->for($organization)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('add_member', $project))->toBeFalse();
 });
@@ -128,7 +128,7 @@ it('denies project member to remove members', function () {
     $organization = Organization::factory()->create();
     $project = Project::factory()->for($organization)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('remove_member', $project))->toBeFalse();
 });
@@ -145,7 +145,7 @@ it('denies project member to attach team', function () {
     $organization = Organization::factory()->create();
     $project = Project::factory()->for($organization)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('attach_team', $project))->toBeFalse();
 });
@@ -162,7 +162,7 @@ it('denies project member to detach team', function () {
     $organization = Organization::factory()->create();
     $project = Project::factory()->for($organization)->create();
     $user = User::factory()->create();
-    $project->members()->attach($user);
+    $project->assignedUsers()->attach($user);
 
     expect($user->can('detach_team', $project))->toBeFalse();
 });

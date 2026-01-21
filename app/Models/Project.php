@@ -23,8 +23,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read int|null $assigned_teams_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $assignedUsers
  * @property-read int|null $assigned_users_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $members
- * @property-read int|null $members_count
  * @property-read \App\Models\Organization $organization
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ticket> $tickets
  * @property-read int|null $tickets_count
@@ -98,14 +96,6 @@ class Project extends Model
     {
         return $this->belongsToMany(User::class, 'project_user')
             ->withTimestamps();
-    }
-
-    /**
-     * @return BelongsToMany<User, $this>
-     */
-    public function members(): BelongsToMany
-    {
-        return $this->assignedUsers();
     }
 
     /**

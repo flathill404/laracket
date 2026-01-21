@@ -32,7 +32,7 @@ describe('index', function () {
             'organization_id' => $organization->id,
         ]);
         // User needs access to project
-        $project->members()->attach($this->user);
+        $project->assignedUsers()->attach($this->user);
 
         $tickets = Ticket::factory(3)->create([
             'project_id' => $project->id,
@@ -53,7 +53,7 @@ describe('index', function () {
         $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create(['organization_id' => $organization->id]);
-        $project->members()->attach($this->user);
+        $project->assignedUsers()->attach($this->user);
 
         // Create tickets with specific dates
         $ticket1 = Ticket::factory()->for($project)->create(['created_at' => now()->subDays(3)]);
@@ -99,7 +99,7 @@ describe('store', function () {
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->members()->attach($this->user);
+        $project->assignedUsers()->attach($this->user);
 
         $data = [
             'title' => 'New Ticket',
@@ -158,7 +158,7 @@ describe('show', function () {
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->members()->attach($this->user);
+        $project->assignedUsers()->attach($this->user);
 
         $ticket = Ticket::factory()->create([
             'project_id' => $project->id,
@@ -263,7 +263,7 @@ describe('destroy', function () {
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->members()->attach($this->user);
+        $project->assignedUsers()->attach($this->user);
 
         $ticket = Ticket::factory()->create([
             'project_id' => $project->id,

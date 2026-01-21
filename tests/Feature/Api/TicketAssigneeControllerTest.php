@@ -36,7 +36,7 @@ describe('store', function () {
 
         $assignee = User::factory()->create();
         $organization->users()->attach($assignee, ['role' => OrganizationRole::Member]);
-        $project->members()->attach($assignee);
+        $project->assignedUsers()->attach($assignee);
 
         postJson("/api/tickets/{$ticket->id}/assignees", [
             'user_id' => $assignee->id,

@@ -30,8 +30,8 @@ describe('index', function () {
         ]);
 
         $otherUser = User::factory()->create();
-        $project->members()->attach($otherUser);
-        $project->members()->attach($this->user);
+        $project->assignedUsers()->attach($otherUser);
+        $project->assignedUsers()->attach($this->user);
 
         getJson("/api/projects/{$project->id}/members")
             ->assertOk()
@@ -128,7 +128,7 @@ describe('destroy', function () {
         ]);
 
         $member = User::factory()->create();
-        $project->members()->attach($member);
+        $project->assignedUsers()->attach($member);
 
         deleteJson("/api/projects/{$project->id}/members/{$member->id}")
             ->assertNoContent();
@@ -148,7 +148,7 @@ describe('destroy', function () {
         ]);
 
         $member = User::factory()->create();
-        $project->members()->attach($member);
+        $project->assignedUsers()->attach($member);
 
         deleteJson("/api/projects/{$project->id}/members/{$member->id}")
             ->assertForbidden();

@@ -24,7 +24,7 @@ describe('index', function () {
         $project = Project::factory()->create(['organization_id' => $organization->id]);
 
         // Grant access
-        $project->members()->attach($this->user);
+        $project->assignedUsers()->attach($this->user);
 
         $ticket = Ticket::factory()->create(['project_id' => $project->id]);
 
@@ -69,7 +69,7 @@ describe('store', function () {
         $project = Project::factory()->create(['organization_id' => $organization->id]);
 
         // Grant access
-        $project->members()->attach($this->user);
+        $project->assignedUsers()->attach($this->user);
 
         $ticket = Ticket::factory()->create(['project_id' => $project->id]);
 
@@ -90,7 +90,7 @@ describe('store', function () {
     it('validates input', function () {
         $organization = Organization::factory()->create();
         $project = Project::factory()->create(['organization_id' => $organization->id]);
-        $project->members()->attach($this->user);
+        $project->assignedUsers()->attach($this->user);
         $ticket = Ticket::factory()->create(['project_id' => $project->id]);
 
         postJson("/api/tickets/{$ticket->id}/comments", [])

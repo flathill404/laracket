@@ -26,7 +26,7 @@ describe('index with status filter', function () {
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->members()->attach($this->user);
+        $project->assignedUsers()->attach($this->user);
 
         $openTicket = Ticket::factory()->create([
             'project_id' => $project->id,
@@ -52,7 +52,7 @@ describe('index with status filter', function () {
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->members()->attach($this->user);
+        $project->assignedUsers()->attach($this->user);
 
         $openTicket = Ticket::factory()->create([
             'project_id' => $project->id,
@@ -86,7 +86,7 @@ describe('index with status filter', function () {
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->members()->attach($this->user);
+        $project->assignedUsers()->attach($this->user);
 
         Ticket::factory()->create(['project_id' => $project->id, 'status' => TicketStatus::Open]);
         Ticket::factory()->create(['project_id' => $project->id, 'status' => TicketStatus::Closed]);

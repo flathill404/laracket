@@ -94,7 +94,7 @@ describe('show', function () {
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->members()->attach($this->user);
+        $project->assignedUsers()->attach($this->user);
 
         getJson("/api/projects/{$project->id}")
             ->assertOk()
