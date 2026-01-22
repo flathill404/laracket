@@ -16,6 +16,7 @@ use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Http\File;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
 class DemoSeeder extends Seeder
@@ -183,6 +184,9 @@ class DemoSeeder extends Seeder
                 }
             }
         }
+
+        // 8. Build search index
+        Artisan::call('scout:import', ['model' => Ticket::class]);
     }
 
     /**
