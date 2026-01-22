@@ -1,7 +1,3 @@
-# CLAUDE.md
-
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Project Overview
 
 Laracket is a backend REST API for a Ticket Management SaaS platform built with Laravel 12.x and PHP 8.4. It provides multi-tenant support through organizations, with projects, teams, and issue tracking.
