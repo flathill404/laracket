@@ -49,7 +49,7 @@ describe('index', function () {
             ]);
     });
 
-    it('returns activities in descending order by created_at', function () {
+    it('returns activities in ascending order by created_at', function () {
         $organization = Organization::factory()->create();
         $project = Project::factory()->create(['organization_id' => $organization->id]);
 
@@ -72,9 +72,9 @@ describe('index', function () {
             ->assertJsonCount(2, 'data');
 
         $data = $response->json('data');
-        // Most recent first (descending order)
-        expect($data[0]['type'])->toBe('status_changed');
-        expect($data[1]['type'])->toBe('created');
+        // Oldest first (ascending order)
+        expect($data[0]['type'])->toBe('created');
+        expect($data[1]['type'])->toBe('status_changed');
     });
 
     it('denies access if not a member', function () {

@@ -110,6 +110,6 @@ class Ticket extends Model
      */
     public function activities(): HasMany
     {
-        return $this->hasMany(TicketActivity::class)->orderBy('created_at', 'desc');
+        return $this->hasMany(TicketActivity::class)->orderBy('created_at', 'asc');
     }
 }
