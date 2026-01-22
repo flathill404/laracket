@@ -48,15 +48,17 @@ class TeamController
         return new TeamResource($team);
     }
 
-    public function update(Request $request, Team $team, UpdateTeam $action): TeamResource
+    public function update(Request $request, Team $team, UpdateTeam $action, GetTeamDetail $query): TeamResource
     {
         Gate::authorize('update', $team);
 
         /** @var array<string, mixed> $input */
         $input = $request->all();
-        $team = $action($team, $input);
+        $action($team, $input);
 
-        return new TeamResource($team);
+        $updatedTeam = $query($team);
+
+        return new TeamResource($updatedTeam);
     }
 
     public function destroy(Request $request, Team $team, DeleteTeam $action): \Illuminate\Http\Response

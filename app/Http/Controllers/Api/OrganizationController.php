@@ -46,15 +46,17 @@ class OrganizationController
         return new OrganizationResource($organization);
     }
 
-    public function update(Request $request, Organization $organization, UpdateOrganization $action): OrganizationResource
+    public function update(Request $request, Organization $organization, UpdateOrganization $action, GetOrganizationDetail $query): OrganizationResource
     {
         Gate::authorize('update', $organization);
 
         /** @var array<string, mixed> $input */
         $input = $request->all();
-        $organization = $action($organization, $input);
+        $action($organization, $input);
 
-        return new OrganizationResource($organization);
+        $updatedOrganization = $query($organization);
+
+        return new OrganizationResource($updatedOrganization);
     }
 
     public function destroy(Request $request, Organization $organization, DeleteOrganization $action): \Illuminate\Http\Response

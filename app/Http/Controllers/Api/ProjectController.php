@@ -48,15 +48,17 @@ class ProjectController
         return new ProjectResource($project);
     }
 
-    public function update(Request $request, Project $project, UpdateProject $action): ProjectResource
+    public function update(Request $request, Project $project, UpdateProject $action, GetProjectDetail $query): ProjectResource
     {
         Gate::authorize('update', $project);
 
         /** @var array<string, mixed> $input */
         $input = $request->all();
-        $project = $action($project, $input);
+        $action($project, $input);
 
-        return new ProjectResource($project);
+        $updatedProject = $query($project);
+
+        return new ProjectResource($updatedProject);
     }
 
     public function destroy(Request $request, Project $project, DeleteProject $action): \Illuminate\Http\Response
