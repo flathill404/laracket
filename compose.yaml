@@ -11,7 +11,7 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-    command: php artisan queue:work redis --sleep=3 --tries=3
+    command: php artisan queue:work
     volumes:
       - .:/var/www/html
     depends_on:
