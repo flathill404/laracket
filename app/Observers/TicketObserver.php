@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Enums\TicketActivityType;
 use App\Models\Ticket;
-
 use Illuminate\Support\Facades\Auth;
 
 class TicketObserver
@@ -18,7 +18,7 @@ class TicketObserver
         if (Auth::check()) {
             $ticket->activities()->create([
                 'user_id' => Auth::id(),
-                'type' => 'created',
+                'type' => TicketActivityType::Created,
                 'payload' => null,
             ]);
         }
@@ -51,7 +51,7 @@ class TicketObserver
 
         $ticket->activities()->create([
             'user_id' => Auth::id(),
-            'type' => 'updated',
+            'type' => TicketActivityType::Updated,
             'payload' => $payload,
         ]);
     }

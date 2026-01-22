@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\TicketActivityType;
 use App\Values\ActivityPayload;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $id
  * @property string $ticket_id
  * @property string $user_id
- * @property string $type
+ * @property TicketActivityType $type
  * @property ActivityPayload|null $payload
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -39,6 +40,7 @@ class TicketActivity extends Model
     protected $casts = [
         'updated_at' => 'immutable_datetime',
         'created_at' => 'immutable_datetime',
+        'type' => TicketActivityType::class,
         'payload' => ActivityPayload::class,
     ];
 

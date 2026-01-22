@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\TicketActivityType;
 use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Ticket;
@@ -33,7 +34,7 @@ describe('index', function () {
         TicketActivity::create([
             'ticket_id' => $ticket->id,
             'user_id' => $this->user->id,
-            'type' => 'status_changed',
+            'type' => TicketActivityType::Updated,
             'payload' => new ActivityPayload(['status' => ['from' => 'open', 'to' => 'in_progress']]),
             'created_at' => now(),
         ]);
@@ -61,7 +62,7 @@ describe('index', function () {
         TicketActivity::create([
             'ticket_id' => $ticket->id,
             'user_id' => $this->user->id,
-            'type' => 'status_changed',
+            'type' => TicketActivityType::Updated,
             'payload' => new ActivityPayload(['status' => ['from' => 'open', 'to' => 'in_progress']]),
             'created_at' => now()->addMinute(),
         ]);
@@ -74,7 +75,7 @@ describe('index', function () {
         $data = $response->json('data');
         // Oldest first (ascending order)
         expect($data[0]['type'])->toBe('created');
-        expect($data[1]['type'])->toBe('status_changed');
+        expect($data[1]['type'])->toBe('updated');
     });
 
     it('denies access if not a member', function () {

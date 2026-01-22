@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\TicketActivityType;
 use App\Models\Comment;
 use App\Models\Ticket;
 use App\Models\User;
@@ -67,7 +68,7 @@ it('does not log activity when ticket is updated without changes', function () {
 
     // We expect count to be 1 (creation only)
     expect($ticket->activities()->count())->toBe(1);
-    expect($ticket->activities()->first()->type)->toBe('created');
+    expect($ticket->activities()->first()->type)->toBe(TicketActivityType::Created);
 });
 
 it('logs activity when comment is posted', function () {
