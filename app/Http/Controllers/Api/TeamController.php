@@ -12,12 +12,15 @@ use App\Models\Organization;
 use App\Models\Team;
 use App\Queries\GetOrganizationTeams;
 use App\Queries\GetTeamDetail;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
 class TeamController
 {
-    public function index(Organization $organization, GetOrganizationTeams $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Organization $organization, GetOrganizationTeams $query): AnonymousResourceCollection
     {
         Gate::authorize('view', $organization);
 
@@ -26,7 +29,7 @@ class TeamController
         return TeamResource::collection($teams);
     }
 
-    public function store(Request $request, Organization $organization, CreateTeam $action): \Illuminate\Http\JsonResponse
+    public function store(Request $request, Organization $organization, CreateTeam $action): JsonResponse
     {
         Gate::authorize('create_team', $organization);
 
@@ -61,7 +64,7 @@ class TeamController
         return new TeamResource($updatedTeam);
     }
 
-    public function destroy(Request $request, Team $team, DeleteTeam $action): \Illuminate\Http\Response
+    public function destroy(Request $request, Team $team, DeleteTeam $action): Response
     {
         Gate::authorize('delete', $team);
 

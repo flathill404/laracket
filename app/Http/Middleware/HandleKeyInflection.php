@@ -8,11 +8,12 @@ use Closure;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\Response;
 
 class HandleKeyInflection
 {
     /**
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      */
     public function handle(Request $request, Closure $next)
     {
@@ -24,7 +25,7 @@ class HandleKeyInflection
             );
         }
 
-        /** @var \Symfony\Component\HttpFoundation\Response $response */
+        /** @var Response $response */
         $response = $next($request);
 
         if ($isCamelRequested && $response instanceof JsonResponse) {

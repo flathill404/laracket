@@ -9,11 +9,12 @@ use App\Actions\Ticket\RemoveReviewerFromTicket;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
 class TicketReviewerController
 {
-    public function store(Request $request, Ticket $ticket, AddReviewerToTicket $action): \Illuminate\Http\Response
+    public function store(Request $request, Ticket $ticket, AddReviewerToTicket $action): Response
     {
         Gate::authorize('add_reviewer', $ticket);
 
@@ -24,7 +25,7 @@ class TicketReviewerController
         return response()->noContent();
     }
 
-    public function destroy(Ticket $ticket, User $user, RemoveReviewerFromTicket $action): \Illuminate\Http\Response
+    public function destroy(Ticket $ticket, User $user, RemoveReviewerFromTicket $action): Response
     {
         Gate::authorize('remove_reviewer', $ticket);
 

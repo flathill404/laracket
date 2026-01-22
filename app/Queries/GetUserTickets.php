@@ -8,14 +8,15 @@ use App\Models\Project;
 use App\Models\Ticket;
 use App\Models\User;
 use App\Values\TicketQuery;
+use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Database\Eloquent\Builder;
 
 class GetUserTickets
 {
     /**
-     * @return \Illuminate\Contracts\Pagination\CursorPaginator<int, \App\Models\Ticket>
+     * @return CursorPaginator<int, \App\Models\Ticket>
      */
-    public function __invoke(User $user, TicketQuery $ticketQuery): \Illuminate\Contracts\Pagination\CursorPaginator
+    public function __invoke(User $user, TicketQuery $ticketQuery): CursorPaginator
     {
         $query = Ticket::query()
             ->whereHas('project', function ($query) use ($user) {

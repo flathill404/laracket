@@ -9,11 +9,13 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
+use JsonSerializable;
 
 /**
  * @implements Arrayable<string, mixed>
  */
-class ActivityPayload implements \JsonSerializable, Arrayable, Castable, Jsonable
+class ActivityPayload implements Arrayable, Castable, Jsonable, JsonSerializable
 {
     /**
      * @param  array<array-key, mixed>  $attributes
@@ -23,14 +25,14 @@ class ActivityPayload implements \JsonSerializable, Arrayable, Castable, Jsonabl
     ) {
         foreach ($attributes as $key => $value) {
             if (! is_string($key)) {
-                throw new \InvalidArgumentException('ActivityPayload attributes keys must be strings.');
+                throw new InvalidArgumentException('ActivityPayload attributes keys must be strings.');
             }
 
             if (is_array($value)) {
                 $keys = array_keys($value);
                 $diff = array_diff($keys, ['from', 'to']);
                 if (! empty($diff)) {
-                    throw new \InvalidArgumentException("ActivityPayload nested array for key '{$key}' can only contain 'from' and 'to'.");
+                    throw new InvalidArgumentException("ActivityPayload nested array for key '{$key}' can only contain 'from' and 'to'.");
                 }
             }
         }
@@ -112,6 +114,6 @@ class ActivityPayloadCast implements CastsAttributes
             return (string) json_encode($value);
         }
 
-        throw new \InvalidArgumentException('The given value is not an ActivityPayload instance or array.');
+        throw new InvalidArgumentException('The given value is not an ActivityPayload instance or array.');
     }
 }

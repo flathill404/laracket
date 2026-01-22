@@ -12,12 +12,15 @@ use App\Models\Organization;
 use App\Models\Project;
 use App\Queries\GetOrganizationProjects;
 use App\Queries\GetProjectDetail;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
 class ProjectController
 {
-    public function index(Organization $organization, GetOrganizationProjects $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Organization $organization, GetOrganizationProjects $query): AnonymousResourceCollection
     {
         Gate::authorize('view', $organization);
 
@@ -26,7 +29,7 @@ class ProjectController
         return ProjectResource::collection($projects);
     }
 
-    public function store(Request $request, Organization $organization, CreateProject $action): \Illuminate\Http\JsonResponse
+    public function store(Request $request, Organization $organization, CreateProject $action): JsonResponse
     {
         Gate::authorize('create_project', $organization);
 
@@ -61,7 +64,7 @@ class ProjectController
         return new ProjectResource($updatedProject);
     }
 
-    public function destroy(Request $request, Project $project, DeleteProject $action): \Illuminate\Http\Response
+    public function destroy(Request $request, Project $project, DeleteProject $action): Response
     {
         Gate::authorize('delete', $project);
 

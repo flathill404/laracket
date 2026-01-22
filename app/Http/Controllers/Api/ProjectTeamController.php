@@ -9,11 +9,12 @@ use App\Actions\Project\DetachTeamFromProject;
 use App\Models\Project;
 use App\Models\Team;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
 class ProjectTeamController
 {
-    public function store(Request $request, Project $project, AttachTeamToProject $action): \Illuminate\Http\Response
+    public function store(Request $request, Project $project, AttachTeamToProject $action): Response
     {
         Gate::authorize('attach_team', $project);
 
@@ -24,7 +25,7 @@ class ProjectTeamController
         return response()->noContent();
     }
 
-    public function destroy(Project $project, Team $team, DetachTeamFromProject $action): \Illuminate\Http\Response
+    public function destroy(Project $project, Team $team, DetachTeamFromProject $action): Response
     {
         Gate::authorize('detach_team', $project);
 

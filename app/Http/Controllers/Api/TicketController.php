@@ -13,12 +13,15 @@ use App\Models\Ticket;
 use App\Queries\GetProjectTickets;
 use App\Queries\GetTicketDetail;
 use App\Values\TicketQuery;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
 class TicketController
 {
-    public function index(Request $request, Project $project, GetProjectTickets $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Request $request, Project $project, GetProjectTickets $query): AnonymousResourceCollection
     {
         Gate::authorize('view', $project);
 
@@ -29,7 +32,7 @@ class TicketController
         return TicketResource::collection($tickets);
     }
 
-    public function store(Request $request, Project $project, CreateTicket $action): \Illuminate\Http\JsonResponse
+    public function store(Request $request, Project $project, CreateTicket $action): JsonResponse
     {
         Gate::authorize('create_ticket', $project);
 
@@ -64,7 +67,7 @@ class TicketController
         return new TicketResource($updatedTicket);
     }
 
-    public function destroy(Request $request, Ticket $ticket, DeleteTicket $action): \Illuminate\Http\Response
+    public function destroy(Request $request, Ticket $ticket, DeleteTicket $action): Response
     {
         Gate::authorize('delete', $ticket);
 

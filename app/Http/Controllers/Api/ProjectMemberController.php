@@ -11,11 +11,13 @@ use App\Models\Project;
 use App\Models\User;
 use App\Queries\GetProjectMembers;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
 class ProjectMemberController
 {
-    public function index(Project $project, GetProjectMembers $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Project $project, GetProjectMembers $query): AnonymousResourceCollection
     {
         Gate::authorize('view', $project);
 
@@ -24,7 +26,7 @@ class ProjectMemberController
         return UserResource::collection($members);
     }
 
-    public function store(Request $request, Project $project, AddProjectMember $action): \Illuminate\Http\Response
+    public function store(Request $request, Project $project, AddProjectMember $action): Response
     {
         Gate::authorize('add_member', $project);
 
@@ -35,7 +37,7 @@ class ProjectMemberController
         return response()->noContent();
     }
 
-    public function destroy(Project $project, User $user, RemoveProjectMember $action): \Illuminate\Http\Response
+    public function destroy(Project $project, User $user, RemoveProjectMember $action): Response
     {
         Gate::authorize('remove_member', $project);
 

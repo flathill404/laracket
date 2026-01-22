@@ -8,6 +8,7 @@ use App\Actions\User\DeleteUserAvatar;
 use App\Actions\User\UpdateUserAvatar;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class UserAvatarController
 {
@@ -24,7 +25,7 @@ class UserAvatarController
         return new UserResource($user);
     }
 
-    public function destroy(Request $request, DeleteUserAvatar $action): \Illuminate\Http\Response
+    public function destroy(Request $request, DeleteUserAvatar $action): Response
     {
         /** @var \App\Models\User $user */
         $user = $request->user();

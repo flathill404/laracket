@@ -7,14 +7,15 @@ namespace App\Queries;
 use App\Models\Team;
 use App\Models\Ticket;
 use App\Values\TicketQuery;
+use Illuminate\Contracts\Pagination\CursorPaginator;
 use Illuminate\Database\Eloquent\Builder;
 
 class GetTeamTickets
 {
     /**
-     * @return \Illuminate\Contracts\Pagination\CursorPaginator<int, \App\Models\Ticket>
+     * @return CursorPaginator<int, \App\Models\Ticket>
      */
-    public function __invoke(Team $team, TicketQuery $ticketQuery): \Illuminate\Contracts\Pagination\CursorPaginator
+    public function __invoke(Team $team, TicketQuery $ticketQuery): CursorPaginator
     {
         $query = Ticket::query()
             ->whereHas('project', function ($query) use ($team) {

@@ -11,12 +11,15 @@ use App\Http\Resources\OrganizationResource;
 use App\Models\Organization;
 use App\Queries\GetMyOrganizations;
 use App\Queries\GetOrganizationDetail;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
 class OrganizationController
 {
-    public function index(Request $request, GetMyOrganizations $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Request $request, GetMyOrganizations $query): AnonymousResourceCollection
     {
         /** @var \App\Models\User $user */
         $user = $request->user();
@@ -26,7 +29,7 @@ class OrganizationController
         return OrganizationResource::collection($organizations);
     }
 
-    public function store(Request $request, CreateOrganization $action): \Illuminate\Http\JsonResponse
+    public function store(Request $request, CreateOrganization $action): JsonResponse
     {
         /** @var \App\Models\User $user */
         $user = $request->user();
@@ -59,7 +62,7 @@ class OrganizationController
         return new OrganizationResource($updatedOrganization);
     }
 
-    public function destroy(Request $request, Organization $organization, DeleteOrganization $action): \Illuminate\Http\Response
+    public function destroy(Request $request, Organization $organization, DeleteOrganization $action): Response
     {
         Gate::authorize('delete', $organization);
 

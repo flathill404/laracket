@@ -10,11 +10,12 @@ use App\Models\Ticket;
 use App\Queries\GetTicketComments;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Gate;
 
 class TicketCommentController
 {
-    public function index(Ticket $ticket, GetTicketComments $query): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Ticket $ticket, GetTicketComments $query): AnonymousResourceCollection
     {
         // Ensure user has access to the project
         Gate::authorize('view', $ticket->project);

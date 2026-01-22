@@ -6,13 +6,14 @@ namespace App\Queries;
 
 use App\Models\Project;
 use App\Values\TicketQuery;
+use Illuminate\Contracts\Pagination\CursorPaginator;
 
 class GetProjectTickets
 {
     /**
-     * @return \Illuminate\Contracts\Pagination\CursorPaginator<int, \App\Models\Ticket>
+     * @return CursorPaginator<int, \App\Models\Ticket>
      */
-    public function __invoke(Project $project, TicketQuery $ticketQuery): \Illuminate\Contracts\Pagination\CursorPaginator
+    public function __invoke(Project $project, TicketQuery $ticketQuery): CursorPaginator
     {
         $query = $project->tickets()
             ->with(['assignees', 'reviewers']);

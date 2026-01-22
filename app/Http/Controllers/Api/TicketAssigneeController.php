@@ -9,11 +9,12 @@ use App\Actions\Ticket\UnassignUserFromTicket;
 use App\Models\Ticket;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
 class TicketAssigneeController
 {
-    public function store(Request $request, Ticket $ticket, AssignUserToTicket $action): \Illuminate\Http\Response
+    public function store(Request $request, Ticket $ticket, AssignUserToTicket $action): Response
     {
         Gate::authorize('assign_user', $ticket);
 
@@ -24,7 +25,7 @@ class TicketAssigneeController
         return response()->noContent();
     }
 
-    public function destroy(Ticket $ticket, User $user, UnassignUserFromTicket $action): \Illuminate\Http\Response
+    public function destroy(Ticket $ticket, User $user, UnassignUserFromTicket $action): Response
     {
         Gate::authorize('unassign_user', $ticket);
 
