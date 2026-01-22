@@ -24,11 +24,7 @@ class TicketActivityResource extends JsonResource
             'type' => $this->type,
             'payload' => $this->payload,
             'created_at' => $this->created_at,
-            'user' => [
-                'id' => $this->user->id,
-                'name' => $this->user->name,
-                'display_name' => $this->user->display_name,
-            ],
+            'user' => new UserResource($this->whenLoaded('user')),
         ];
     }
 }
