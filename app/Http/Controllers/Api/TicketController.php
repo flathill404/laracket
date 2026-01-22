@@ -59,6 +59,10 @@ class TicketController
         $input = $request->all();
         $ticket = $action($ticket, $input);
 
+        // TODO: ここで詳細情報をロードするのあってる？
+        $ticket->load('assignees');
+        $ticket->load('reviewers');
+
         return new TicketResource($ticket);
     }
 

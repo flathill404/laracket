@@ -33,12 +33,11 @@ class UpdateTicket
             }
 
             if (isset($validated['assignees'])) {
-                // Enumのvalueを渡すのが確実じゃ
-                $ticket->assignees()->syncWithPivotValues((array) $validated['assignees'], ['type' => TicketUserType::Assignee->value]);
+                $ticket->assignees()->syncWithPivotValues((array) $validated['assignees'], ['type' => TicketUserType::Assignee]);
             }
 
             if (isset($validated['reviewers'])) {
-                $ticket->reviewers()->syncWithPivotValues((array) $validated['reviewers'], ['type' => TicketUserType::Reviewer->value]);
+                $ticket->reviewers()->syncWithPivotValues((array) $validated['reviewers'], ['type' => TicketUserType::Reviewer]);
             }
         });
 
