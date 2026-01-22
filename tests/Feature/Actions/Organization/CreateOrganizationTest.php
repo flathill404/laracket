@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Organization\CreateOrganization;
 use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;

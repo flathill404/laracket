@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Ticket\DeleteTicket;
 use App\Models\Ticket;
 use App\Models\User;

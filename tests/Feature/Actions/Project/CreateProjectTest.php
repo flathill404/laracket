@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Project\CreateProject;
 use App\Models\Organization;
 use App\Models\Team;

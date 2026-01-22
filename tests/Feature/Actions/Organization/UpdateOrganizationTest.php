@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Organization\UpdateOrganization;
 use App\Models\Organization;
 use App\Models\User;

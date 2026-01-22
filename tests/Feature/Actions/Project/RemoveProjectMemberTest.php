@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Project\RemoveProjectMember;
 use App\Models\Organization;
 use App\Models\Project;

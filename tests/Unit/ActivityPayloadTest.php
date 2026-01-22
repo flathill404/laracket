@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Values\ActivityPayload;
 
 it('accepts flat attributes', function () {

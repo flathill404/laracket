@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Ticket\UpdateTicketStatus;
 use App\Enums\TicketStatus;
 use App\Models\Organization;

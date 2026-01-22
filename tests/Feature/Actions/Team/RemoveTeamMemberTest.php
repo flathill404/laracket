@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Team\RemoveTeamMember;
 use App\Enums\TeamRole;
 use App\Models\Organization;

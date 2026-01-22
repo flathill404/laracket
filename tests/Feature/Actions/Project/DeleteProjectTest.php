@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Project\DeleteProject;
 use App\Models\Project;
 use App\Models\User;

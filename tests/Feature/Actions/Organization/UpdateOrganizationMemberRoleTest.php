@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Organization\UpdateOrganizationMemberRole;
 use App\Enums\OrganizationRole;
 use App\Models\Organization;

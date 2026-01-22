@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Actions\Ticket\AddReviewerToTicket;
 use App\Enums\TicketUserType;
 use App\Models\Organization;

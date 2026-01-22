@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Values;
 
 use Illuminate\Contracts\Database\Eloquent\Castable;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Api\OrganizationController;
 use App\Http\Controllers\Api\OrganizationMemberController;
 use App\Http\Controllers\Api\ProjectController;
