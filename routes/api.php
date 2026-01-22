@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\TicketAssigneeController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TicketOrderController;
 use App\Http\Controllers\Api\TicketReviewerController;
+use App\Http\Controllers\Api\TicketSearchController;
 use App\Http\Controllers\Api\TicketStatusController;
 use App\Http\Controllers\Api\UserAvatarController;
 use App\Http\Controllers\Api\UserController;
@@ -74,6 +75,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/teams/{team}/tickets', [TeamTicketsController::class, 'index']);
 
     // Tickets
+    Route::get('/tickets/search', [TicketSearchController::class, 'index']);
     Route::get('/projects/{project}/tickets', [TicketController::class, 'index']);
     Route::post('/projects/{project}/tickets', [TicketController::class, 'store']);
     Route::get('/tickets/{ticket}', [TicketController::class, 'show']);

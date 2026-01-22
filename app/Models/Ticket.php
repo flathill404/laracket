@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Scout\Searchable;
 
 /**
  * @property string $id
@@ -52,12 +53,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Ticket extends Model
 {
-    /**
-     * @use HasFactory<\Database\Factories\TicketFactory>
-     */
+    /** @use HasFactory<\Database\Factories\TicketFactory> */
     use HasFactory;
 
     use HasUuids;
+    use Searchable;
 
     protected $guarded = [];
 
@@ -67,6 +67,24 @@ class Ticket extends Model
         'updated_at' => 'immutable_datetime',
         'created_at' => 'immutable_datetime',
     ];
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'description' => $this->description,
+            'project_id' => $this->project_id,
+            'created_by' => $this->created_by,
+            'status' => $this->status->value,
+            'created_at' => $this->created_at?->timestamp,
+            'updated_at' => $this->updated_at?->timestamp,
+            'display_order' => $this->display_order,
+        ];
+    }
 
     /**
      * @return BelongsTo<Project, $this>
