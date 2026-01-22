@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property string $display_name
  * @property string|null $description
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team> $assignedTeams
  * @property-read int|null $assigned_teams_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $assignedUsers

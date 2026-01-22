@@ -21,16 +21,17 @@ use Laravel\Scout\Searchable;
  * @property string $title
  * @property string|null $description
  * @property TicketStatus $status
- * @property \Illuminate\Support\Carbon|null $due_date
+ * @property \Carbon\CarbonImmutable|null $due_date
  * @property float $display_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TicketActivity> $activities
  * @property-read int|null $activities_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $assignees
  * @property-read int|null $assignees_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Comment> $comments
  * @property-read int|null $comments_count
+ * @property-read \App\Models\User $creator
  * @property-read \App\Models\Project $project
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $reviewers
  * @property-read int|null $reviewers_count
@@ -40,6 +41,7 @@ use Laravel\Scout\Searchable;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereCreatedBy($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereDisplayOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket whereDueDate($value)

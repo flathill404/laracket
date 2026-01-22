@@ -13,10 +13,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $id
  * @property string $organization_id
  * @property string $email
- * @property \App\Enums\OrganizationRole $role
+ * @property OrganizationRole $role
  * @property string $token
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
  * @property-read \App\Models\Organization $organization
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|OrganizationInvitation newModelQuery()

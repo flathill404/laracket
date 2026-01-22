@@ -16,8 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $name
  * @property string $display_name
  * @property string $owner_user_id
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
  * @property-read \App\Models\User $owner
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project> $projects
  * @property-read int|null $projects_count

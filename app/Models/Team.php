@@ -15,8 +15,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string $organization_id
  * @property string $name
  * @property string $display_name
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project> $assignedProjects
  * @property-read int|null $assigned_projects_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $members

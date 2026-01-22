@@ -19,16 +19,16 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property string $id
  * @property string $name
  * @property string $email
- * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property \Carbon\CarbonImmutable|null $email_verified_at
  * @property string $password
  * @property string|null $remember_token
  * @property string $display_name
  * @property string|null $avatar_path
  * @property string|null $two_factor_secret
  * @property string|null $two_factor_recovery_codes
- * @property string|null $two_factor_confirmed_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Carbon\CarbonImmutable|null $two_factor_confirmed_at
+ * @property \Carbon\CarbonImmutable|null $created_at
+ * @property \Carbon\CarbonImmutable|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project> $assignedProjects
  * @property-read int|null $assigned_projects_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ticket> $assignedTickets
