@@ -18,15 +18,13 @@ use function Pest\Laravel\postJson;
 
 uses(LazilyRefreshDatabase::class);
 
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    actingAs($this->user);
-});
-
 describe('store', function () {
     it('adds a reviewer to the ticket', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -53,6 +51,9 @@ describe('store', function () {
     });
 
     it('denies adding reviewer if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -71,8 +72,11 @@ describe('store', function () {
     });
 
     it('validates input', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -89,8 +93,11 @@ describe('store', function () {
 
 describe('destroy', function () {
     it('removes a reviewer from the ticket', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -114,6 +121,9 @@ describe('destroy', function () {
     });
 
     it('denies removing reviewer if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create([
             'organization_id' => $organization->id,

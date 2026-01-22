@@ -17,17 +17,15 @@ use function Pest\Laravel\postJson;
 
 uses(LazilyRefreshDatabase::class);
 
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    actingAs($this->user);
-});
-
 describe('index', function () {
     it('lists organization members for member', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create([
-            'owner_user_id' => $this->user->id,
+            'owner_user_id' => $user->id,
         ]);
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Owner]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Owner]);
 
         $otherUser = User::factory()->create();
         $organization->users()->attach($otherUser, ['role' => OrganizationRole::Member]);
@@ -43,6 +41,9 @@ describe('index', function () {
     });
 
     it('denies access if not a member', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $otherUser = User::factory()->create();
         $organization = Organization::factory()->create([
             'owner_user_id' => $otherUser->id,
@@ -56,10 +57,13 @@ describe('index', function () {
 
 describe('store', function () {
     it('invites a member to organization', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create([
-            'owner_user_id' => $this->user->id,
+            'owner_user_id' => $user->id,
         ]);
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Owner]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Owner]);
 
         $newUser = User::factory()->create();
 
@@ -77,10 +81,13 @@ describe('store', function () {
     });
 
     it('defaults to member role if role is missing', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create([
-            'owner_user_id' => $this->user->id,
+            'owner_user_id' => $user->id,
         ]);
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Owner]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Owner]);
 
         $newUser = User::factory()->create();
 
@@ -97,12 +104,15 @@ describe('store', function () {
     });
 
     it('denies invite if not authorized (e.g. not owner/admin depending on policy)', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $otherUser = User::factory()->create();
         $organization = Organization::factory()->create([
             'owner_user_id' => $otherUser->id,
         ]);
         // Attach current user as a regular member (assuming only owners/admins can invite)
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $newUser = User::factory()->create();
 
@@ -116,10 +126,13 @@ describe('store', function () {
 
 describe('update', function () {
     it('updates member role', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create([
-            'owner_user_id' => $this->user->id,
+            'owner_user_id' => $user->id,
         ]);
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Owner]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Owner]);
 
         $member = User::factory()->create();
         $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
@@ -137,12 +150,15 @@ describe('update', function () {
     });
 
     it('denies update if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $otherUser = User::factory()->create();
         $organization = Organization::factory()->create([
             'owner_user_id' => $otherUser->id,
         ]);
         // Current user is just a member
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $member = User::factory()->create();
         $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
@@ -156,10 +172,13 @@ describe('update', function () {
 
 describe('destroy', function () {
     it('removes member from organization', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create([
-            'owner_user_id' => $this->user->id,
+            'owner_user_id' => $user->id,
         ]);
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Owner]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Owner]);
 
         $member = User::factory()->create();
         $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
@@ -174,12 +193,15 @@ describe('destroy', function () {
     });
 
     it('denies removal if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $otherUser = User::factory()->create();
         $organization = Organization::factory()->create([
             'owner_user_id' => $otherUser->id,
         ]);
         // Current user is just a member
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $member = User::factory()->create();
         $organization->users()->attach($member, ['role' => OrganizationRole::Member]);

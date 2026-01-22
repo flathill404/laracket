@@ -15,20 +15,18 @@ use function Pest\Laravel\getJson;
 
 uses(LazilyRefreshDatabase::class);
 
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    actingAs($this->user);
-});
-
 describe('index with status filter', function () {
     it('filters tickets by single status', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         $openTicket = Ticket::factory()->create([
             'project_id' => $project->id,
@@ -48,13 +46,16 @@ describe('index with status filter', function () {
     });
 
     it('filters tickets by multiple statuses', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         $openTicket = Ticket::factory()->create([
             'project_id' => $project->id,
@@ -82,13 +83,16 @@ describe('index with status filter', function () {
     });
 
     it('returns all tickets when no status filter is provided', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         Ticket::factory()->create(['project_id' => $project->id, 'status' => TicketStatus::Open]);
         Ticket::factory()->create(['project_id' => $project->id, 'status' => TicketStatus::Closed]);

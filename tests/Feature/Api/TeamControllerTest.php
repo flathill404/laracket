@@ -18,15 +18,13 @@ use function Pest\Laravel\putJson;
 
 uses(LazilyRefreshDatabase::class);
 
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    actingAs($this->user);
-});
-
 describe('index', function () {
     it('lists teams for organization member', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $teams = Team::factory(3)->create([
             'organization_id' => $organization->id,
@@ -43,6 +41,9 @@ describe('index', function () {
     });
 
     it('denies access if not a member', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         // User is not a member
 
@@ -53,8 +54,11 @@ describe('index', function () {
 
 describe('store', function () {
     it('creates a team', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $data = [
             'name' => 'test-team',
@@ -77,8 +81,11 @@ describe('store', function () {
     });
 
     it('denies creation if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $data = [
             'name' => 'test-team',
@@ -90,8 +97,11 @@ describe('store', function () {
     });
 
     it('validates input', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         postJson("/api/organizations/{$organization->id}/teams", [])
             ->assertUnprocessable()
@@ -101,8 +111,11 @@ describe('store', function () {
 
 describe('show', function () {
     it('shows team details', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $team = Team::factory()->create([
             'organization_id' => $organization->id,
@@ -119,6 +132,9 @@ describe('show', function () {
     });
 
     it('denies access if not a member of organization', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $team = Team::factory()->create([
             'organization_id' => $organization->id,
@@ -132,8 +148,11 @@ describe('show', function () {
 
 describe('update', function () {
     it('updates team', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $team = Team::factory()->create([
             'organization_id' => $organization->id,
@@ -158,8 +177,11 @@ describe('update', function () {
     });
 
     it('denies update if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $team = Team::factory()->create([
             'organization_id' => $organization->id,
@@ -172,8 +194,11 @@ describe('update', function () {
 
 describe('destroy', function () {
     it('deletes team', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $team = Team::factory()->create([
             'organization_id' => $organization->id,
@@ -188,8 +213,11 @@ describe('destroy', function () {
     });
 
     it('denies delete if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $team = Team::factory()->create([
             'organization_id' => $organization->id,

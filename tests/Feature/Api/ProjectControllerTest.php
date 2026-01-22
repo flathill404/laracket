@@ -18,15 +18,13 @@ use function Pest\Laravel\putJson;
 
 uses(LazilyRefreshDatabase::class);
 
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    actingAs($this->user);
-});
-
 describe('index', function () {
     it('lists projects for organization member', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $projects = Project::factory(3)->create([
             'organization_id' => $organization->id,
@@ -43,6 +41,9 @@ describe('index', function () {
     });
 
     it('denies access if not a member', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         // User is not a member
 
@@ -53,8 +54,11 @@ describe('index', function () {
 
 describe('store', function () {
     it('creates a project', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $data = [
             'name' => 'test-project',
@@ -79,8 +83,11 @@ describe('store', function () {
     });
 
     it('validates input', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         postJson("/api/organizations/{$organization->id}/projects", [])
             ->assertUnprocessable()
@@ -90,13 +97,16 @@ describe('store', function () {
 
 describe('show', function () {
     it('shows project details', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         getJson("/api/projects/{$project->id}")
             ->assertOk()
@@ -109,6 +119,9 @@ describe('show', function () {
     });
 
     it('denies access if not a member of organization', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -122,8 +135,11 @@ describe('show', function () {
 
 describe('update', function () {
     it('updates project', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -148,6 +164,9 @@ describe('update', function () {
     });
 
     it('denies update if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $otherUser = User::factory()->create();
         $organization = Organization::factory()->create(['owner_user_id' => $otherUser->id]);
         // User is not member (or minimal member role check depending on policy)
@@ -163,10 +182,13 @@ describe('update', function () {
 
 describe('destroy', function () {
     it('deletes project', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create([
-            'owner_user_id' => $this->user->id,
+            'owner_user_id' => $user->id,
         ]);
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Owner]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Owner]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -184,8 +206,11 @@ describe('destroy', function () {
     });
 
     it('denies delete if not owner', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,

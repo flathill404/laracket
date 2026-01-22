@@ -16,24 +16,22 @@ use function Pest\Laravel\getJson;
 
 uses(LazilyRefreshDatabase::class);
 
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    actingAs($this->user);
-});
-
 describe('index', function () {
     it('lists activities for a ticket', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create(['organization_id' => $organization->id]);
 
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         // Observer creates 'created' activity when ticket is created
         $ticket = Ticket::factory()->create(['project_id' => $project->id]);
 
         TicketActivity::create([
             'ticket_id' => $ticket->id,
-            'user_id' => $this->user->id,
+            'user_id' => $user->id,
             'type' => TicketActivityType::Updated,
             'payload' => new ActivityPayload(['status' => ['from' => 'open', 'to' => 'in_progress']]),
             'created_at' => now(),
@@ -51,17 +49,20 @@ describe('index', function () {
     });
 
     it('returns activities in ascending order by created_at', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create(['organization_id' => $organization->id]);
 
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         // Observer creates 'created' activity when ticket is created
         $ticket = Ticket::factory()->create(['project_id' => $project->id]);
 
         TicketActivity::create([
             'ticket_id' => $ticket->id,
-            'user_id' => $this->user->id,
+            'user_id' => $user->id,
             'type' => TicketActivityType::Updated,
             'payload' => new ActivityPayload(['status' => ['from' => 'open', 'to' => 'in_progress']]),
             'created_at' => now()->addMinute(),
@@ -79,6 +80,9 @@ describe('index', function () {
     });
 
     it('denies access if not a member', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create(['organization_id' => $organization->id]);
         $ticket = Ticket::factory()->create(['project_id' => $project->id]);

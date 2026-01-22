@@ -20,21 +20,19 @@ use function Pest\Laravel\putJson;
 
 uses(LazilyRefreshDatabase::class);
 
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    actingAs($this->user);
-});
-
 describe('index', function () {
     it('lists tickets in project', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
         // User needs access to project
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         $tickets = Ticket::factory(3)->create([
             'project_id' => $project->id,
@@ -51,11 +49,14 @@ describe('index', function () {
     });
 
     it('can paginate and sort tickets', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create(['organization_id' => $organization->id]);
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         // Create tickets with specific dates
         $ticket1 = Ticket::factory()->for($project)->create(['created_at' => now()->subDays(3)]);
@@ -82,6 +83,9 @@ describe('index', function () {
     });
 
     it('denies access if not a member', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -95,13 +99,16 @@ describe('index', function () {
 
 describe('store', function () {
     it('creates a ticket', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         $data = [
             'title' => 'New Ticket',
@@ -124,6 +131,9 @@ describe('store', function () {
     });
 
     it('denies creation if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -139,8 +149,11 @@ describe('store', function () {
     });
 
     it('validates input', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -152,11 +165,14 @@ describe('store', function () {
     });
 
     it('sets the creator of the ticket', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create(['organization_id' => $organization->id]);
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         $data = [
             'title' => 'Ticket with Creator',
@@ -166,20 +182,23 @@ describe('store', function () {
 
         assertDatabaseHas('tickets', [
             'title' => 'Ticket with Creator',
-            'created_by' => $this->user->id,
+            'created_by' => $user->id,
         ]);
     });
 });
 
 describe('show', function () {
     it('shows ticket details', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         $ticket = Ticket::factory()->create([
             'project_id' => $project->id,
@@ -196,6 +215,9 @@ describe('show', function () {
     });
 
     it('denies access if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -212,8 +234,11 @@ describe('show', function () {
 
 describe('update', function () {
     it('updates ticket', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -242,6 +267,9 @@ describe('update', function () {
     });
 
     it('denies update if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -258,8 +286,11 @@ describe('update', function () {
 
 describe('destroy', function () {
     it('deletes ticket', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -278,13 +309,16 @@ describe('destroy', function () {
     });
 
     it('denies delete if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
         ]);
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         $ticket = Ticket::factory()->create([
             'project_id' => $project->id,

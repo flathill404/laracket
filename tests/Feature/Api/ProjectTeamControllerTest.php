@@ -17,15 +17,13 @@ use function Pest\Laravel\postJson;
 
 uses(LazilyRefreshDatabase::class);
 
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    actingAs($this->user);
-});
-
 describe('store', function () {
     it('attaches a team to the project', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -47,8 +45,11 @@ describe('store', function () {
     });
 
     it('denies attaching team if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -65,8 +66,11 @@ describe('store', function () {
     });
 
     it('validates input', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -79,8 +83,11 @@ describe('store', function () {
 
 describe('destroy', function () {
     it('detaches a team from the project', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -101,8 +108,11 @@ describe('destroy', function () {
     });
 
     it('denies detaching team if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,

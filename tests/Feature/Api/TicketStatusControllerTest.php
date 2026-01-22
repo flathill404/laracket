@@ -16,15 +16,13 @@ use function Pest\Laravel\patchJson;
 
 uses(LazilyRefreshDatabase::class);
 
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    actingAs($this->user);
-});
-
 describe('update', function () {
     it('updates ticket status', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -47,6 +45,9 @@ describe('update', function () {
     });
 
     it('denies update if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create([
             'organization_id' => $organization->id,
@@ -64,8 +65,11 @@ describe('update', function () {
     });
 
     it('validates status enum', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
-        $organization->users()->attach($this->user, ['role' => OrganizationRole::Admin]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
         $project = Project::factory()->create([
             'organization_id' => $organization->id,

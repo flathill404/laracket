@@ -10,23 +10,22 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\getJson;
 use function Pest\Laravel\postJson;
 
 uses(LazilyRefreshDatabase::class);
 
-beforeEach(function () {
-    $this->user = User::factory()->create();
-    actingAs($this->user);
-});
-
 describe('index', function () {
     it('lists comments for a ticket', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create(['organization_id' => $organization->id]);
 
         // Grant access
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         $ticket = Ticket::factory()->create(['project_id' => $project->id]);
 
@@ -40,7 +39,7 @@ describe('index', function () {
 
         Comment::create([
             'ticket_id' => $ticket->id,
-            'user_id' => $this->user->id,
+            'user_id' => $user->id,
             'body' => 'Second comment',
             'created_at' => now(),
         ]);
@@ -56,6 +55,9 @@ describe('index', function () {
     });
 
     it('denies access if not a member', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create(['organization_id' => $organization->id]);
         $ticket = Ticket::factory()->create(['project_id' => $project->id]);
@@ -67,11 +69,14 @@ describe('index', function () {
 
 describe('store', function () {
     it('creates a comment', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create(['organization_id' => $organization->id]);
 
         // Grant access
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
 
         $ticket = Ticket::factory()->create(['project_id' => $project->id]);
 
@@ -82,17 +87,20 @@ describe('store', function () {
             ->assertJsonFragment(['body' => 'My new comment'])
             ->assertJsonStructure(['id', 'body', 'created_at', 'user']);
 
-        $this->assertDatabaseHas('comments', [
+        assertDatabaseHas('comments', [
             'ticket_id' => $ticket->id,
-            'user_id' => $this->user->id,
+            'user_id' => $user->id,
             'body' => 'My new comment',
         ]);
     });
 
     it('validates input', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create(['organization_id' => $organization->id]);
-        $project->assignedUsers()->attach($this->user);
+        $project->assignedUsers()->attach($user);
         $ticket = Ticket::factory()->create(['project_id' => $project->id]);
 
         postJson("/api/tickets/{$ticket->id}/comments", [])
@@ -101,6 +109,9 @@ describe('store', function () {
     });
 
     it('denies creation if not authorized', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+
         $organization = Organization::factory()->create();
         $project = Project::factory()->create(['organization_id' => $organization->id]);
         $ticket = Ticket::factory()->create(['project_id' => $project->id]);
