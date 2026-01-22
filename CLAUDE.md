@@ -89,7 +89,9 @@ Model lifecycle hooks for audit logging:
 ## Key Patterns
 
 ### Controller Flow
-Controllers delegate to Actions and Queries:
+Controllers delegate to Actions and Queries following CQS (Command Query Separation) principles:
+
+**Create (store)**: Action returns the created resource
 ```php
 public function store(Request $request, Project $project): TicketResource
 {
@@ -98,6 +100,22 @@ public function store(Request $request, Project $project): TicketResource
     return new TicketResource($ticket);
 }
 ```
+
+**Update**: Action performs the mutation, Query fetches the response
+```php
+public function update(Request $request, Ticket $ticket, UpdateTicket $action, GetTicketDetail $query): TicketResource
+{
+    Gate::authorize('update', $ticket);
+    $action($ticket, $request->all());
+    $updatedTicket = $query($ticket);
+    return new TicketResource($updatedTicket);
+}
+```
+
+This separation ensures:
+- Actions remain pure commands (write-only)
+- Queries handle eager loading consistently with `show` methods
+- Response structure is unified across `show` and `update` endpoints
 
 ### Middleware
 - `HandleKeyInflection`: Converts snake_case requests to camelCase and vice versa for responses
