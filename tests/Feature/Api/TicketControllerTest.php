@@ -150,6 +150,25 @@ describe('store', function () {
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['title']);
     });
+
+    it('sets the creator of the ticket', function () {
+        $organization = Organization::factory()->create();
+        $organization->users()->attach($this->user, ['role' => OrganizationRole::Member]);
+
+        $project = Project::factory()->create(['organization_id' => $organization->id]);
+        $project->assignedUsers()->attach($this->user);
+
+        $data = [
+            'title' => 'Ticket with Creator',
+        ];
+
+        postJson("/api/projects/{$project->id}/tickets", $data)->assertCreated();
+
+        assertDatabaseHas('tickets', [
+            'title' => 'Ticket with Creator',
+            'created_by' => $this->user->id,
+        ]);
+    });
 });
 
 describe('show', function () {

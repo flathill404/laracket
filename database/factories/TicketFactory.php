@@ -21,6 +21,7 @@ class TicketFactory extends Factory
             'status' => $this->faker->randomElement(TicketStatus::cases()),
             'due_date' => $this->faker->optional()->dateTimeBetween('now', '+1 month'),
             'project_id' => \App\Models\Project::factory(),
+            'created_by' => \App\Models\User::factory(),
         ];
     }
 }

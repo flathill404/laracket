@@ -30,9 +30,10 @@ class CreateTicket
             $this->validateAssigneeIsProjectMember($project, $validated['assignee_id']);
         }
 
-        $ticket = DB::transaction(function () use ($project, $validated) {
+        $ticket = DB::transaction(function () use ($project, $validated, $creator) {
             /** @var Ticket $ticket */
             $ticket = $project->tickets()->create([
+                'created_by' => $creator->id,
                 'title' => $validated['title'],
                 'description' => $validated['description'] ?? null,
                 'status' => $validated['status'] ?? TicketStatus::Open->value,
