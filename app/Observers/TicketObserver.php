@@ -6,6 +6,8 @@ namespace App\Observers;
 
 use App\Models\Ticket;
 
+use Illuminate\Support\Facades\Auth;
+
 class TicketObserver
 {
     /**
@@ -13,9 +15,9 @@ class TicketObserver
      */
     public function created(Ticket $ticket): void
     {
-        if (auth()->check()) {
+        if (Auth::check()) {
             $ticket->activities()->create([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'type' => 'created',
                 'payload' => null,
             ]);
@@ -27,7 +29,7 @@ class TicketObserver
      */
     public function updated(Ticket $ticket): void
     {
-        if (! auth()->check()) {
+        if (! Auth::check()) {
             return;
         }
 
@@ -48,7 +50,7 @@ class TicketObserver
         }
 
         $ticket->activities()->create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'type' => 'updated',
             'payload' => $payload,
         ]);

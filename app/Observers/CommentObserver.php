@@ -6,6 +6,8 @@ namespace App\Observers;
 
 use App\Models\Comment;
 
+use Illuminate\Support\Facades\Auth;
+
 class CommentObserver
 {
     /**
@@ -13,9 +15,9 @@ class CommentObserver
      */
     public function created(Comment $comment): void
     {
-        if (auth()->check()) {
+        if (Auth::check()) {
             $comment->ticket->activities()->create([
-                'user_id' => auth()->id(),
+                'user_id' => Auth::id(),
                 'type' => 'commented',
                 'payload' => ['body' => $comment->body], // Assuming 'body' is the content field
             ]);
