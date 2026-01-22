@@ -51,19 +51,17 @@ class TicketController
         return new TicketResource($ticket);
     }
 
-    public function update(Request $request, Ticket $ticket, UpdateTicket $action): TicketResource
+    public function update(Request $request, Ticket $ticket, UpdateTicket $action, GetTicketDetail $query): TicketResource
     {
         Gate::authorize('update', $ticket);
 
         /** @var array<string, mixed> $input */
         $input = $request->all();
-        $ticket = $action($ticket, $input);
+        $action($ticket, $input);
 
-        // TODO: ここで詳細情報をロードするのあってる？
-        $ticket->load('assignees');
-        $ticket->load('reviewers');
+        $updatedTicket = $query($ticket);
 
-        return new TicketResource($ticket);
+        return new TicketResource($updatedTicket);
     }
 
     public function destroy(Request $request, Ticket $ticket, DeleteTicket $action): \Illuminate\Http\Response
