@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\ProjectTeamController;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TeamMemberController;
 use App\Http\Controllers\Api\TeamTicketsController;
+use App\Http\Controllers\Api\TicketActivityController;
 use App\Http\Controllers\Api\TicketAssigneeController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TicketOrderController;
@@ -90,4 +91,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Comments
     Route::get('/tickets/{ticket}/comments', [\App\Http\Controllers\Api\TicketCommentController::class, 'index']);
     Route::post('/tickets/{ticket}/comments', [\App\Http\Controllers\Api\TicketCommentController::class, 'store']);
+
+    // Activities
+    Route::get('/tickets/{ticket}/activities', [TicketActivityController::class, 'index']);
 });
