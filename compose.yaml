@@ -16,6 +16,16 @@ services:
       - .:/var/www/html
     depends_on:
       - redis
+  horizon:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+    command: php artisan horizon
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - redis
+      - db
   db:
     image: 'mysql:8.4'
     ports:

@@ -13,6 +13,7 @@
         "http-interop/http-factory-guzzle": "^1.2",
         "laravel/fortify": "^1.33",
         "laravel/framework": "^12.0",
+        "laravel/horizon": "^5.43",
         "laravel/sanctum": "^4.0",
         "laravel/scout": "^10.23",
         "laravel/tinker": "^2.10.1",
