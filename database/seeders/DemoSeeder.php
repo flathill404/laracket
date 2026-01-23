@@ -187,8 +187,14 @@ class DemoSeeder extends Seeder
         $this->command?->info('🎫 Creating tickets...');
         $ticketCount = 0;
         $commentCount = 0;
-        foreach ($data['tickets'] ?? [] as $ticketData) {
+
+        $tickets = $data['tickets'] ?? [];
+        $this->command?->getOutput()?->progressStart(count($tickets));
+
+        foreach ($tickets as $ticketData) {
             if (! isset($projects[$ticketData['project_name']])) {
+                $this->command?->getOutput()?->progressAdvance();
+
                 continue;
             }
 
@@ -225,7 +231,11 @@ class DemoSeeder extends Seeder
                     $commentCount++;
                 }
             }
+
+            $this->command?->getOutput()?->progressAdvance();
         }
+
+        $this->command?->getOutput()?->progressFinish();
         $this->command?->info("   → {$ticketCount} tickets created");
         $this->command?->info("   → {$commentCount} comments created");
         $this->command?->info('');
