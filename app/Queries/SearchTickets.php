@@ -30,12 +30,12 @@ class SearchTickets
         }
 
         if (! empty($searchQuery->statuses)) {
-            $statusValues = array_map(fn ($status) => $status->value, $searchQuery->statuses);
+            $statusValues = array_map(fn($status) => $status->value, $searchQuery->statuses);
             $builder->whereIn('status', $statusValues);
         }
 
         return $builder
-            ->query(fn (Builder $query) => $query->with(['assignees', 'reviewers', 'project']))
-            ->simplePaginate($searchQuery->perPage);
+            ->query(fn(Builder $query) => $query->with(['assignees', 'reviewers', 'project']))
+            ->cursorPaginate($searchQuery->perPage);
     }
 }
