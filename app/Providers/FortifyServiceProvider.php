@@ -62,6 +62,7 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         ResetPassword::createUrlUsing(function ($user, string $token) {
+            /** @var \App\Models\User $user */
             /** @var string $frontendUrl */
             $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
 
