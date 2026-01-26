@@ -14,8 +14,8 @@ class TicketSearchController
 {
     public function index(Request $request, SearchTickets $query): AnonymousResourceCollection
     {
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
 
         $searchQuery = new TicketSearchQuery((array) $request->query());
 

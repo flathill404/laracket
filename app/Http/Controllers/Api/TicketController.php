@@ -36,8 +36,9 @@ class TicketController
     {
         Gate::authorize('create_ticket', $project);
 
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
+
         /** @var array<string, mixed> $input */
         $input = $request->all();
         $ticket = $action($user, $project, $input);
@@ -71,8 +72,9 @@ class TicketController
     {
         Gate::authorize('delete', $ticket);
 
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
+
         $action($user, $ticket);
 
         return response()->noContent();

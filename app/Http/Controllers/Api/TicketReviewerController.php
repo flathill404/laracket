@@ -18,8 +18,9 @@ class TicketReviewerController
     {
         Gate::authorize('add_reviewer', $ticket);
 
-        /** @var \App\Models\User $user */
         $user = User::findOrFail($request->input('user_id'));
+        assert($user instanceof \App\Models\User);
+
         $action($ticket, $user);
 
         return response()->noContent();

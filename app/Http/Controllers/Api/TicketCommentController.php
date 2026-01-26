@@ -29,8 +29,9 @@ class TicketCommentController
     {
         Gate::authorize('view', $ticket->project); // Assuming view access is enough to comment for now
 
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
+
         /** @var array<string, mixed> $data */
         $data = $request->all();
         $comment = $action($user, $ticket, $data);

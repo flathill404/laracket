@@ -30,8 +30,9 @@ class ProjectMemberController
     {
         Gate::authorize('add_member', $project);
 
-        /** @var \App\Models\User $user */
         $user = User::findOrFail($request->input('user_id'));
+        assert($user instanceof \App\Models\User);
+
         $action($project, $user);
 
         return response()->noContent();

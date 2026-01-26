@@ -33,8 +33,9 @@ class ProjectController
     {
         Gate::authorize('create_project', $organization);
 
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
+
         /** @var array<string, mixed> $input */
         $input = $request->all();
         $project = $action($user, $organization, $input);
@@ -68,8 +69,9 @@ class ProjectController
     {
         Gate::authorize('delete', $project);
 
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
+
         $action($user, $project);
 
         return response()->noContent();

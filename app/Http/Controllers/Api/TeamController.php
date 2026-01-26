@@ -33,8 +33,9 @@ class TeamController
     {
         Gate::authorize('create_team', $organization);
 
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
+
         /** @var array<string, mixed> $input */
         $input = $request->all();
         $team = $action($user, $organization, $input);
@@ -68,8 +69,9 @@ class TeamController
     {
         Gate::authorize('delete', $team);
 
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
+
         $action($user, $team);
 
         return response()->noContent();

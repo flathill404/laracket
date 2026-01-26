@@ -21,8 +21,8 @@ class OrganizationController
 {
     public function index(Request $request, GetMyOrganizations $query): AnonymousResourceCollection
     {
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
 
         $organizations = $query($user);
 
@@ -31,8 +31,9 @@ class OrganizationController
 
     public function store(Request $request, CreateOrganization $action): JsonResponse
     {
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
+
         /** @var array<string, mixed> $input */
         $input = $request->all();
         $organization = $action($user, $input);
@@ -66,8 +67,9 @@ class OrganizationController
     {
         Gate::authorize('delete', $organization);
 
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
+
         $action($user, $organization);
 
         return response()->noContent();

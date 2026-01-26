@@ -12,8 +12,8 @@ class UserController
 {
     public function show(Request $request, GetUserProfile $query): UserResource
     {
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
 
         $user = $query($user);
 

@@ -14,8 +14,8 @@ class UserAvatarController
 {
     public function update(Request $request, UpdateUserAvatar $action): UserResource
     {
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
 
         /** @var array<string, mixed> $input */
         $input = $request->all();
@@ -27,8 +27,8 @@ class UserAvatarController
 
     public function destroy(Request $request, DeleteUserAvatar $action): Response
     {
-        /** @var \App\Models\User $user */
         $user = $request->user();
+        assert($user instanceof \App\Models\User);
 
         $action($user);
 
