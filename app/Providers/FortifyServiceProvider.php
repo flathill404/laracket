@@ -8,6 +8,7 @@ use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
+use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\RedirectResponse;
@@ -61,8 +62,9 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($request->session()->get('login.id'));
         });
 
-        ResetPassword::createUrlUsing(function ($user, string $token) {
-            /** @var \App\Models\User $user */
+        ResetPassword::createUrlUsing(function (mixed $user, string $token) {
+            assert($user instanceof User);
+
             /** @var string $frontendUrl */
             $frontendUrl = config('app.frontend_url', 'http://localhost:5173');
 
