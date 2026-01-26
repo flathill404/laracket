@@ -9,7 +9,6 @@ use App\Models\Ticket;
 use App\Models\User;
 use App\Values\TicketSearchQuery;
 use Illuminate\Contracts\Pagination\CursorPaginator;
-use Illuminate\Database\Eloquent\Builder;
 
 class SearchTickets
 {
@@ -30,7 +29,7 @@ class SearchTickets
         }
 
         if (! empty($searchQuery->statuses)) {
-            $statusValues = array_map(fn($status) => $status->value, $searchQuery->statuses);
+            $statusValues = array_map(fn ($status) => $status->value, $searchQuery->statuses);
             $scoutBuilder->whereIn('status', $statusValues);
         }
 
