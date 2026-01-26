@@ -36,6 +36,6 @@ class SearchTickets
 
         return $builder
             ->query(fn(Builder $query) => $query->with(['assignees', 'reviewers', 'project']))
-            ->cursorPaginate($searchQuery->perPage);
+            ->simplePaginate($searchQuery->perPage);
     }
 }
