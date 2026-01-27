@@ -83,13 +83,13 @@ class DemoSeeder extends Seeder
         $this->command?->info('   → '.count($users).' users created');
         $this->command?->info('');
 
-        // 2. Personal Projects (Actions)
+        // 2. Personal Organizations (Actions)
         $this->command?->info('🏠 Creating personal organizations...');
         $createOrganization = app(CreateOrganization::class);
         foreach ($users as $user) {
             $org = $createOrganization($user, [
-                'name' => 'the-'.$user->name.'-project',
-                'display_name' => 'The '.$user->display_name.' Project',
+                'name' => 'the-'.$user->name.'-organization',
+                'display_name' => 'The '.$user->display_name.' Organization',
             ]);
             $this->command?->line("   ✓ Created: {$org->display_name}");
         }
