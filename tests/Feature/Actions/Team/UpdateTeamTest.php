@@ -12,40 +12,42 @@ use function Pest\Laravel\assertDatabaseHas;
 
 uses(LazilyRefreshDatabase::class);
 
-it('updates a team', function () {
-    $team = Team::factory()->create();
-    $user = User::factory()->create();
-    $member = User::factory()->create();
-    $action = new UpdateTeam;
+describe('UpdateTeam', function () {
+    it('updates a team', function () {
+        $team = Team::factory()->create();
+        $user = User::factory()->create();
+        $member = User::factory()->create();
+        $action = new UpdateTeam;
 
-    $input = [
-        'name' => 'UpdatedTeamName',
-        'members' => [$member->id],
-    ];
+        $input = [
+            'name' => 'UpdatedTeamName',
+            'members' => [$member->id],
+        ];
 
-    $action($team, $input);
+        $action($team, $input);
 
-    assertDatabaseHas('teams', [
-        'id' => $team->id,
-        'name' => 'UpdatedTeamName',
-    ]);
+        assertDatabaseHas('teams', [
+            'id' => $team->id,
+            'name' => 'UpdatedTeamName',
+        ]);
 
-    assertDatabaseHas('team_user', [
-        'team_id' => $team->id,
-        'user_id' => $member->id,
-        'role' => 'member',
-    ]);
-});
+        assertDatabaseHas('team_user', [
+            'team_id' => $team->id,
+            'user_id' => $member->id,
+            'role' => 'member',
+        ]);
+    });
 
-it('validates team update', function () {
-    $team = Team::factory()->create();
-    $action = new UpdateTeam;
+    it('validates team update', function () {
+        $team = Team::factory()->create();
+        $action = new UpdateTeam;
 
-    expect(fn () => $action($team, [
-        'name' => 'Invalid Name!',
-    ]))->toThrow(ValidationException::class);
+        expect(fn () => $action($team, [
+            'name' => 'Invalid Name!',
+        ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action($team, [
-        'display_name' => str_repeat('a', 51),
-    ]))->toThrow(ValidationException::class);
+        expect(fn () => $action($team, [
+            'display_name' => str_repeat('a', 51),
+        ]))->toThrow(ValidationException::class);
+    });
 });

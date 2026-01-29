@@ -13,7 +13,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 describe('GetUserProjects', function () {
-    test('organization owner can see all projects', function () {
+    it('shows all projects to organization owner', function () {
         $owner = User::factory()->create();
         $org = Organization::factory()->create(['owner_user_id' => $owner->id]);
         $project = Project::factory()->create(['organization_id' => $org->id]);
@@ -25,7 +25,7 @@ describe('GetUserProjects', function () {
             ->and($projects->first()->id)->toBe($project->id);
     });
 
-    test('organization admin can see all projects', function () {
+    it('shows all projects to organization admin', function () {
         $admin = User::factory()->create();
         $org = Organization::factory()->create();
         $org->users()->attach($admin, ['role' => OrganizationRole::Admin]);
@@ -38,7 +38,7 @@ describe('GetUserProjects', function () {
             ->and($projects->first()->id)->toBe($project->id);
     });
 
-    test('organization member cannot see projects not assigned', function () {
+    it('hides unassigned projects from organization member', function () {
         $member = User::factory()->create();
         $org = Organization::factory()->create();
         $org->users()->attach($member, ['role' => OrganizationRole::Member]);
@@ -50,7 +50,7 @@ describe('GetUserProjects', function () {
         expect($projects)->toHaveCount(0);
     });
 
-    test('assigned user can see project', function () {
+    it('shows project to assigned user', function () {
         $user = User::factory()->create();
         $org = Organization::factory()->create();
         // User is part of org or not? logic doesn't strictly require it but usually they are.
@@ -65,7 +65,7 @@ describe('GetUserProjects', function () {
             ->and($projects->first()->id)->toBe($project->id);
     });
 
-    test('assigned team member can see project', function () {
+    it('shows project to assigned team member', function () {
         $user = User::factory()->create();
         $org = Organization::factory()->create();
         $team = Team::factory()->create(['organization_id' => $org->id]);
@@ -81,7 +81,7 @@ describe('GetUserProjects', function () {
             ->and($projects->first()->id)->toBe($project->id);
     });
 
-    test('unrelated user cannot see project', function () {
+    it('hides project from unrelated user', function () {
         $user = User::factory()->create();
         $org = Organization::factory()->create();
         $project = Project::factory()->create(['organization_id' => $org->id]);

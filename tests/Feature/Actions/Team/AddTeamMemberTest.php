@@ -14,44 +14,46 @@ use function Pest\Laravel\assertDatabaseHas;
 
 uses(LazilyRefreshDatabase::class);
 
-it('adds a member to a team', function () {
-    $organization = Organization::factory()->create();
-    $team = Team::factory()->create(['organization_id' => $organization->id]);
-    $user = User::factory()->create();
-    $organization->users()->attach($user, ['role' => 'member']);
+describe('AddTeamMember', function () {
+    it('adds a member to a team', function () {
+        $organization = Organization::factory()->create();
+        $team = Team::factory()->create(['organization_id' => $organization->id]);
+        $user = User::factory()->create();
+        $organization->users()->attach($user, ['role' => 'member']);
 
-    $action = new AddTeamMember;
+        $action = new AddTeamMember;
 
-    $action($team, $user);
+        $action($team, $user);
 
-    assertDatabaseHas('team_user', [
-        'team_id' => $team->id,
-        'user_id' => $user->id,
-        'role' => TeamRole::Member->value,
-    ]);
-});
+        assertDatabaseHas('team_user', [
+            'team_id' => $team->id,
+            'user_id' => $user->id,
+            'role' => TeamRole::Member->value,
+        ]);
+    });
 
-it('validates user belongs to organization', function () {
-    $organization = Organization::factory()->create();
-    $team = Team::factory()->create(['organization_id' => $organization->id]);
-    $user = User::factory()->create();
-    // User is NOT added to organization
+    it('validates user belongs to organization', function () {
+        $organization = Organization::factory()->create();
+        $team = Team::factory()->create(['organization_id' => $organization->id]);
+        $user = User::factory()->create();
+        // User is NOT added to organization
 
-    $action = new AddTeamMember;
+        $action = new AddTeamMember;
 
-    expect(fn () => $action($team, $user))
-        ->toThrow(ValidationException::class);
-});
+        expect(fn () => $action($team, $user))
+            ->toThrow(ValidationException::class);
+    });
 
-it('validates user is not already a member', function () {
-    $organization = Organization::factory()->create();
-    $team = Team::factory()->create(['organization_id' => $organization->id]);
-    $user = User::factory()->create();
-    $organization->users()->attach($user, ['role' => 'member']);
-    $team->users()->attach($user, ['role' => TeamRole::Member]);
+    it('validates user is not already a member', function () {
+        $organization = Organization::factory()->create();
+        $team = Team::factory()->create(['organization_id' => $organization->id]);
+        $user = User::factory()->create();
+        $organization->users()->attach($user, ['role' => 'member']);
+        $team->users()->attach($user, ['role' => TeamRole::Member]);
 
-    $action = new AddTeamMember;
+        $action = new AddTeamMember;
 
-    expect(fn () => $action($team, $user))
-        ->toThrow(ValidationException::class);
+        expect(fn () => $action($team, $user))
+            ->toThrow(ValidationException::class);
+    });
 });

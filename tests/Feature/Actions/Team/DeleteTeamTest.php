@@ -11,12 +11,14 @@ use function Pest\Laravel\assertModelMissing;
 
 uses(LazilyRefreshDatabase::class);
 
-it('deletes a team', function () {
-    $team = Team::factory()->create();
-    $user = User::factory()->create();
-    $action = new DeleteTeam;
+describe('DeleteTeam', function () {
+    it('deletes a team', function () {
+        $team = Team::factory()->create();
+        $user = User::factory()->create();
+        $action = new DeleteTeam;
 
-    $action($user, $team);
+        $action($user, $team);
 
-    assertModelMissing($team);
+        assertModelMissing($team);
+    });
 });

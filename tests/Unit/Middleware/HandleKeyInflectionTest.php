@@ -9,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 describe('HandleKeyInflection', function () {
-    test('request keys are converted to snake_case when header is present', function () {
+    it('converts request keys to snake_case when header is present', function () {
         $middleware = new HandleKeyInflection;
 
         $request = Request::create('/', 'POST', ['camelKey' => 'value', 'nestedCamel' => ['innerKey' => 'innerValue']]);
@@ -25,7 +25,7 @@ describe('HandleKeyInflection', function () {
         });
     });
 
-    test('response keys are converted to camelCase when header is present', function () {
+    it('converts response keys to camelCase when header is present', function () {
         $middleware = new HandleKeyInflection;
 
         $request = Request::create('/', 'GET');
@@ -41,7 +41,7 @@ describe('HandleKeyInflection', function () {
         ]);
     });
 
-    test('no conversion without header', function () {
+    it('does not convert keys without header', function () {
         $middleware = new HandleKeyInflection;
 
         $request = Request::create('/', 'POST', ['camelKey' => 'value']);
@@ -55,7 +55,7 @@ describe('HandleKeyInflection', function () {
         expect($response->getData(true))->toBe(['snake_key' => 'value']);
     });
 
-    test('arrays are handled recursively', function () {
+    it('handles arrays recursively', function () {
         $middleware = new HandleKeyInflection;
 
         $request = Request::create('/', 'POST', [

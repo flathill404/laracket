@@ -46,8 +46,8 @@ describe('ActivityPayload', function () {
         // Usually activity logs are 1-level deep diffs.
         // checking immediate array value keys should be enough for now.
 
-        $payload = new ActivityPayload([
+        expect(fn () => new ActivityPayload([
             'meta' => ['foo' => 'bar'],
-        ]);
-    })->throws(InvalidArgumentException::class);
+        ]))->toThrow(InvalidArgumentException::class);
+    });
 });

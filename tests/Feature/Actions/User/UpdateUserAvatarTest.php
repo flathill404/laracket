@@ -35,8 +35,9 @@ describe('UpdateUserAvatar', function () {
             'avatar' => 'invalid-data-uri',
         ];
 
-        $action($user, $input);
-    })->throws(ValidationException::class, 'Invalid Image Data URI');
+        expect(fn () => $action($user, $input))
+            ->toThrow(ValidationException::class, 'Invalid Image Data URI');
+    });
 
     it('throws validation exception for unsupported image type', function () {
         $user = User::factory()->create();
@@ -46,8 +47,9 @@ describe('UpdateUserAvatar', function () {
             'avatar' => 'data:image/bmp;base64,'.base64_encode('fake-image-content'),
         ];
 
-        $action($user, $input);
-    })->throws(ValidationException::class, 'Unsupported image type');
+        expect(fn () => $action($user, $input))
+            ->toThrow(ValidationException::class, 'Unsupported image type');
+    });
 
     it('deletes old avatar when updating', function () {
         Storage::fake();

@@ -17,113 +17,115 @@ use function Pest\Laravel\postJson;
 
 uses(LazilyRefreshDatabase::class);
 
-describe('store', function () {
-    it('attaches a team to the project', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+describe('ProjectTeamController', function () {
+    describe('store', function () {
+        it('attaches a team to the project', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-        $team = Team::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            $team = Team::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-        postJson("/api/projects/{$project->id}/teams", [
-            'team_id' => $team->id,
-        ])
-            ->assertNoContent();
+            postJson("/api/projects/{$project->id}/teams", [
+                'team_id' => $team->id,
+            ])
+                ->assertNoContent();
 
-        assertDatabaseHas('project_team', [
-            'project_id' => $project->id,
-            'team_id' => $team->id,
-        ]);
+            assertDatabaseHas('project_team', [
+                'project_id' => $project->id,
+                'team_id' => $team->id,
+            ]);
+        });
+
+        it('denies attaching team if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+
+            $team = Team::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+
+            postJson("/api/projects/{$project->id}/teams", [
+                'team_id' => $team->id,
+            ])
+                ->assertForbidden();
+        });
+
+        it('validates input', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+
+            postJson("/api/projects/{$project->id}/teams", [])
+                ->assertNotFound();
+        });
     });
 
-    it('denies attaching team if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+    describe('destroy', function () {
+        it('detaches a team from the project', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-        $team = Team::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            $team = Team::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            $project->assignedTeams()->attach($team);
 
-        postJson("/api/projects/{$project->id}/teams", [
-            'team_id' => $team->id,
-        ])
-            ->assertForbidden();
-    });
+            deleteJson("/api/projects/{$project->id}/teams/{$team->id}")
+                ->assertNoContent();
 
-    it('validates input', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            assertDatabaseMissing('project_team', [
+                'project_id' => $project->id,
+                'team_id' => $team->id,
+            ]);
+        });
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+        it('denies detaching team if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-        postJson("/api/projects/{$project->id}/teams", [])
-            ->assertNotFound();
-    });
-});
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-describe('destroy', function () {
-    it('detaches a team from the project', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            $team = Team::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            $project->assignedTeams()->attach($team);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
-
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-
-        $team = Team::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        $project->assignedTeams()->attach($team);
-
-        deleteJson("/api/projects/{$project->id}/teams/{$team->id}")
-            ->assertNoContent();
-
-        assertDatabaseMissing('project_team', [
-            'project_id' => $project->id,
-            'team_id' => $team->id,
-        ]);
-    });
-
-    it('denies detaching team if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
-
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
-
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-
-        $team = Team::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        $project->assignedTeams()->attach($team);
-
-        deleteJson("/api/projects/{$project->id}/teams/{$team->id}")
-            ->assertForbidden();
+            deleteJson("/api/projects/{$project->id}/teams/{$team->id}")
+                ->assertForbidden();
+        });
     });
 });
