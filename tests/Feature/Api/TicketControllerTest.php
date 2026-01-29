@@ -20,312 +20,314 @@ use function Pest\Laravel\putJson;
 
 uses(LazilyRefreshDatabase::class);
 
-describe('index', function () {
-    it('lists tickets in project', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+describe('TicketController', function () {
+    describe('index', function () {
+        it('lists tickets in project', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        // User needs access to project
-        $project->assignedUsers()->attach($user);
-
-        $tickets = Ticket::factory(3)->create([
-            'project_id' => $project->id,
-        ]);
-
-        getJson("/api/projects/{$project->id}/tickets")
-            ->assertOk()
-            ->assertJsonCount(3, 'data')
-            ->assertJsonStructure([
-                'data' => [
-                    '*' => ['id', 'title', 'project_id', 'status'],
-                ],
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
             ]);
+            // User needs access to project
+            $project->assignedUsers()->attach($user);
+
+            $tickets = Ticket::factory(3)->create([
+                'project_id' => $project->id,
+            ]);
+
+            getJson("/api/projects/{$project->id}/tickets")
+                ->assertOk()
+                ->assertJsonCount(3, 'data')
+                ->assertJsonStructure([
+                    'data' => [
+                        '*' => ['id', 'title', 'project_id', 'status'],
+                    ],
+                ]);
+        });
+
+        it('can paginate and sort tickets', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+
+            $project = Project::factory()->create(['organization_id' => $organization->id]);
+            $project->assignedUsers()->attach($user);
+
+            // Create tickets with specific dates
+            $ticket1 = Ticket::factory()->for($project)->create(['created_at' => now()->subDays(3)]);
+            $ticket2 = Ticket::factory()->for($project)->create(['created_at' => now()->subDays(1)]);
+            $ticket3 = Ticket::factory()->for($project)->create(['created_at' => now()->subDays(2)]);
+
+            // Sort asc
+            $responseAsc = getJson("/api/projects/{$project->id}/tickets?sort=created_at&per_page=10");
+            $responseAsc->assertOk();
+            $idsAsc = collect($responseAsc->json('data'))->pluck('id');
+            $this->assertEquals([$ticket1->id, $ticket3->id, $ticket2->id], $idsAsc->toArray());
+
+            // Sort desc
+            $responseDesc = getJson("/api/projects/{$project->id}/tickets?sort=-created_at&per_page=10");
+            $responseDesc->assertOk();
+            $idsDesc = collect($responseDesc->json('data'))->pluck('id');
+            $this->assertEquals([$ticket2->id, $ticket3->id, $ticket1->id], $idsDesc->toArray());
+
+            // Pagination
+            $responsePage = getJson("/api/projects/{$project->id}/tickets?sort=id&per_page=2");
+            $responsePage->assertOk()->assertJsonCount(2, 'data');
+            $this->assertArrayHasKey('meta', $responsePage->json());
+            $this->assertArrayHasKey('links', $responsePage->json());
+        });
+
+        it('denies access if not a member', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            // User not attached
+
+            getJson("/api/projects/{$project->id}/tickets")
+                ->assertForbidden();
+        });
     });
 
-    it('can paginate and sort tickets', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+    describe('store', function () {
+        it('creates a ticket', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-        $project = Project::factory()->create(['organization_id' => $organization->id]);
-        $project->assignedUsers()->attach($user);
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            $project->assignedUsers()->attach($user);
 
-        // Create tickets with specific dates
-        $ticket1 = Ticket::factory()->for($project)->create(['created_at' => now()->subDays(3)]);
-        $ticket2 = Ticket::factory()->for($project)->create(['created_at' => now()->subDays(1)]);
-        $ticket3 = Ticket::factory()->for($project)->create(['created_at' => now()->subDays(2)]);
+            $data = [
+                'title' => 'New Ticket',
+                'description' => 'Ticket Description',
+                'priority' => 'high', // Assuming priority field exists or is ignored safely
+            ];
 
-        // Sort asc
-        $responseAsc = getJson("/api/projects/{$project->id}/tickets?sort=created_at&per_page=10");
-        $responseAsc->assertOk();
-        $idsAsc = collect($responseAsc->json('data'))->pluck('id');
-        $this->assertEquals([$ticket1->id, $ticket3->id, $ticket2->id], $idsAsc->toArray());
+            postJson("/api/projects/{$project->id}/tickets", $data)
+                ->assertCreated()
+                ->assertJsonFragment([
+                    'title' => 'New Ticket',
+                    'project_id' => $project->id,
+                    'status' => TicketStatus::Open->value,
+                ]);
 
-        // Sort desc
-        $responseDesc = getJson("/api/projects/{$project->id}/tickets?sort=-created_at&per_page=10");
-        $responseDesc->assertOk();
-        $idsDesc = collect($responseDesc->json('data'))->pluck('id');
-        $this->assertEquals([$ticket2->id, $ticket3->id, $ticket1->id], $idsDesc->toArray());
-
-        // Pagination
-        $responsePage = getJson("/api/projects/{$project->id}/tickets?sort=id&per_page=2");
-        $responsePage->assertOk()->assertJsonCount(2, 'data');
-        $this->assertArrayHasKey('meta', $responsePage->json());
-        $this->assertArrayHasKey('links', $responsePage->json());
-    });
-
-    it('denies access if not a member', function () {
-        $user = User::factory()->create();
-        actingAs($user);
-
-        $organization = Organization::factory()->create();
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        // User not attached
-
-        getJson("/api/projects/{$project->id}/tickets")
-            ->assertForbidden();
-    });
-});
-
-describe('store', function () {
-    it('creates a ticket', function () {
-        $user = User::factory()->create();
-        actingAs($user);
-
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
-
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        $project->assignedUsers()->attach($user);
-
-        $data = [
-            'title' => 'New Ticket',
-            'description' => 'Ticket Description',
-            'priority' => 'high', // Assuming priority field exists or is ignored safely
-        ];
-
-        postJson("/api/projects/{$project->id}/tickets", $data)
-            ->assertCreated()
-            ->assertJsonFragment([
+            assertDatabaseHas('tickets', [
                 'title' => 'New Ticket',
                 'project_id' => $project->id,
-                'status' => TicketStatus::Open->value,
+            ]);
+        });
+
+        it('denies creation if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            // User not authorized
+
+            $data = [
+                'title' => 'New Ticket',
+            ];
+
+            postJson("/api/projects/{$project->id}/tickets", $data)
+                ->assertForbidden();
+        });
+
+        it('validates input', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
             ]);
 
-        assertDatabaseHas('tickets', [
-            'title' => 'New Ticket',
-            'project_id' => $project->id,
-        ]);
-    });
+            postJson("/api/projects/{$project->id}/tickets", [])
+                ->assertUnprocessable()
+                ->assertJsonValidationErrors(['title']);
+        });
 
-    it('denies creation if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+        it('sets the creator of the ticket', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        // User not authorized
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-        $data = [
-            'title' => 'New Ticket',
-        ];
+            $project = Project::factory()->create(['organization_id' => $organization->id]);
+            $project->assignedUsers()->attach($user);
 
-        postJson("/api/projects/{$project->id}/tickets", $data)
-            ->assertForbidden();
-    });
+            $data = [
+                'title' => 'Ticket with Creator',
+            ];
 
-    it('validates input', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            postJson("/api/projects/{$project->id}/tickets", $data)->assertCreated();
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
-
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-
-        postJson("/api/projects/{$project->id}/tickets", [])
-            ->assertUnprocessable()
-            ->assertJsonValidationErrors(['title']);
-    });
-
-    it('sets the creator of the ticket', function () {
-        $user = User::factory()->create();
-        actingAs($user);
-
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
-
-        $project = Project::factory()->create(['organization_id' => $organization->id]);
-        $project->assignedUsers()->attach($user);
-
-        $data = [
-            'title' => 'Ticket with Creator',
-        ];
-
-        postJson("/api/projects/{$project->id}/tickets", $data)->assertCreated();
-
-        assertDatabaseHas('tickets', [
-            'title' => 'Ticket with Creator',
-            'created_by' => $user->id,
-        ]);
-    });
-});
-
-describe('show', function () {
-    it('shows ticket details', function () {
-        $user = User::factory()->create();
-        actingAs($user);
-
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
-
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        $project->assignedUsers()->attach($user);
-
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
-
-        getJson("/api/tickets/{$ticket->id}")
-            ->assertOk()
-            ->assertJson([
-                'data' => [
-                    'id' => $ticket->id,
-                    'title' => $ticket->title,
-                ],
+            assertDatabaseHas('tickets', [
+                'title' => 'Ticket with Creator',
+                'created_by' => $user->id,
             ]);
+        });
     });
 
-    it('denies access if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+    describe('show', function () {
+        it('shows ticket details', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
-        // User not authorized
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-        getJson("/api/tickets/{$ticket->id}")
-            ->assertForbidden();
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            $project->assignedUsers()->attach($user);
+
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
+
+            getJson("/api/tickets/{$ticket->id}")
+                ->assertOk()
+                ->assertJson([
+                    'data' => [
+                        'id' => $ticket->id,
+                        'title' => $ticket->title,
+                    ],
+                ]);
+        });
+
+        it('denies access if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
+            // User not authorized
+
+            getJson("/api/tickets/{$ticket->id}")
+                ->assertForbidden();
+        });
     });
-});
 
-describe('update', function () {
-    it('updates ticket', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+    describe('update', function () {
+        it('updates ticket', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-            'title' => 'Old Title',
-        ]);
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+                'title' => 'Old Title',
+            ]);
 
-        $data = [
-            'title' => 'Updated Title',
-            'description' => 'Updated Description',
-        ];
+            $data = [
+                'title' => 'Updated Title',
+                'description' => 'Updated Description',
+            ];
 
-        putJson("/api/tickets/{$ticket->id}", $data)
-            ->assertOk()
-            ->assertJsonFragment([
+            putJson("/api/tickets/{$ticket->id}", $data)
+                ->assertOk()
+                ->assertJsonFragment([
+                    'title' => 'Updated Title',
+                ]);
+
+            assertDatabaseHas('tickets', [
+                'id' => $ticket->id,
                 'title' => 'Updated Title',
             ]);
+        });
 
-        assertDatabaseHas('tickets', [
-            'id' => $ticket->id,
-            'title' => 'Updated Title',
-        ]);
+        it('denies update if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
+            // User not authorized
+
+            putJson("/api/tickets/{$ticket->id}", ['title' => 'New Title'])
+                ->assertForbidden();
+        });
     });
 
-    it('denies update if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+    describe('destroy', function () {
+        it('deletes ticket', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
-        // User not authorized
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-        putJson("/api/tickets/{$ticket->id}", ['title' => 'New Title'])
-            ->assertForbidden();
-    });
-});
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-describe('destroy', function () {
-    it('deletes ticket', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+            deleteJson("/api/tickets/{$ticket->id}")
+                ->assertNoContent();
 
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            assertDatabaseMissing('tickets', [
+                'id' => $ticket->id,
+            ]);
+        });
 
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
+        it('denies delete if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        deleteJson("/api/tickets/{$ticket->id}")
-            ->assertNoContent();
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-        assertDatabaseMissing('tickets', [
-            'id' => $ticket->id,
-        ]);
-    });
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            $project->assignedUsers()->attach($user);
 
-    it('denies delete if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
+            // Member cannot delete unless creator/reviewer logic allows, assuming default policy
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
-
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        $project->assignedUsers()->attach($user);
-
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
-        // Member cannot delete unless creator/reviewer logic allows, assuming default policy
-
-        deleteJson("/api/tickets/{$ticket->id}")
-            ->assertForbidden();
+            deleteJson("/api/tickets/{$ticket->id}")
+                ->assertForbidden();
+        });
     });
 });

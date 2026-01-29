@@ -18,125 +18,127 @@ use function Pest\Laravel\postJson;
 
 uses(LazilyRefreshDatabase::class);
 
-describe('store', function () {
-    it('adds a reviewer to the ticket', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+describe('TicketReviewerController', function () {
+    describe('store', function () {
+        it('adds a reviewer to the ticket', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
 
-        $reviewer = User::factory()->create();
-        $organization->users()->attach($reviewer, ['role' => OrganizationRole::Member]);
-        $project->assignedUsers()->attach($reviewer);
+            $reviewer = User::factory()->create();
+            $organization->users()->attach($reviewer, ['role' => OrganizationRole::Member]);
+            $project->assignedUsers()->attach($reviewer);
 
-        postJson("/api/tickets/{$ticket->id}/reviewers", [
-            'user_id' => $reviewer->id,
-        ])
-            ->assertNoContent();
+            postJson("/api/tickets/{$ticket->id}/reviewers", [
+                'user_id' => $reviewer->id,
+            ])
+                ->assertNoContent();
 
-        assertDatabaseHas('ticket_user', [
-            'ticket_id' => $ticket->id,
-            'user_id' => $reviewer->id,
-            'type' => TicketUserType::Reviewer->value,
-        ]);
+            assertDatabaseHas('ticket_user', [
+                'ticket_id' => $ticket->id,
+                'user_id' => $reviewer->id,
+                'type' => TicketUserType::Reviewer->value,
+            ]);
+        });
+
+        it('denies adding reviewer if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
+            // User is not member
+
+            $reviewer = User::factory()->create();
+
+            postJson("/api/tickets/{$ticket->id}/reviewers", [
+                'user_id' => $reviewer->id,
+            ])
+                ->assertForbidden();
+        });
+
+        it('validates input', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
+
+            postJson("/api/tickets/{$ticket->id}/reviewers", [])
+                ->assertNotFound();
+        });
     });
 
-    it('denies adding reviewer if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+    describe('destroy', function () {
+        it('removes a reviewer from the ticket', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
-        // User is not member
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-        $reviewer = User::factory()->create();
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-        postJson("/api/tickets/{$ticket->id}/reviewers", [
-            'user_id' => $reviewer->id,
-        ])
-            ->assertForbidden();
-    });
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
 
-    it('validates input', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            $reviewer = User::factory()->create();
+            $ticket->reviewers()->attach($reviewer, ['type' => TicketUserType::Reviewer]);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+            deleteJson("/api/tickets/{$ticket->id}/reviewers/{$reviewer->id}")
+                ->assertNoContent();
 
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            assertDatabaseMissing('ticket_user', [
+                'ticket_id' => $ticket->id,
+                'user_id' => $reviewer->id,
+                'type' => TicketUserType::Reviewer->value,
+            ]);
+        });
 
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
+        it('denies removing reviewer if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        postJson("/api/tickets/{$ticket->id}/reviewers", [])
-            ->assertNotFound();
-    });
-});
+            $organization = Organization::factory()->create();
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
+            // User not authorized
 
-describe('destroy', function () {
-    it('removes a reviewer from the ticket', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            $reviewer = User::factory()->create();
+            $ticket->reviewers()->attach($reviewer, ['type' => TicketUserType::Reviewer]);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
-
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
-
-        $reviewer = User::factory()->create();
-        $ticket->reviewers()->attach($reviewer, ['type' => TicketUserType::Reviewer]);
-
-        deleteJson("/api/tickets/{$ticket->id}/reviewers/{$reviewer->id}")
-            ->assertNoContent();
-
-        assertDatabaseMissing('ticket_user', [
-            'ticket_id' => $ticket->id,
-            'user_id' => $reviewer->id,
-            'type' => TicketUserType::Reviewer->value,
-        ]);
-    });
-
-    it('denies removing reviewer if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
-
-        $organization = Organization::factory()->create();
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
-        // User not authorized
-
-        $reviewer = User::factory()->create();
-        $ticket->reviewers()->attach($reviewer, ['type' => TicketUserType::Reviewer]);
-
-        deleteJson("/api/tickets/{$ticket->id}/reviewers/{$reviewer->id}")
-            ->assertForbidden();
+            deleteJson("/api/tickets/{$ticket->id}/reviewers/{$reviewer->id}")
+                ->assertForbidden();
+        });
     });
 });

@@ -11,48 +11,50 @@ use function Pest\Laravel\postJson;
 
 uses(LazilyRefreshDatabase::class);
 
-it('registers a new user', function () {
-    $response = postJson('/api/register', [
-        'name' => 'Power Chan',
-        'display_name' => 'Power Chan',
-        'email' => 'power@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
-    ]);
+describe('Registration', function () {
+    it('registers a new user', function () {
+        $response = postJson('/api/register', [
+            'name' => 'Power Chan',
+            'display_name' => 'Power Chan',
+            'email' => 'power@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
 
-    $response->assertCreated();
-    assertAuthenticated();
-    assertDatabaseHas('users', [
-        'email' => 'power@example.com',
-    ]);
-});
+        $response->assertCreated();
+        assertAuthenticated();
+        assertDatabaseHas('users', [
+            'email' => 'power@example.com',
+        ]);
+    });
 
-it('fails registration if passwords do not match', function () {
-    $response = postJson('/api/register', [
-        'name' => 'Power Chan',
-        'display_name' => 'Power Chan',
-        'email' => 'power@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'wrong-password',
-    ]);
+    it('fails registration if passwords do not match', function () {
+        $response = postJson('/api/register', [
+            'name' => 'Power Chan',
+            'display_name' => 'Power Chan',
+            'email' => 'power@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'wrong-password',
+        ]);
 
-    $response->assertUnprocessable();
-    $response->assertJsonValidationErrors(['password']);
-});
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(['password']);
+    });
 
-it('fails registration with duplicate email', function () {
-    User::factory()->create([
-        'email' => 'power@example.com',
-    ]);
+    it('fails registration with duplicate email', function () {
+        User::factory()->create([
+            'email' => 'power@example.com',
+        ]);
 
-    $response = postJson('/api/register', [
-        'name' => 'Another Power',
-        'display_name' => 'Another Power',
-        'email' => 'power@example.com',
-        'password' => 'password',
-        'password_confirmation' => 'password',
-    ]);
+        $response = postJson('/api/register', [
+            'name' => 'Another Power',
+            'display_name' => 'Another Power',
+            'email' => 'power@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
 
-    $response->assertUnprocessable();
-    $response->assertJsonValidationErrors(['email']);
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(['email']);
+    });
 });

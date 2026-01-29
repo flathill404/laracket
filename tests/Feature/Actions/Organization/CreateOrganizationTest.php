@@ -11,41 +11,43 @@ use function Pest\Laravel\assertDatabaseHas;
 
 uses(LazilyRefreshDatabase::class);
 
-it('creates an organization', function () {
-    $user = User::factory()->create();
-    $action = new CreateOrganization;
+describe('CreateOrganization', function () {
+    it('creates an organization', function () {
+        $user = User::factory()->create();
+        $action = new CreateOrganization;
 
-    $input = [
-        'name' => 'TestOrganization',
-        'display_name' => 'Test Org Display',
-    ];
+        $input = [
+            'name' => 'TestOrganization',
+            'display_name' => 'Test Org Display',
+        ];
 
-    $organization = $action($user, $input);
+        $organization = $action($user, $input);
 
-    assertDatabaseHas('organizations', [
-        'id' => $organization->id,
-        'name' => 'TestOrganization',
-        'owner_user_id' => $user->id,
-    ]);
+        assertDatabaseHas('organizations', [
+            'id' => $organization->id,
+            'name' => 'TestOrganization',
+            'owner_user_id' => $user->id,
+        ]);
 
-    assertDatabaseHas('organization_user', [
-        'organization_id' => $organization->id,
-        'user_id' => $user->id,
-        'role' => 'admin',
-    ]);
-});
+        assertDatabaseHas('organization_user', [
+            'organization_id' => $organization->id,
+            'user_id' => $user->id,
+            'role' => 'admin',
+        ]);
+    });
 
-it('validates organization creation', function () {
-    $user = User::factory()->create();
-    $action = new CreateOrganization;
+    it('validates organization creation', function () {
+        $user = User::factory()->create();
+        $action = new CreateOrganization;
 
-    expect(fn () => $action($user, [
-        'name' => 'Invalid Name!',
-        'display_name' => 'Valid Display',
-    ]))->toThrow(ValidationException::class);
+        expect(fn () => $action($user, [
+            'name' => 'Invalid Name!',
+            'display_name' => 'Valid Display',
+        ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action($user, [
-        'name' => 'valid-name',
-        'display_name' => str_repeat('a', 101),
-    ]))->toThrow(ValidationException::class);
+        expect(fn () => $action($user, [
+            'name' => 'valid-name',
+            'display_name' => str_repeat('a', 101),
+        ]))->toThrow(ValidationException::class);
+    });
 });

@@ -16,78 +16,80 @@ use function Pest\Laravel\getJson;
 
 uses(LazilyRefreshDatabase::class);
 
-describe('index', function () {
-    it('lists activities for a ticket', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+describe('TicketActivityController', function () {
+    describe('index', function () {
+        it('lists activities for a ticket', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $project = Project::factory()->create(['organization_id' => $organization->id]);
+            $organization = Organization::factory()->create();
+            $project = Project::factory()->create(['organization_id' => $organization->id]);
 
-        $project->assignedUsers()->attach($user);
+            $project->assignedUsers()->attach($user);
 
-        // Observer creates 'created' activity when ticket is created
-        $ticket = Ticket::factory()->create(['project_id' => $project->id]);
+            // Observer creates 'created' activity when ticket is created
+            $ticket = Ticket::factory()->create(['project_id' => $project->id]);
 
-        TicketActivity::create([
-            'ticket_id' => $ticket->id,
-            'user_id' => $user->id,
-            'type' => TicketActivityType::Updated,
-            'payload' => new ActivityPayload(['status' => ['from' => 'open', 'to' => 'in_progress']]),
-            'created_at' => now(),
-        ]);
-
-        // 1 from observer + 1 manually created = 2 activities
-        getJson("/api/tickets/{$ticket->id}/activities")
-            ->assertOk()
-            ->assertJsonCount(2, 'data')
-            ->assertJsonStructure([
-                'data' => [
-                    '*' => ['id', 'type', 'payload', 'created_at', 'user' => ['id', 'name', 'display_name']],
-                ],
+            TicketActivity::create([
+                'ticket_id' => $ticket->id,
+                'user_id' => $user->id,
+                'type' => TicketActivityType::Updated,
+                'payload' => new ActivityPayload(['status' => ['from' => 'open', 'to' => 'in_progress']]),
+                'created_at' => now(),
             ]);
-    });
 
-    it('returns activities in ascending order by created_at', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            // 1 from observer + 1 manually created = 2 activities
+            getJson("/api/tickets/{$ticket->id}/activities")
+                ->assertOk()
+                ->assertJsonCount(2, 'data')
+                ->assertJsonStructure([
+                    'data' => [
+                        '*' => ['id', 'type', 'payload', 'created_at', 'user' => ['id', 'name', 'display_name']],
+                    ],
+                ]);
+        });
 
-        $organization = Organization::factory()->create();
-        $project = Project::factory()->create(['organization_id' => $organization->id]);
+        it('returns activities in ascending order by created_at', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $project->assignedUsers()->attach($user);
+            $organization = Organization::factory()->create();
+            $project = Project::factory()->create(['organization_id' => $organization->id]);
 
-        // Observer creates 'created' activity when ticket is created
-        $ticket = Ticket::factory()->create(['project_id' => $project->id]);
+            $project->assignedUsers()->attach($user);
 
-        TicketActivity::create([
-            'ticket_id' => $ticket->id,
-            'user_id' => $user->id,
-            'type' => TicketActivityType::Updated,
-            'payload' => new ActivityPayload(['status' => ['from' => 'open', 'to' => 'in_progress']]),
-            'created_at' => now()->addMinute(),
-        ]);
+            // Observer creates 'created' activity when ticket is created
+            $ticket = Ticket::factory()->create(['project_id' => $project->id]);
 
-        // 1 from observer + 1 manually created = 2 activities
-        $response = getJson("/api/tickets/{$ticket->id}/activities")
-            ->assertOk()
-            ->assertJsonCount(2, 'data');
+            TicketActivity::create([
+                'ticket_id' => $ticket->id,
+                'user_id' => $user->id,
+                'type' => TicketActivityType::Updated,
+                'payload' => new ActivityPayload(['status' => ['from' => 'open', 'to' => 'in_progress']]),
+                'created_at' => now()->addMinute(),
+            ]);
 
-        $data = $response->json('data');
-        // Oldest first (ascending order)
-        expect($data[0]['type'])->toBe('created');
-        expect($data[1]['type'])->toBe('updated');
-    });
+            // 1 from observer + 1 manually created = 2 activities
+            $response = getJson("/api/tickets/{$ticket->id}/activities")
+                ->assertOk()
+                ->assertJsonCount(2, 'data');
 
-    it('denies access if not a member', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            $data = $response->json('data');
+            // Oldest first (ascending order)
+            expect($data[0]['type'])->toBe('created');
+            expect($data[1]['type'])->toBe('updated');
+        });
 
-        $organization = Organization::factory()->create();
-        $project = Project::factory()->create(['organization_id' => $organization->id]);
-        $ticket = Ticket::factory()->create(['project_id' => $project->id]);
+        it('denies access if not a member', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        getJson("/api/tickets/{$ticket->id}/activities")
-            ->assertForbidden();
+            $organization = Organization::factory()->create();
+            $project = Project::factory()->create(['organization_id' => $organization->id]);
+            $ticket = Ticket::factory()->create(['project_id' => $project->id]);
+
+            getJson("/api/tickets/{$ticket->id}/activities")
+                ->assertForbidden();
+        });
     });
 });

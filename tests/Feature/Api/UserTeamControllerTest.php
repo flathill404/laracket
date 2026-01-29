@@ -12,87 +12,89 @@ use function Pest\Laravel\getJson;
 
 uses(LazilyRefreshDatabase::class);
 
-describe('index', function () {
-    it('allows user to list joined teams', function () {
-        $organization = Organization::factory()->create();
-        $user = User::factory()->create();
-        $team = Team::factory()->for($organization)->create();
+describe('UserTeamController', function () {
+    describe('index', function () {
+        it('allows user to list joined teams', function () {
+            $organization = Organization::factory()->create();
+            $user = User::factory()->create();
+            $team = Team::factory()->for($organization)->create();
 
-        // Assign user to team
-        $team->users()->attach($user, ['role' => \App\Enums\TeamRole::Member]);
+            // Assign user to team
+            $team->users()->attach($user, ['role' => \App\Enums\TeamRole::Member]);
 
-        // Another team where user is not member
-        $otherTeam = Team::factory()->for($organization)->create();
+            // Another team where user is not member
+            $otherTeam = Team::factory()->for($organization)->create();
 
-        actingAs($user);
+            actingAs($user);
 
-        $response = getJson("/api/users/{$user->id}/teams");
+            $response = getJson("/api/users/{$user->id}/teams");
 
-        $response->assertOk()
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.id', $team->id);
-    });
+            $response->assertOk()
+                ->assertJsonCount(1, 'data')
+                ->assertJsonPath('data.0.id', $team->id);
+        });
 
-    it('allows organization owner to list all teams in organization', function () {
-        $user = User::factory()->create();
-        $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
-        $team1 = Team::factory()->for($organization)->create();
-        $team2 = Team::factory()->for($organization)->create();
+        it('allows organization owner to list all teams in organization', function () {
+            $user = User::factory()->create();
+            $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+            $team1 = Team::factory()->for($organization)->create();
+            $team2 = Team::factory()->for($organization)->create();
 
-        // Another organization team
-        $otherOrg = Organization::factory()->create();
-        $otherTeam = Team::factory()->for($otherOrg)->create();
+            // Another organization team
+            $otherOrg = Organization::factory()->create();
+            $otherTeam = Team::factory()->for($otherOrg)->create();
 
-        actingAs($user);
+            actingAs($user);
 
-        $response = getJson("/api/users/{$user->id}/teams");
+            $response = getJson("/api/users/{$user->id}/teams");
 
-        $response->assertOk()
-            ->assertJsonCount(2, 'data');
-    });
+            $response->assertOk()
+                ->assertJsonCount(2, 'data');
+        });
 
-    it('allows organization admin to list all teams in organization', function () {
-        $organization = Organization::factory()->create();
-        $user = User::factory()->create();
+        it('allows organization admin to list all teams in organization', function () {
+            $organization = Organization::factory()->create();
+            $user = User::factory()->create();
 
-        // Make user admin
-        $organization->users()->attach($user, ['role' => \App\Enums\OrganizationRole::Admin]);
+            // Make user admin
+            $organization->users()->attach($user, ['role' => \App\Enums\OrganizationRole::Admin]);
 
-        $team1 = Team::factory()->for($organization)->create();
-        $team2 = Team::factory()->for($organization)->create();
+            $team1 = Team::factory()->for($organization)->create();
+            $team2 = Team::factory()->for($organization)->create();
 
-        actingAs($user);
+            actingAs($user);
 
-        $response = getJson("/api/users/{$user->id}/teams");
+            $response = getJson("/api/users/{$user->id}/teams");
 
-        $response->assertOk()
-            ->assertJsonCount(2, 'data');
-    });
+            $response->assertOk()
+                ->assertJsonCount(2, 'data');
+        });
 
-    it('denies user from seeing unrelated teams', function () {
-        $organization = Organization::factory()->create();
-        $user = User::factory()->create();
-        $team = Team::factory()->for($organization)->create();
+        it('denies user from seeing unrelated teams', function () {
+            $organization = Organization::factory()->create();
+            $user = User::factory()->create();
+            $team = Team::factory()->for($organization)->create();
 
-        // User is just a member of org but not in team
-        $organization->users()->attach($user, ['role' => \App\Enums\OrganizationRole::Member]);
+            // User is just a member of org but not in team
+            $organization->users()->attach($user, ['role' => \App\Enums\OrganizationRole::Member]);
 
-        actingAs($user);
+            actingAs($user);
 
-        $response = getJson("/api/users/{$user->id}/teams");
+            $response = getJson("/api/users/{$user->id}/teams");
 
-        $response->assertOk()
-            ->assertJsonCount(0, 'data');
-    });
+            $response->assertOk()
+                ->assertJsonCount(0, 'data');
+        });
 
-    it('denies viewing other users teams', function () {
-        $user = User::factory()->create();
-        $otherUser = User::factory()->create();
+        it('denies viewing other users teams', function () {
+            $user = User::factory()->create();
+            $otherUser = User::factory()->create();
 
-        actingAs($user);
+            actingAs($user);
 
-        $response = getJson("/api/users/{$otherUser->id}/teams");
+            $response = getJson("/api/users/{$otherUser->id}/teams");
 
-        $response->assertForbidden();
+            $response->assertForbidden();
+        });
     });
 });

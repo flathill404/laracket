@@ -18,125 +18,127 @@ use function Pest\Laravel\postJson;
 
 uses(LazilyRefreshDatabase::class);
 
-describe('store', function () {
-    it('assigns a user to the ticket', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+describe('TicketAssigneeController', function () {
+    describe('store', function () {
+        it('assigns a user to the ticket', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
 
-        $assignee = User::factory()->create();
-        $organization->users()->attach($assignee, ['role' => OrganizationRole::Member]);
-        $project->assignedUsers()->attach($assignee);
+            $assignee = User::factory()->create();
+            $organization->users()->attach($assignee, ['role' => OrganizationRole::Member]);
+            $project->assignedUsers()->attach($assignee);
 
-        postJson("/api/tickets/{$ticket->id}/assignees", [
-            'user_id' => $assignee->id,
-        ])
-            ->assertNoContent();
+            postJson("/api/tickets/{$ticket->id}/assignees", [
+                'user_id' => $assignee->id,
+            ])
+                ->assertNoContent();
 
-        assertDatabaseHas('ticket_user', [
-            'ticket_id' => $ticket->id,
-            'user_id' => $assignee->id,
-            'type' => TicketUserType::Assignee->value,
-        ]);
+            assertDatabaseHas('ticket_user', [
+                'ticket_id' => $ticket->id,
+                'user_id' => $assignee->id,
+                'type' => TicketUserType::Assignee->value,
+            ]);
+        });
+
+        it('denies assigning user if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
+            // User is not member
+
+            $assignee = User::factory()->create();
+
+            postJson("/api/tickets/{$ticket->id}/assignees", [
+                'user_id' => $assignee->id,
+            ])
+                ->assertForbidden();
+        });
+
+        it('validates input', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
+
+            postJson("/api/tickets/{$ticket->id}/assignees", [])
+                ->assertNotFound();
+        });
     });
 
-    it('denies assigning user if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+    describe('destroy', function () {
+        it('unassigns a user from the ticket', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
-        // User is not member
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-        $assignee = User::factory()->create();
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-        postJson("/api/tickets/{$ticket->id}/assignees", [
-            'user_id' => $assignee->id,
-        ])
-            ->assertForbidden();
-    });
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
 
-    it('validates input', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            $assignee = User::factory()->create();
+            $ticket->assignees()->attach($assignee, ['type' => TicketUserType::Assignee]);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+            deleteJson("/api/tickets/{$ticket->id}/assignees/{$assignee->id}")
+                ->assertNoContent();
 
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            assertDatabaseMissing('ticket_user', [
+                'ticket_id' => $ticket->id,
+                'user_id' => $assignee->id,
+                'type' => TicketUserType::Assignee->value,
+            ]);
+        });
 
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
+        it('denies unassigning user if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        postJson("/api/tickets/{$ticket->id}/assignees", [])
-            ->assertNotFound();
-    });
-});
+            $organization = Organization::factory()->create();
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+            ]);
+            // User not authorized
 
-describe('destroy', function () {
-    it('unassigns a user from the ticket', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            $assignee = User::factory()->create();
+            $ticket->assignees()->attach($assignee, ['type' => TicketUserType::Assignee]);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
-
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
-
-        $assignee = User::factory()->create();
-        $ticket->assignees()->attach($assignee, ['type' => TicketUserType::Assignee]);
-
-        deleteJson("/api/tickets/{$ticket->id}/assignees/{$assignee->id}")
-            ->assertNoContent();
-
-        assertDatabaseMissing('ticket_user', [
-            'ticket_id' => $ticket->id,
-            'user_id' => $assignee->id,
-            'type' => TicketUserType::Assignee->value,
-        ]);
-    });
-
-    it('denies unassigning user if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
-
-        $organization = Organization::factory()->create();
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-        ]);
-        // User not authorized
-
-        $assignee = User::factory()->create();
-        $ticket->assignees()->attach($assignee, ['type' => TicketUserType::Assignee]);
-
-        deleteJson("/api/tickets/{$ticket->id}/assignees/{$assignee->id}")
-            ->assertForbidden();
+            deleteJson("/api/tickets/{$ticket->id}/assignees/{$assignee->id}")
+                ->assertForbidden();
+        });
     });
 });

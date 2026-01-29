@@ -9,47 +9,49 @@ use Illuminate\Validation\ValidationException;
 
 uses(LazilyRefreshDatabase::class);
 
-it('updates profile information', function () {
-    $user = User::factory()->make([
-        'name' => 'Original Name',
-        'display_name' => 'Old Name',
-        'email' => 'old@example.com',
-    ]);
+describe('UpdateUserProfileInformation', function () {
+    it('updates profile information', function () {
+        $user = User::factory()->make([
+            'name' => 'Original Name',
+            'display_name' => 'Old Name',
+            'email' => 'old@example.com',
+        ]);
 
-    $action = new UpdateUserProfileInformation;
+        $action = new UpdateUserProfileInformation;
 
-    $action->update($user, [
-        'name' => 'New Name', // Should be ignored
-        'display_name' => 'New Name',
-        'email' => 'new@example.com',
-    ]);
-    $user->refresh();
+        $action->update($user, [
+            'name' => 'New Name', // Should be ignored
+            'display_name' => 'New Name',
+            'email' => 'new@example.com',
+        ]);
+        $user->refresh();
 
-    expect($user->name)->toBe('Original Name');
-    expect($user->display_name)->toBe('New Name');
-    expect($user->email)->toBe('new@example.com');
-});
+        expect($user->name)->toBe('Original Name');
+        expect($user->display_name)->toBe('New Name');
+        expect($user->email)->toBe('new@example.com');
+    });
 
-it('validates email uniqueness', function () {
-    User::factory()->create(['email' => 'taken@example.com']);
-    $user = User::factory()->make(['email' => 'original@example.com']);
-    $action = new UpdateUserProfileInformation;
+    it('validates email uniqueness', function () {
+        User::factory()->create(['email' => 'taken@example.com']);
+        $user = User::factory()->make(['email' => 'original@example.com']);
+        $action = new UpdateUserProfileInformation;
 
-    expect(fn () => $action->update($user, [
-        'display_name' => 'New Name',
-        'email' => 'taken@example.com',
-    ]))->toThrow(ValidationException::class);
-});
+        expect(fn () => $action->update($user, [
+            'display_name' => 'New Name',
+            'email' => 'taken@example.com',
+        ]))->toThrow(ValidationException::class);
+    });
 
-it('updates display name with the same email', function () {
-    $user = User::factory()->make(['email' => 'me@example.com']);
-    $action = new UpdateUserProfileInformation;
+    it('updates display name with the same email', function () {
+        $user = User::factory()->make(['email' => 'me@example.com']);
+        $action = new UpdateUserProfileInformation;
 
-    $action->update($user, [
-        'display_name' => 'New Name',
-        'email' => 'me@example.com',
-    ]);
+        $action->update($user, [
+            'display_name' => 'New Name',
+            'email' => 'me@example.com',
+        ]);
 
-    $user->refresh();
-    expect($user->display_name)->toBe('New Name');
+        $user->refresh();
+        expect($user->display_name)->toBe('New Name');
+    });
 });

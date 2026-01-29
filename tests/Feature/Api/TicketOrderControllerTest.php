@@ -15,51 +15,53 @@ use function Pest\Laravel\patchJson;
 
 uses(LazilyRefreshDatabase::class);
 
-describe('update', function () {
-    it('updates ticket order', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+describe('TicketOrderController', function () {
+    describe('update', function () {
+        it('updates ticket order', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-            'display_order' => 100,
-        ]);
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+                'display_order' => 100,
+            ]);
 
-        patchJson("/api/tickets/{$ticket->id}/order", [
-            'order' => 200.5,
-        ])
-            ->assertNoContent();
+            patchJson("/api/tickets/{$ticket->id}/order", [
+                'order' => 200.5,
+            ])
+                ->assertNoContent();
 
-        assertDatabaseHas('tickets', [
-            'id' => $ticket->id,
-            'display_order' => 200.5,
-        ]);
-    });
+            assertDatabaseHas('tickets', [
+                'id' => $ticket->id,
+                'display_order' => 200.5,
+            ]);
+        });
 
-    it('denies update if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+        it('denies update if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $project = Project::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-        $ticket = Ticket::factory()->create([
-            'project_id' => $project->id,
-            'display_order' => 100,
-        ]);
-        // User not authorized
+            $organization = Organization::factory()->create();
+            $project = Project::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+            $ticket = Ticket::factory()->create([
+                'project_id' => $project->id,
+                'display_order' => 100,
+            ]);
+            // User not authorized
 
-        patchJson("/api/tickets/{$ticket->id}/order", [
-            'order' => 200.5,
-        ])
-            ->assertForbidden();
+            patchJson("/api/tickets/{$ticket->id}/order", [
+                'order' => 200.5,
+            ])
+                ->assertForbidden();
+        });
     });
 });

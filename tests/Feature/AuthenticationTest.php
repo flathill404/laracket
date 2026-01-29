@@ -13,41 +13,43 @@ use function Pest\Laravel\postJson;
 
 uses(LazilyRefreshDatabase::class);
 
-it('retrieves sanctum csrf cookie', function () {
-    $response = get('/api/csrf-cookie');
+describe('Authentication', function () {
+    it('retrieves sanctum csrf cookie', function () {
+        $response = get('/api/csrf-cookie');
 
-    $response->assertNoContent();
-});
+        $response->assertNoContent();
+    });
 
-it('authenticates the user', function () {
-    $user = User::factory()->create();
+    it('authenticates the user', function () {
+        $user = User::factory()->create();
 
-    $response = postJson('/api/login', [
-        'email' => $user->email,
-        'password' => 'password',
-    ]);
+        $response = postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
 
-    $response->assertOk();
-    assertAuthenticated();
-});
+        $response->assertOk();
+        assertAuthenticated();
+    });
 
-it('does not authenticate with invalid password', function () {
-    $user = User::factory()->create();
+    it('does not authenticate with invalid password', function () {
+        $user = User::factory()->create();
 
-    postJson('/api/login', [
-        'email' => $user->email,
-        'password' => 'wrong-password',
-    ]);
+        postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'wrong-password',
+        ]);
 
-    assertGuest();
-});
+        assertGuest();
+    });
 
-it('logs out the user', function () {
-    $user = User::factory()->create();
-    actingAs($user);
+    it('logs out the user', function () {
+        $user = User::factory()->create();
+        actingAs($user);
 
-    $response = postJson('/api/logout');
+        $response = postJson('/api/logout');
 
-    $response->assertNoContent();
-    assertGuest();
+        $response->assertNoContent();
+        assertGuest();
+    });
 });

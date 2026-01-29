@@ -13,82 +13,84 @@ use function Pest\Laravel\assertDatabaseHas;
 
 uses(LazilyRefreshDatabase::class);
 
-it('logs activity when ticket is created', function () {
-    $user = User::factory()->create();
+describe('TicketActivity', function () {
+    it('logs activity when ticket is created', function () {
+        $user = User::factory()->create();
 
-    actingAs($user);
-    $ticket = Ticket::factory()->create();
+        actingAs($user);
+        $ticket = Ticket::factory()->create();
 
-    assertDatabaseHas('ticket_activities', [
-        'ticket_id' => $ticket->id,
-        'user_id' => $user->id,
-        'type' => 'created',
-        'payload' => null,
-    ]);
-});
+        assertDatabaseHas('ticket_activities', [
+            'ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'type' => 'created',
+            'payload' => null,
+        ]);
+    });
 
-it('logs activity when ticket is updated', function () {
-    $user = User::factory()->create();
-    $ticket = Ticket::factory()->create(['title' => 'Old Title', 'status' => 'open']);
+    it('logs activity when ticket is updated', function () {
+        $user = User::factory()->create();
+        $ticket = Ticket::factory()->create(['title' => 'Old Title', 'status' => 'open']);
 
-    actingAs($user);
+        actingAs($user);
 
-    $ticket->update([
-        'title' => 'New Title',
-        'status' => 'in_progress',
-    ]);
+        $ticket->update([
+            'title' => 'New Title',
+            'status' => 'in_progress',
+        ]);
 
-    assertDatabaseHas('ticket_activities', [
-        'ticket_id' => $ticket->id,
-        'user_id' => $user->id,
-        'type' => 'updated',
-    ]);
+        assertDatabaseHas('ticket_activities', [
+            'ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'type' => 'updated',
+        ]);
 
-    $activity = $ticket->activities()->where('type', 'updated')->first();
+        $activity = $ticket->activities()->where('type', 'updated')->first();
 
-    expect($activity->payload->toArray())->toEqual([
-        'title' => ['from' => 'Old Title', 'to' => 'New Title'],
-        'status' => ['from' => 'open', 'to' => 'in_progress'],
-    ]);
-});
+        expect($activity->payload->toArray())->toEqual([
+            'title' => ['from' => 'Old Title', 'to' => 'New Title'],
+            'status' => ['from' => 'open', 'to' => 'in_progress'],
+        ]);
+    });
 
-it('does not log activity when ticket is updated without changes', function () {
-    $user = User::factory()->create();
-    actingAs($user);
-    $ticket = Ticket::factory()->create(['title' => 'Old Title']);
+    it('does not log activity when ticket is updated without changes', function () {
+        $user = User::factory()->create();
+        actingAs($user);
+        $ticket = Ticket::factory()->create(['title' => 'Old Title']);
 
-    $ticket->update(['title' => 'Old Title']);
+        $ticket->update(['title' => 'Old Title']);
 
-    // Should only have 'created' activity from factory if factory runs observers?
-    // Factories usually fire events, so yes.
-    // The previous test creates a ticket, so it has 1 activity (created).
-    // Updating with same value -> should effectively do nothing or trigger update event with no dirty attributes.
-    // Eloquent update() with same values often doesn't even fire events if nothing is dirty.
-    // Let's force a "touch" or similar if we wanted to test filter, but basically if dirty is empty we return.
+        // Should only have 'created' activity from factory if factory runs observers?
+        // Factories usually fire events, so yes.
+        // The previous test creates a ticket, so it has 1 activity (created).
+        // Updating with same value -> should effectively do nothing or trigger update event with no dirty attributes.
+        // Eloquent update() with same values often doesn't even fire events if nothing is dirty.
+        // Let's force a "touch" or similar if we wanted to test filter, but basically if dirty is empty we return.
 
-    // We expect count to be 1 (creation only)
-    expect($ticket->activities()->count())->toBe(1);
-    expect($ticket->activities()->first()->type)->toBe(TicketActivityType::Created);
-});
+        // We expect count to be 1 (creation only)
+        expect($ticket->activities()->count())->toBe(1);
+        expect($ticket->activities()->first()->type)->toBe(TicketActivityType::Created);
+    });
 
-it('logs activity when comment is posted', function () {
-    $user = User::factory()->create();
-    $ticket = Ticket::factory()->create();
+    it('logs activity when comment is posted', function () {
+        $user = User::factory()->create();
+        $ticket = Ticket::factory()->create();
 
-    actingAs($user);
+        actingAs($user);
 
-    Comment::factory()->create([
-        'ticket_id' => $ticket->id,
-        'user_id' => $user->id,
-        'body' => 'This is a comment',
-    ]);
+        Comment::factory()->create([
+            'ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'body' => 'This is a comment',
+        ]);
 
-    assertDatabaseHas('ticket_activities', [
-        'ticket_id' => $ticket->id,
-        'user_id' => $user->id,
-        'type' => 'commented',
-    ]);
+        assertDatabaseHas('ticket_activities', [
+            'ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'type' => 'commented',
+        ]);
 
-    $activity = $ticket->activities()->where('type', 'commented')->first();
-    expect($activity->payload->toArray())->toBe(['body' => 'This is a comment']);
+        $activity = $ticket->activities()->where('type', 'commented')->first();
+        expect($activity->payload->toArray())->toBe(['body' => 'This is a comment']);
+    });
 });

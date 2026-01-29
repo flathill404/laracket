@@ -12,18 +12,20 @@ use function Pest\Laravel\assertDatabaseMissing;
 
 uses(LazilyRefreshDatabase::class);
 
-it('detaches a team from a project', function () {
-    $organization = Organization::factory()->create();
-    $project = Project::factory()->create(['organization_id' => $organization->id]);
-    $team = Team::factory()->create(['organization_id' => $organization->id]);
-    $project->assignedTeams()->attach($team);
+describe('DetachTeamFromProject', function () {
+    it('detaches a team from a project', function () {
+        $organization = Organization::factory()->create();
+        $project = Project::factory()->create(['organization_id' => $organization->id]);
+        $team = Team::factory()->create(['organization_id' => $organization->id]);
+        $project->assignedTeams()->attach($team);
 
-    $action = new DetachTeamFromProject;
+        $action = new DetachTeamFromProject;
 
-    $action($project, $team);
+        $action($project, $team);
 
-    assertDatabaseMissing('project_team', [
-        'project_id' => $project->id,
-        'team_id' => $team->id,
-    ]);
+        assertDatabaseMissing('project_team', [
+            'project_id' => $project->id,
+            'team_id' => $team->id,
+        ]);
+    });
 });

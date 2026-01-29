@@ -11,68 +11,70 @@ use function Pest\Laravel\assertDatabaseHas;
 
 uses(LazilyRefreshDatabase::class);
 
-it('retrieves user profile', function () {
-    $user = User::factory()->create();
+describe('UserProfile', function () {
+    it('retrieves user profile', function () {
+        $user = User::factory()->create();
 
-    $response = actingAs($user)
-        ->getJson('/api/user');
+        $response = actingAs($user)
+            ->getJson('/api/user');
 
-    $response->assertOk()
-        ->assertJson([
-            'data' => [
-                'id' => $user->id,
-                'email' => $user->email,
-            ],
-        ]);
-});
+        $response->assertOk()
+            ->assertJson([
+                'data' => [
+                    'id' => $user->id,
+                    'email' => $user->email,
+                ],
+            ]);
+    });
 
-it('updates profile information', function () {
-    $user = User::factory()->create();
+    it('updates profile information', function () {
+        $user = User::factory()->create();
 
-    $response = actingAs($user)
-        ->putJson('/api/user/profile-information', [
+        $response = actingAs($user)
+            ->putJson('/api/user/profile-information', [
+                'display_name' => 'Super Power',
+                'email' => 'super_power@example.com',
+            ]);
+
+        $response->assertOk();
+        assertDatabaseHas('users', [
+            'id' => $user->id,
             'display_name' => 'Super Power',
             'email' => 'super_power@example.com',
         ]);
+    });
 
-    $response->assertOk();
-    assertDatabaseHas('users', [
-        'id' => $user->id,
-        'display_name' => 'Super Power',
-        'email' => 'super_power@example.com',
-    ]);
-});
-
-it('updates password', function () {
-    $user = User::factory()->create([
-        'password' => Hash::make('old-password'),
-    ]);
-
-    $response = actingAs($user)
-        ->putJson('/api/user/password', [
-            'current_password' => 'old-password',
-            'password' => 'new-strong-password',
-            'password_confirmation' => 'new-strong-password',
+    it('updates password', function () {
+        $user = User::factory()->create([
+            'password' => Hash::make('old-password'),
         ]);
 
-    $response->assertOk();
+        $response = actingAs($user)
+            ->putJson('/api/user/password', [
+                'current_password' => 'old-password',
+                'password' => 'new-strong-password',
+                'password_confirmation' => 'new-strong-password',
+            ]);
 
-    $user->refresh();
-    expect(Hash::check('new-strong-password', $user->password))->toBeTrue();
-});
+        $response->assertOk();
 
-it('fails password update if current password is incorrect', function () {
-    $user = User::factory()->create([
-        'password' => Hash::make('old-password'),
-    ]);
+        $user->refresh();
+        expect(Hash::check('new-strong-password', $user->password))->toBeTrue();
+    });
 
-    $response = actingAs($user)
-        ->putJson('/api/user/password', [
-            'current_password' => 'wrong-password',
-            'password' => 'new-password',
-            'password_confirmation' => 'new-password',
+    it('fails password update if current password is incorrect', function () {
+        $user = User::factory()->create([
+            'password' => Hash::make('old-password'),
         ]);
 
-    $response->assertUnprocessable();
-    $response->assertJsonValidationErrors(['current_password']);
+        $response = actingAs($user)
+            ->putJson('/api/user/password', [
+                'current_password' => 'wrong-password',
+                'password' => 'new-password',
+                'password_confirmation' => 'new-password',
+            ]);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(['current_password']);
+    });
 });

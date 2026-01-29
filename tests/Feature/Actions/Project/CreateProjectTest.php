@@ -13,51 +13,53 @@ use function Pest\Laravel\assertDatabaseHas;
 
 uses(LazilyRefreshDatabase::class);
 
-it('creates a project', function () {
-    $organization = Organization::factory()->create();
-    $user = User::factory()->create();
-    $team = Team::factory()->create(['organization_id' => $organization->id]);
-    $action = new CreateProject;
+describe('CreateProject', function () {
+    it('creates a project', function () {
+        $organization = Organization::factory()->create();
+        $user = User::factory()->create();
+        $team = Team::factory()->create(['organization_id' => $organization->id]);
+        $action = new CreateProject;
 
-    $input = [
-        'name' => 'TestProject',
-        'display_name' => 'Test Project Display',
-        'description' => 'Test Description',
-        'assigned_users' => [$user->id],
-        'assigned_teams' => [$team->id],
-    ];
+        $input = [
+            'name' => 'TestProject',
+            'display_name' => 'Test Project Display',
+            'description' => 'Test Description',
+            'assigned_users' => [$user->id],
+            'assigned_teams' => [$team->id],
+        ];
 
-    $project = $action($user, $organization, $input);
+        $project = $action($user, $organization, $input);
 
-    assertDatabaseHas('projects', [
-        'id' => $project->id,
-        'name' => 'TestProject',
-        'organization_id' => $organization->id,
-    ]);
+        assertDatabaseHas('projects', [
+            'id' => $project->id,
+            'name' => 'TestProject',
+            'organization_id' => $organization->id,
+        ]);
 
-    assertDatabaseHas('project_user', [
-        'project_id' => $project->id,
-        'user_id' => $user->id,
-    ]);
+        assertDatabaseHas('project_user', [
+            'project_id' => $project->id,
+            'user_id' => $user->id,
+        ]);
 
-    assertDatabaseHas('project_team', [
-        'project_id' => $project->id,
-        'team_id' => $team->id,
-    ]);
-});
+        assertDatabaseHas('project_team', [
+            'project_id' => $project->id,
+            'team_id' => $team->id,
+        ]);
+    });
 
-it('validates project creation', function () {
-    $organization = Organization::factory()->create();
-    $user = User::factory()->create();
-    $action = new CreateProject;
+    it('validates project creation', function () {
+        $organization = Organization::factory()->create();
+        $user = User::factory()->create();
+        $action = new CreateProject;
 
-    expect(fn () => $action($user, $organization, [
-        'name' => 'Invalid Name!',
-        'display_name' => 'Valid Display',
-    ]))->toThrow(ValidationException::class);
+        expect(fn () => $action($user, $organization, [
+            'name' => 'Invalid Name!',
+            'display_name' => 'Valid Display',
+        ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action($user, $organization, [
-        'name' => 'valid-name',
-        'display_name' => str_repeat('a', 51),
-    ]))->toThrow(ValidationException::class);
+        expect(fn () => $action($user, $organization, [
+            'name' => 'valid-name',
+            'display_name' => str_repeat('a', 51),
+        ]))->toThrow(ValidationException::class);
+    });
 });

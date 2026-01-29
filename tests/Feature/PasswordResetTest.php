@@ -13,54 +13,56 @@ use function Pest\Laravel\postJson;
 
 uses(LazilyRefreshDatabase::class);
 
-it('requests a reset password link', function () {
-    Notification::fake();
-    $user = User::factory()->create();
+describe('PasswordReset', function () {
+    it('requests a reset password link', function () {
+        Notification::fake();
+        $user = User::factory()->create();
 
-    $response = postJson('/api/forgot-password', [
-        'email' => $user->email,
-    ]);
+        $response = postJson('/api/forgot-password', [
+            'email' => $user->email,
+        ]);
 
-    $response->assertOk();
-    Notification::assertSentTo(
-        $user,
-        ResetPassword::class
-    );
-});
+        $response->assertOk();
+        Notification::assertSentTo(
+            $user,
+            ResetPassword::class
+        );
+    });
 
-it('resets password with valid token', function () {
-    $user = User::factory()->create();
+    it('resets password with valid token', function () {
+        $user = User::factory()->create();
 
-    $token = Password::broker()->createToken($user);
+        $token = Password::broker()->createToken($user);
 
-    $response = postJson('/api/reset-password', [
-        'token' => $token,
-        'email' => $user->email,
-        'password' => 'new-password',
-        'password_confirmation' => 'new-password',
-    ]);
+        $response = postJson('/api/reset-password', [
+            'token' => $token,
+            'email' => $user->email,
+            'password' => 'new-password',
+            'password_confirmation' => 'new-password',
+        ]);
 
-    $response->assertOk();
-    assertGuest();
+        $response->assertOk();
+        assertGuest();
 
-    $loginResponse = postJson('/api/login', [
-        'email' => $user->email,
-        'password' => 'new-password',
-    ]);
+        $loginResponse = postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'new-password',
+        ]);
 
-    $loginResponse->assertOk();
-});
+        $loginResponse->assertOk();
+    });
 
-it('does not reset password with invalid token', function () {
-    $user = User::factory()->create();
+    it('does not reset password with invalid token', function () {
+        $user = User::factory()->create();
 
-    $response = postJson('/api/reset-password', [
-        'token' => 'invalid-token',
-        'email' => $user->email,
-        'password' => 'new-password',
-        'password_confirmation' => 'new-password',
-    ]);
+        $response = postJson('/api/reset-password', [
+            'token' => 'invalid-token',
+            'email' => $user->email,
+            'password' => 'new-password',
+            'password_confirmation' => 'new-password',
+        ]);
 
-    $response->assertUnprocessable();
-    $response->assertJsonValidationErrors(['email']);
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(['email']);
+    });
 });

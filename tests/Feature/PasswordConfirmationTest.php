@@ -10,39 +10,41 @@ use function Pest\Laravel\getJson;
 
 uses(LazilyRefreshDatabase::class);
 
-it('returns false for initial password confirmation status', function () {
-    $user = User::factory()->create();
+describe('PasswordConfirmation', function () {
+    it('returns false for initial password confirmation status', function () {
+        $user = User::factory()->create();
 
-    $response = actingAs($user)
-        ->getJson('/api/user/confirmed-password-status');
+        $response = actingAs($user)
+            ->getJson('/api/user/confirmed-password-status');
 
-    $response->assertOk()
-        ->assertJson(['confirmed' => false]);
-});
+        $response->assertOk()
+            ->assertJson(['confirmed' => false]);
+    });
 
-it('confirms the password', function () {
-    $user = User::factory()->create();
+    it('confirms the password', function () {
+        $user = User::factory()->create();
 
-    $response = actingAs($user)
-        ->postJson('/api/user/confirm-password', [
-            'password' => 'password',
-        ]);
+        $response = actingAs($user)
+            ->postJson('/api/user/confirm-password', [
+                'password' => 'password',
+            ]);
 
-    $response->assertCreated();
-    getJson('/api/user/confirmed-password-status')
-        ->assertJson(['confirmed' => true]);
-});
+        $response->assertCreated();
+        getJson('/api/user/confirmed-password-status')
+            ->assertJson(['confirmed' => true]);
+    });
 
-it('fails password confirmation with invalid password', function () {
-    $user = User::factory()->create();
+    it('fails password confirmation with invalid password', function () {
+        $user = User::factory()->create();
 
-    $response = actingAs($user)
-        ->postJson('/api/user/confirm-password', [
-            'password' => 'wrong-password',
-        ]);
+        $response = actingAs($user)
+            ->postJson('/api/user/confirm-password', [
+                'password' => 'wrong-password',
+            ]);
 
-    $response->assertUnprocessable();
-    $response->assertJsonValidationErrors(['password']);
-    getJson('/api/user/confirmed-password-status')
-        ->assertJson(['confirmed' => false]);
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(['password']);
+        getJson('/api/user/confirmed-password-status')
+            ->assertJson(['confirmed' => false]);
+    });
 });

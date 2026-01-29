@@ -12,33 +12,35 @@ use function Pest\Laravel\assertDatabaseHas;
 
 uses(LazilyRefreshDatabase::class);
 
-it('updates an organization', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
-    $action = new UpdateOrganization;
+describe('UpdateOrganization', function () {
+    it('updates an organization', function () {
+        $user = User::factory()->create();
+        $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+        $action = new UpdateOrganization;
 
-    $input = [
-        'name' => 'UpdatedOrganizationName',
-    ];
+        $input = [
+            'name' => 'UpdatedOrganizationName',
+        ];
 
-    $action($organization, $input);
+        $action($organization, $input);
 
-    assertDatabaseHas('organizations', [
-        'id' => $organization->id,
-        'name' => 'UpdatedOrganizationName',
-    ]);
-});
+        assertDatabaseHas('organizations', [
+            'id' => $organization->id,
+            'name' => 'UpdatedOrganizationName',
+        ]);
+    });
 
-it('validates organization update', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
-    $action = new UpdateOrganization;
+    it('validates organization update', function () {
+        $user = User::factory()->create();
+        $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+        $action = new UpdateOrganization;
 
-    expect(fn () => $action($organization, [
-        'name' => 'Invalid Name!',
-    ]))->toThrow(ValidationException::class);
+        expect(fn () => $action($organization, [
+            'name' => 'Invalid Name!',
+        ]))->toThrow(ValidationException::class);
 
-    expect(fn () => $action($organization, [
-        'display_name' => str_repeat('a', 101),
-    ]))->toThrow(ValidationException::class);
+        expect(fn () => $action($organization, [
+            'display_name' => str_repeat('a', 101),
+        ]))->toThrow(ValidationException::class);
+    });
 });

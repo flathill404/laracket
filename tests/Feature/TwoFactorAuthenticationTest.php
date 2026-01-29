@@ -15,114 +15,116 @@ use function Pest\Laravel\postJson;
 
 uses(LazilyRefreshDatabase::class);
 
-it('enables two factor authentication', function () {
-    $user = User::factory()->create();
+describe('TwoFactorAuthentication', function () {
+    it('enables two factor authentication', function () {
+        $user = User::factory()->create();
 
-    $response = actingAs($user)
-        ->withSession(['auth.password_confirmed_at' => time()])
-        ->postJson('/api/user/two-factor-authentication');
+        $response = actingAs($user)
+            ->withSession(['auth.password_confirmed_at' => time()])
+            ->postJson('/api/user/two-factor-authentication');
 
-    $response->assertOk();
+        $response->assertOk();
 
-    $user->refresh();
-    expect($user->two_factor_secret)->not->toBeNull();
-    expect($user->two_factor_recovery_codes)->not->toBeNull();
-});
-
-it('gets two factor qr code', function () {
-    $user = User::factory()->create();
-
-    actingAs($user)
-        ->withSession(['auth.password_confirmed_at' => time()])
-        ->postJson('/api/user/two-factor-authentication');
-
-    $response = getJson('/api/user/two-factor-qr-code');
-
-    $response->assertOk();
-    expect($response->content())->toContain('svg');
-});
-
-it('confirms two factor authentication', function () {
-    $user = User::factory()->create();
-
-    actingAs($user)
-        ->withSession(['auth.password_confirmed_at' => time()])
-        ->postJson('/api/user/two-factor-authentication');
-
-    mock(TwoFactorAuthenticationProvider::class, function ($mock) {
-        $mock->shouldReceive('verify')->andReturn(true);
+        $user->refresh();
+        expect($user->two_factor_secret)->not->toBeNull();
+        expect($user->two_factor_recovery_codes)->not->toBeNull();
     });
 
-    $response = postJson('/api/user/confirmed-two-factor-authentication', [
-        'code' => '123456',
-    ]);
+    it('gets two factor qr code', function () {
+        $user = User::factory()->create();
 
-    $response->assertOk();
+        actingAs($user)
+            ->withSession(['auth.password_confirmed_at' => time()])
+            ->postJson('/api/user/two-factor-authentication');
 
-    $user->refresh();
-    expect($user->two_factor_confirmed_at)->not->toBeNull();
-});
+        $response = getJson('/api/user/two-factor-qr-code');
 
-it('authenticates the user with two factor code', function () {
-    $user = User::factory()->create([
-        'two_factor_secret' => encrypt('dummy-secret'),
-        'two_factor_recovery_codes' => encrypt(json_encode(['dummy-recovery-code'])),
-        'two_factor_confirmed_at' => now(),
-    ]);
-
-    $response = postJson('/api/login', [
-        'email' => $user->email,
-        'password' => 'password',
-    ]);
-
-    $response->assertJson(['two_factor' => true]);
-    assertGuest();
-
-    mock(TwoFactorAuthenticationProvider::class, function ($mock) {
-        $mock->shouldReceive('verify')->andReturn(true);
+        $response->assertOk();
+        expect($response->content())->toContain('svg');
     });
 
-    $response = postJson('/api/two-factor-challenge', [
-        'code' => '123456',
-    ]);
+    it('confirms two factor authentication', function () {
+        $user = User::factory()->create();
 
-    $response->assertNoContent();
-    assertAuthenticatedAs($user);
-});
+        actingAs($user)
+            ->withSession(['auth.password_confirmed_at' => time()])
+            ->postJson('/api/user/two-factor-authentication');
 
-it('authenticates the user with recovery code', function () {
-    $user = User::factory()->create([
-        'two_factor_secret' => encrypt('dummy-secret'),
-        'two_factor_recovery_codes' => encrypt(json_encode(['valid-recovery-code'])),
-        'two_factor_confirmed_at' => now(),
-    ]);
+        mock(TwoFactorAuthenticationProvider::class, function ($mock) {
+            $mock->shouldReceive('verify')->andReturn(true);
+        });
 
-    postJson('/api/login', [
-        'email' => $user->email,
-        'password' => 'password',
-    ]);
+        $response = postJson('/api/user/confirmed-two-factor-authentication', [
+            'code' => '123456',
+        ]);
 
-    $response = postJson('/api/two-factor-challenge', [
-        'recovery_code' => 'valid-recovery-code',
-    ]);
+        $response->assertOk();
 
-    $response->assertNoContent();
-    assertAuthenticatedAs($user);
-});
+        $user->refresh();
+        expect($user->two_factor_confirmed_at)->not->toBeNull();
+    });
 
-it('disables two factor authentication', function () {
-    $user = User::factory()->create([
-        'two_factor_secret' => encrypt('secret'),
-        'two_factor_confirmed_at' => now(),
-    ]);
+    it('authenticates the user with two factor code', function () {
+        $user = User::factory()->create([
+            'two_factor_secret' => encrypt('dummy-secret'),
+            'two_factor_recovery_codes' => encrypt(json_encode(['dummy-recovery-code'])),
+            'two_factor_confirmed_at' => now(),
+        ]);
 
-    $response = actingAs($user)
-        ->withSession(['auth.password_confirmed_at' => time()])
-        ->deleteJson('/api/user/two-factor-authentication');
+        $response = postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
 
-    $response->assertOk();
+        $response->assertJson(['two_factor' => true]);
+        assertGuest();
 
-    $user->refresh();
-    expect($user->two_factor_secret)->toBeNull();
-    expect($user->two_factor_confirmed_at)->toBeNull();
+        mock(TwoFactorAuthenticationProvider::class, function ($mock) {
+            $mock->shouldReceive('verify')->andReturn(true);
+        });
+
+        $response = postJson('/api/two-factor-challenge', [
+            'code' => '123456',
+        ]);
+
+        $response->assertNoContent();
+        assertAuthenticatedAs($user);
+    });
+
+    it('authenticates the user with recovery code', function () {
+        $user = User::factory()->create([
+            'two_factor_secret' => encrypt('dummy-secret'),
+            'two_factor_recovery_codes' => encrypt(json_encode(['valid-recovery-code'])),
+            'two_factor_confirmed_at' => now(),
+        ]);
+
+        postJson('/api/login', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $response = postJson('/api/two-factor-challenge', [
+            'recovery_code' => 'valid-recovery-code',
+        ]);
+
+        $response->assertNoContent();
+        assertAuthenticatedAs($user);
+    });
+
+    it('disables two factor authentication', function () {
+        $user = User::factory()->create([
+            'two_factor_secret' => encrypt('secret'),
+            'two_factor_confirmed_at' => now(),
+        ]);
+
+        $response = actingAs($user)
+            ->withSession(['auth.password_confirmed_at' => time()])
+            ->deleteJson('/api/user/two-factor-authentication');
+
+        $response->assertOk();
+
+        $user->refresh();
+        expect($user->two_factor_secret)->toBeNull();
+        expect($user->two_factor_confirmed_at)->toBeNull();
+    });
 });

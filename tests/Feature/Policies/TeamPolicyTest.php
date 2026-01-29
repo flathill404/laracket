@@ -11,106 +11,108 @@ use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 
 uses(LazilyRefreshDatabase::class);
 
-it('allows organization member to view the team', function () {
-    $organization = Organization::factory()->create();
-    $team = Team::factory()->for($organization)->create();
-    $user = User::factory()->create();
-    $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+describe('TeamPolicy', function () {
+    it('allows organization member to view the team', function () {
+        $organization = Organization::factory()->create();
+        $team = Team::factory()->for($organization)->create();
+        $user = User::factory()->create();
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-    expect($user->can('view', $team))->toBeTrue();
-});
+        expect($user->can('view', $team))->toBeTrue();
+    });
 
-it('denies outsider to view the team', function () {
-    $organization = Organization::factory()->create();
-    $team = Team::factory()->for($organization)->create();
-    $user = User::factory()->create();
+    it('denies outsider to view the team', function () {
+        $organization = Organization::factory()->create();
+        $team = Team::factory()->for($organization)->create();
+        $user = User::factory()->create();
 
-    expect($user->can('view', $team))->toBeFalse();
-});
+        expect($user->can('view', $team))->toBeFalse();
+    });
 
-it('allows organization owner to update the team', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
-    $team = Team::factory()->for($organization)->create();
+    it('allows organization owner to update the team', function () {
+        $user = User::factory()->create();
+        $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+        $team = Team::factory()->for($organization)->create();
 
-    expect($user->can('update', $team))->toBeTrue();
-});
+        expect($user->can('update', $team))->toBeTrue();
+    });
 
-it('allows team leader to update the team', function () {
-    $organization = Organization::factory()->create();
-    $team = Team::factory()->for($organization)->create();
-    $user = User::factory()->create();
-    // Assuming team leader logic
-    $team->users()->attach($user, ['role' => TeamRole::Leader]);
-    $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+    it('allows team leader to update the team', function () {
+        $organization = Organization::factory()->create();
+        $team = Team::factory()->for($organization)->create();
+        $user = User::factory()->create();
+        // Assuming team leader logic
+        $team->users()->attach($user, ['role' => TeamRole::Leader]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-    expect($user->can('update', $team))->toBeTrue();
-});
+        expect($user->can('update', $team))->toBeTrue();
+    });
 
-it('denies team member to update the team', function () {
-    $organization = Organization::factory()->create();
-    $team = Team::factory()->for($organization)->create();
-    $user = User::factory()->create();
-    $team->users()->attach($user, ['role' => TeamRole::Member]);
-    $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+    it('denies team member to update the team', function () {
+        $organization = Organization::factory()->create();
+        $team = Team::factory()->for($organization)->create();
+        $user = User::factory()->create();
+        $team->users()->attach($user, ['role' => TeamRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-    expect($user->can('update', $team))->toBeFalse();
-});
+        expect($user->can('update', $team))->toBeFalse();
+    });
 
-it('allows organization owner to delete the team', function () {
-    $user = User::factory()->create();
-    $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
-    $team = Team::factory()->for($organization)->create();
+    it('allows organization owner to delete the team', function () {
+        $user = User::factory()->create();
+        $organization = Organization::factory()->create(['owner_user_id' => $user->id]);
+        $team = Team::factory()->for($organization)->create();
 
-    expect($user->can('delete', $team))->toBeTrue();
-});
+        expect($user->can('delete', $team))->toBeTrue();
+    });
 
-it('denies team leader to delete the team', function () {
-    $organization = Organization::factory()->create();
-    $team = Team::factory()->for($organization)->create();
-    $user = User::factory()->create();
-    $team->users()->attach($user, ['role' => TeamRole::Leader]);
-    $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+    it('denies team leader to delete the team', function () {
+        $organization = Organization::factory()->create();
+        $team = Team::factory()->for($organization)->create();
+        $user = User::factory()->create();
+        $team->users()->attach($user, ['role' => TeamRole::Leader]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-    expect($user->can('delete', $team))->toBeFalse();
-});
+        expect($user->can('delete', $team))->toBeFalse();
+    });
 
-it('allows team leader to add members', function () {
-    $organization = Organization::factory()->create();
-    $team = Team::factory()->for($organization)->create();
-    $user = User::factory()->create();
-    $team->users()->attach($user, ['role' => TeamRole::Leader]);
-    $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+    it('allows team leader to add members', function () {
+        $organization = Organization::factory()->create();
+        $team = Team::factory()->for($organization)->create();
+        $user = User::factory()->create();
+        $team->users()->attach($user, ['role' => TeamRole::Leader]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-    expect($user->can('add_member', $team))->toBeTrue();
-});
+        expect($user->can('add_member', $team))->toBeTrue();
+    });
 
-it('denies team member to add members', function () {
-    $organization = Organization::factory()->create();
-    $team = Team::factory()->for($organization)->create();
-    $user = User::factory()->create();
-    $team->users()->attach($user, ['role' => TeamRole::Member]);
-    $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+    it('denies team member to add members', function () {
+        $organization = Organization::factory()->create();
+        $team = Team::factory()->for($organization)->create();
+        $user = User::factory()->create();
+        $team->users()->attach($user, ['role' => TeamRole::Member]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-    expect($user->can('add_member', $team))->toBeFalse();
-});
+        expect($user->can('add_member', $team))->toBeFalse();
+    });
 
-it('allows team leader to remove members', function () {
-    $organization = Organization::factory()->create();
-    $team = Team::factory()->for($organization)->create();
-    $user = User::factory()->create();
-    $team->users()->attach($user, ['role' => TeamRole::Leader]);
-    $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+    it('allows team leader to remove members', function () {
+        $organization = Organization::factory()->create();
+        $team = Team::factory()->for($organization)->create();
+        $user = User::factory()->create();
+        $team->users()->attach($user, ['role' => TeamRole::Leader]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-    expect($user->can('remove_member', $team))->toBeTrue();
-});
+        expect($user->can('remove_member', $team))->toBeTrue();
+    });
 
-it('allows team leader to update member roles', function () {
-    $organization = Organization::factory()->create();
-    $team = Team::factory()->for($organization)->create();
-    $user = User::factory()->create();
-    $team->users()->attach($user, ['role' => TeamRole::Leader]);
-    $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+    it('allows team leader to update member roles', function () {
+        $organization = Organization::factory()->create();
+        $team = Team::factory()->for($organization)->create();
+        $user = User::factory()->create();
+        $team->users()->attach($user, ['role' => TeamRole::Leader]);
+        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-    expect($user->can('update_member_role', $team))->toBeTrue();
+        expect($user->can('update_member_role', $team))->toBeTrue();
+    });
 });

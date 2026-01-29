@@ -12,18 +12,20 @@ use function Pest\Laravel\assertDatabaseMissing;
 
 uses(LazilyRefreshDatabase::class);
 
-it('removes a member from a project', function () {
-    $organization = Organization::factory()->create();
-    $project = Project::factory()->create(['organization_id' => $organization->id]);
-    $user = User::factory()->create();
-    $project->assignedUsers()->attach($user);
+describe('RemoveProjectMember', function () {
+    it('removes a member from a project', function () {
+        $organization = Organization::factory()->create();
+        $project = Project::factory()->create(['organization_id' => $organization->id]);
+        $user = User::factory()->create();
+        $project->assignedUsers()->attach($user);
 
-    $action = new RemoveProjectMember;
+        $action = new RemoveProjectMember;
 
-    $action($project, $user);
+        $action($project, $user);
 
-    assertDatabaseMissing('project_user', [
-        'project_id' => $project->id,
-        'user_id' => $user->id,
-    ]);
+        assertDatabaseMissing('project_user', [
+            'project_id' => $project->id,
+            'user_id' => $user->id,
+        ]);
+    });
 });

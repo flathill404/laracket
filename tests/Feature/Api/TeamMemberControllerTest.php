@@ -19,208 +19,210 @@ use function Pest\Laravel\postJson;
 
 uses(LazilyRefreshDatabase::class);
 
-describe('index', function () {
-    it('lists team members', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+describe('TeamMemberController', function () {
+    describe('index', function () {
+        it('lists team members', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-        $team = Team::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-
-        $otherUser = User::factory()->create();
-        $organization->users()->attach($otherUser, ['role' => OrganizationRole::Member]);
-
-        $team->users()->attach($user, ['role' => TeamRole::Leader]);
-        $team->users()->attach($otherUser, ['role' => TeamRole::Member]);
-
-        getJson("/api/teams/{$team->id}/members")
-            ->assertOk()
-            ->assertJsonCount(2, 'data')
-            ->assertJsonStructure([
-                'data' => [
-                    '*' => ['id', 'name', 'email'],
-                ],
+            $team = Team::factory()->create([
+                'organization_id' => $organization->id,
             ]);
+
+            $otherUser = User::factory()->create();
+            $organization->users()->attach($otherUser, ['role' => OrganizationRole::Member]);
+
+            $team->users()->attach($user, ['role' => TeamRole::Leader]);
+            $team->users()->attach($otherUser, ['role' => TeamRole::Member]);
+
+            getJson("/api/teams/{$team->id}/members")
+                ->assertOk()
+                ->assertJsonCount(2, 'data')
+                ->assertJsonStructure([
+                    'data' => [
+                        '*' => ['id', 'name', 'email'],
+                    ],
+                ]);
+        });
+
+        it('denies access if not a member of organization', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $team = Team::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+
+            getJson("/api/teams/{$team->id}/members")
+                ->assertForbidden();
+        });
     });
 
-    it('denies access if not a member of organization', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+    describe('store', function () {
+        it('adds a member to the team', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $team = Team::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-        getJson("/api/teams/{$team->id}/members")
-            ->assertForbidden();
-    });
-});
+            $team = Team::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-describe('store', function () {
-    it('adds a member to the team', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            $newUser = User::factory()->create();
+            $organization->users()->attach($newUser, ['role' => OrganizationRole::Member]);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+            postJson("/api/teams/{$team->id}/members", [
+                'user_id' => $newUser->id,
+            ])
+                ->assertNoContent();
 
-        $team = Team::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            assertDatabaseHas('team_user', [
+                'team_id' => $team->id,
+                'user_id' => $newUser->id,
+                'role' => TeamRole::Member->value,
+            ]);
+        });
 
-        $newUser = User::factory()->create();
-        $organization->users()->attach($newUser, ['role' => OrganizationRole::Member]);
+        it('denies adding member if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        postJson("/api/teams/{$team->id}/members", [
-            'user_id' => $newUser->id,
-        ])
-            ->assertNoContent();
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-        assertDatabaseHas('team_user', [
-            'team_id' => $team->id,
-            'user_id' => $newUser->id,
-            'role' => TeamRole::Member->value,
-        ]);
-    });
+            $team = Team::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-    it('denies adding member if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            $newUser = User::factory()->create();
+            $organization->users()->attach($newUser, ['role' => OrganizationRole::Member]);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+            postJson("/api/teams/{$team->id}/members", [
+                'user_id' => $newUser->id,
+            ])
+                ->assertForbidden();
+        });
 
-        $team = Team::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+        it('validates user belongs to organization', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $newUser = User::factory()->create();
-        $organization->users()->attach($newUser, ['role' => OrganizationRole::Member]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-        postJson("/api/teams/{$team->id}/members", [
-            'user_id' => $newUser->id,
-        ])
-            ->assertForbidden();
-    });
+            $team = Team::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-    it('validates user belongs to organization', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+            $newUser = User::factory()->create();
+            // Not adding to organization
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
-
-        $team = Team::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-
-        $newUser = User::factory()->create();
-        // Not adding to organization
-
-        postJson("/api/teams/{$team->id}/members", [
-            'user_id' => $newUser->id,
-        ])
-            ->assertUnprocessable()
-            ->assertJsonValidationErrors(['user']);
-    });
-});
-
-describe('update', function () {
-    it('updates member role', function () {
-        $user = User::factory()->create();
-        actingAs($user);
-
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
-
-        $team = Team::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
-
-        $member = User::factory()->create();
-        $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
-        $team->users()->attach($member, ['role' => TeamRole::Member]);
-
-        patchJson("/api/teams/{$team->id}/members/{$member->id}", [
-            'role' => TeamRole::Leader->value,
-        ])
-            ->assertNoContent();
-
-        assertDatabaseHas('team_user', [
-            'team_id' => $team->id,
-            'user_id' => $member->id,
-            'role' => TeamRole::Leader->value,
-        ]);
+            postJson("/api/teams/{$team->id}/members", [
+                'user_id' => $newUser->id,
+            ])
+                ->assertUnprocessable()
+                ->assertJsonValidationErrors(['user']);
+        });
     });
 
-    it('denies update if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+    describe('update', function () {
+        it('updates member role', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-        $team = Team::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            $team = Team::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-        $member = User::factory()->create();
-        $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
-        $team->users()->attach($member, ['role' => TeamRole::Member]);
+            $member = User::factory()->create();
+            $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
+            $team->users()->attach($member, ['role' => TeamRole::Member]);
 
-        patchJson("/api/teams/{$team->id}/members/{$member->id}", [
-            'role' => TeamRole::Leader->value,
-        ])
-            ->assertForbidden();
+            patchJson("/api/teams/{$team->id}/members/{$member->id}", [
+                'role' => TeamRole::Leader->value,
+            ])
+                ->assertNoContent();
+
+            assertDatabaseHas('team_user', [
+                'team_id' => $team->id,
+                'user_id' => $member->id,
+                'role' => TeamRole::Leader->value,
+            ]);
+        });
+
+        it('denies update if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
+
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+
+            $team = Team::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
+
+            $member = User::factory()->create();
+            $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
+            $team->users()->attach($member, ['role' => TeamRole::Member]);
+
+            patchJson("/api/teams/{$team->id}/members/{$member->id}", [
+                'role' => TeamRole::Leader->value,
+            ])
+                ->assertForbidden();
+        });
     });
-});
 
-describe('destroy', function () {
-    it('removes a member from the team', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+    describe('destroy', function () {
+        it('removes a member from the team', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
-        $team = Team::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            $team = Team::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-        $member = User::factory()->create();
-        $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
-        $team->users()->attach($member, ['role' => TeamRole::Member]);
+            $member = User::factory()->create();
+            $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
+            $team->users()->attach($member, ['role' => TeamRole::Member]);
 
-        deleteJson("/api/teams/{$team->id}/members/{$member->id}")
-            ->assertNoContent();
+            deleteJson("/api/teams/{$team->id}/members/{$member->id}")
+                ->assertNoContent();
 
-        assertDatabaseMissing('team_user', [
-            'team_id' => $team->id,
-            'user_id' => $member->id,
-        ]);
-    });
+            assertDatabaseMissing('team_user', [
+                'team_id' => $team->id,
+                'user_id' => $member->id,
+            ]);
+        });
 
-    it('denies removal if not authorized', function () {
-        $user = User::factory()->create();
-        actingAs($user);
+        it('denies removal if not authorized', function () {
+            $user = User::factory()->create();
+            actingAs($user);
 
-        $organization = Organization::factory()->create();
-        $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
+            $organization = Organization::factory()->create();
+            $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
-        $team = Team::factory()->create([
-            'organization_id' => $organization->id,
-        ]);
+            $team = Team::factory()->create([
+                'organization_id' => $organization->id,
+            ]);
 
-        $member = User::factory()->create();
-        $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
-        $team->users()->attach($member, ['role' => TeamRole::Member]);
+            $member = User::factory()->create();
+            $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
+            $team->users()->attach($member, ['role' => TeamRole::Member]);
 
-        deleteJson("/api/teams/{$team->id}/members/{$member->id}")
-            ->assertForbidden();
+            deleteJson("/api/teams/{$team->id}/members/{$member->id}")
+                ->assertForbidden();
+        });
     });
 });

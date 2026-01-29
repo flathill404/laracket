@@ -13,42 +13,44 @@ use function Pest\Laravel\assertDatabaseHas;
 
 uses(LazilyRefreshDatabase::class);
 
-it('attaches a team to a project', function () {
-    $organization = Organization::factory()->create();
-    $project = Project::factory()->create(['organization_id' => $organization->id]);
-    $team = Team::factory()->create(['organization_id' => $organization->id]);
+describe('AttachTeamToProject', function () {
+    it('attaches a team to a project', function () {
+        $organization = Organization::factory()->create();
+        $project = Project::factory()->create(['organization_id' => $organization->id]);
+        $team = Team::factory()->create(['organization_id' => $organization->id]);
 
-    $action = new AttachTeamToProject;
+        $action = new AttachTeamToProject;
 
-    $action($project, $team);
+        $action($project, $team);
 
-    assertDatabaseHas('project_team', [
-        'project_id' => $project->id,
-        'team_id' => $team->id,
-    ]);
-});
+        assertDatabaseHas('project_team', [
+            'project_id' => $project->id,
+            'team_id' => $team->id,
+        ]);
+    });
 
-it('validates team belongs to organization', function () {
-    $organization = Organization::factory()->create();
-    $project = Project::factory()->create(['organization_id' => $organization->id]);
+    it('validates team belongs to organization', function () {
+        $organization = Organization::factory()->create();
+        $project = Project::factory()->create(['organization_id' => $organization->id]);
 
-    $otherOrganization = Organization::factory()->create();
-    $team = Team::factory()->create(['organization_id' => $otherOrganization->id]);
+        $otherOrganization = Organization::factory()->create();
+        $team = Team::factory()->create(['organization_id' => $otherOrganization->id]);
 
-    $action = new AttachTeamToProject;
+        $action = new AttachTeamToProject;
 
-    expect(fn () => $action($project, $team))
-        ->toThrow(ValidationException::class);
-});
+        expect(fn () => $action($project, $team))
+            ->toThrow(ValidationException::class);
+    });
 
-it('validates team is not already attached', function () {
-    $organization = Organization::factory()->create();
-    $project = Project::factory()->create(['organization_id' => $organization->id]);
-    $team = Team::factory()->create(['organization_id' => $organization->id]);
-    $project->assignedTeams()->attach($team);
+    it('validates team is not already attached', function () {
+        $organization = Organization::factory()->create();
+        $project = Project::factory()->create(['organization_id' => $organization->id]);
+        $team = Team::factory()->create(['organization_id' => $organization->id]);
+        $project->assignedTeams()->attach($team);
 
-    $action = new AttachTeamToProject;
+        $action = new AttachTeamToProject;
 
-    expect(fn () => $action($project, $team))
-        ->toThrow(ValidationException::class);
+        expect(fn () => $action($project, $team))
+            ->toThrow(ValidationException::class);
+    });
 });
