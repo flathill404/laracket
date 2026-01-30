@@ -100,12 +100,32 @@ class Project extends Model
     }
 
     /**
+     * Alias for assignedTeams to support route model binding.
+     *
+     * @return BelongsToMany<Team, $this>
+     */
+    public function teams(): BelongsToMany
+    {
+        return $this->assignedTeams();
+    }
+
+    /**
      * @return BelongsToMany<User, $this>
      */
     public function assignedUsers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'project_user')
             ->withTimestamps();
+    }
+
+    /**
+     * Alias for assignedUsers to support route model binding.
+     *
+     * @return BelongsToMany<User, $this>
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->assignedUsers();
     }
 
     /**
@@ -176,5 +196,28 @@ class Project extends Model
         $query->whereHas('assignedTeams.members', function (Builder $q) use ($user) {
             $q->where('users.id', $user->id);
         });
+    }
+
+    /**
+     * Retrieve the child model for a bound value.
+     *
+     * @param  string  $childType
+     * @param  mixed  $value
+     * @param  string|null  $field
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function resolveChildRouteBinding($childType, $value, $field)
+    {
+        if ($field) {
+            return parent::resolveChildRouteBinding($childType, $value, $field);
+        }
+
+        $relationship = $this->{\Illuminate\Support\Str::plural(\Illuminate\Support\Str::camel($childType))}();
+
+        $query = $relationship->getRelated()->resolveRouteBindingQuery($relationship, $value, null);
+
+        return $relationship instanceof \Illuminate\Database\Eloquent\Relations\Relation
+            ? $query->firstOrFail()
+            : $query->first();
     }
 }

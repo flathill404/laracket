@@ -38,7 +38,7 @@ describe('TeamMemberController', function () {
             $team->users()->attach($user, ['role' => TeamRole::Leader]);
             $team->users()->attach($otherUser, ['role' => TeamRole::Member]);
 
-            getJson("/api/teams/{$team->id}/members")
+            getJson("/api/organizations/{$organization->id}/teams/{$team->id}/members")
                 ->assertOk()
                 ->assertJsonCount(2, 'data')
                 ->assertJsonStructure([
@@ -57,7 +57,7 @@ describe('TeamMemberController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            getJson("/api/teams/{$team->id}/members")
+            getJson("/api/organizations/{$organization->id}/teams/{$team->id}/members")
                 ->assertForbidden();
         });
     });
@@ -77,7 +77,7 @@ describe('TeamMemberController', function () {
             $newUser = User::factory()->create();
             $organization->users()->attach($newUser, ['role' => OrganizationRole::Member]);
 
-            postJson("/api/teams/{$team->id}/members", [
+            postJson("/api/organizations/{$organization->id}/teams/{$team->id}/members", [
                 'user_id' => $newUser->id,
             ])
                 ->assertNoContent();
@@ -103,7 +103,7 @@ describe('TeamMemberController', function () {
             $newUser = User::factory()->create();
             $organization->users()->attach($newUser, ['role' => OrganizationRole::Member]);
 
-            postJson("/api/teams/{$team->id}/members", [
+            postJson("/api/organizations/{$organization->id}/teams/{$team->id}/members", [
                 'user_id' => $newUser->id,
             ])
                 ->assertForbidden();
@@ -123,7 +123,7 @@ describe('TeamMemberController', function () {
             $newUser = User::factory()->create();
             // Not adding to organization
 
-            postJson("/api/teams/{$team->id}/members", [
+            postJson("/api/organizations/{$organization->id}/teams/{$team->id}/members", [
                 'user_id' => $newUser->id,
             ])
                 ->assertUnprocessable()
@@ -147,7 +147,7 @@ describe('TeamMemberController', function () {
             $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
             $team->users()->attach($member, ['role' => TeamRole::Member]);
 
-            patchJson("/api/teams/{$team->id}/members/{$member->id}", [
+            patchJson("/api/organizations/{$organization->id}/teams/{$team->id}/members/{$member->id}", [
                 'role' => TeamRole::Leader->value,
             ])
                 ->assertNoContent();
@@ -174,7 +174,7 @@ describe('TeamMemberController', function () {
             $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
             $team->users()->attach($member, ['role' => TeamRole::Member]);
 
-            patchJson("/api/teams/{$team->id}/members/{$member->id}", [
+            patchJson("/api/organizations/{$organization->id}/teams/{$team->id}/members/{$member->id}", [
                 'role' => TeamRole::Leader->value,
             ])
                 ->assertForbidden();
@@ -197,7 +197,7 @@ describe('TeamMemberController', function () {
             $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
             $team->users()->attach($member, ['role' => TeamRole::Member]);
 
-            deleteJson("/api/teams/{$team->id}/members/{$member->id}")
+            deleteJson("/api/organizations/{$organization->id}/teams/{$team->id}/members/{$member->id}")
                 ->assertNoContent();
 
             assertDatabaseMissing('team_user', [
@@ -221,7 +221,7 @@ describe('TeamMemberController', function () {
             $organization->users()->attach($member, ['role' => OrganizationRole::Member]);
             $team->users()->attach($member, ['role' => TeamRole::Member]);
 
-            deleteJson("/api/teams/{$team->id}/members/{$member->id}")
+            deleteJson("/api/organizations/{$organization->id}/teams/{$team->id}/members/{$member->id}")
                 ->assertForbidden();
         });
     });

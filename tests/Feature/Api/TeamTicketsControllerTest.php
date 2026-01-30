@@ -36,13 +36,13 @@ describe('TeamTicketsController', function () {
 
             actingAs($user);
 
-            $response = getJson("/api/teams/{$team->id}/tickets?status=open");
+            $response = getJson("/api/organizations/{$organization->id}/teams/{$team->id}/tickets?status=open");
 
             $response->assertOk()
                 ->assertJsonCount(1, 'data')
                 ->assertJsonPath('data.0.id', $ticketOpen->id);
 
-            $responseMultiple = getJson("/api/teams/{$team->id}/tickets?status[]=open&status[]=in_progress");
+            $responseMultiple = getJson("/api/organizations/{$organization->id}/teams/{$team->id}/tickets?status[]=open&status[]=in_progress");
 
             $responseMultiple->assertOk()
                 ->assertJsonCount(2, 'data');
@@ -74,7 +74,7 @@ describe('TeamTicketsController', function () {
 
             actingAs($user);
 
-            $response = getJson("/api/teams/{$team->id}/tickets");
+            $response = getJson("/api/organizations/{$organization->id}/teams/{$team->id}/tickets");
 
             $response->assertOk()
                 ->assertJsonCount(1, 'data')
@@ -90,7 +90,7 @@ describe('TeamTicketsController', function () {
 
             actingAs($user);
 
-            $response = getJson("/api/teams/{$team->id}/tickets");
+            $response = getJson("/api/organizations/{$organization->id}/teams/{$team->id}/tickets");
 
             $response->assertForbidden();
         });

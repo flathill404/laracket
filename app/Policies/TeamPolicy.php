@@ -14,8 +14,12 @@ class TeamPolicy
      */
     public function view(User $user, Team $team): bool
     {
+        if ($user->isOrganizationOwner($team->organization)) {
+            return true;
+        }
+
         // Allowed if user is a member of the organization
-        return $user->organizations()->where('organization_id', $team->organization_id)->exists();
+        return $user->organizations()->where('organizations.id', $team->organization_id)->exists();
     }
 
     /**

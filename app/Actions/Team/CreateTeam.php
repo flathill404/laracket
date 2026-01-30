@@ -45,8 +45,8 @@ class CreateTeam
     protected function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:30', 'alpha_dash'],
             'name' => ['required', 'string', 'max:50'],
+            'slug' => ['required', 'string', 'max:50', 'alpha_dash'],
             'members' => ['sometimes', 'array'],
         ];
     }

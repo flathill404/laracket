@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Actions\Project\AddProjectMember;
 use App\Actions\Project\RemoveProjectMember;
 use App\Http\Resources\UserResource;
+use App\Models\Organization;
 use App\Models\Project;
 use App\Models\User;
 use App\Queries\GetProjectMembers;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Gate;
 
 class ProjectMemberController
 {
-    public function index(Project $project, GetProjectMembers $query): AnonymousResourceCollection
+    public function index(Organization $organization, Project $project, GetProjectMembers $query): AnonymousResourceCollection
     {
         Gate::authorize('view', $project);
 
@@ -26,7 +27,7 @@ class ProjectMemberController
         return UserResource::collection($members);
     }
 
-    public function store(Request $request, Project $project, AddProjectMember $action): Response
+    public function store(Request $request, Organization $organization, Project $project, AddProjectMember $action): Response
     {
         Gate::authorize('add_member', $project);
 
@@ -38,7 +39,7 @@ class ProjectMemberController
         return response()->noContent();
     }
 
-    public function destroy(Project $project, User $user, RemoveProjectMember $action): Response
+    public function destroy(Organization $organization, Project $project, User $user, RemoveProjectMember $action): Response
     {
         Gate::authorize('remove_member', $project);
 

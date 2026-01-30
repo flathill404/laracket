@@ -34,7 +34,7 @@ describe('ProjectTeamController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            postJson("/api/projects/{$project->id}/teams", [
+            postJson("/api/organizations/{$organization->id}/projects/{$project->id}/teams", [
                 'team_id' => $team->id,
             ])
                 ->assertNoContent();
@@ -60,7 +60,7 @@ describe('ProjectTeamController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            postJson("/api/projects/{$project->id}/teams", [
+            postJson("/api/organizations/{$organization->id}/projects/{$project->id}/teams", [
                 'team_id' => $team->id,
             ])
                 ->assertForbidden();
@@ -77,7 +77,7 @@ describe('ProjectTeamController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            postJson("/api/projects/{$project->id}/teams", [])
+            postJson("/api/organizations/{$organization->id}/projects/{$project->id}/teams", [])
                 ->assertNotFound();
         });
     });
@@ -99,7 +99,7 @@ describe('ProjectTeamController', function () {
             ]);
             $project->assignedTeams()->attach($team);
 
-            deleteJson("/api/projects/{$project->id}/teams/{$team->id}")
+            deleteJson("/api/organizations/{$organization->id}/projects/{$project->id}/teams/{$team->id}")
                 ->assertNoContent();
 
             assertDatabaseMissing('project_team', [
@@ -124,7 +124,7 @@ describe('ProjectTeamController', function () {
             ]);
             $project->assignedTeams()->attach($team);
 
-            deleteJson("/api/projects/{$project->id}/teams/{$team->id}")
+            deleteJson("/api/organizations/{$organization->id}/projects/{$project->id}/teams/{$team->id}")
                 ->assertForbidden();
         });
     });

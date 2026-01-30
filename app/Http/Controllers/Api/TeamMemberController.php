@@ -9,6 +9,7 @@ use App\Actions\Team\RemoveTeamMember;
 use App\Actions\Team\UpdateTeamMemberRole;
 use App\Enums\TeamRole;
 use App\Http\Resources\UserResource;
+use App\Models\Organization;
 use App\Models\Team;
 use App\Models\User;
 use App\Queries\GetTeamMembers;
@@ -19,7 +20,7 @@ use Illuminate\Support\Facades\Gate;
 
 class TeamMemberController
 {
-    public function index(Team $team, GetTeamMembers $query): AnonymousResourceCollection
+    public function index(Organization $organization, Team $team, GetTeamMembers $query): AnonymousResourceCollection
     {
         Gate::authorize('view', $team);
 
@@ -28,7 +29,7 @@ class TeamMemberController
         return UserResource::collection($members);
     }
 
-    public function store(Request $request, Team $team, AddTeamMember $action): Response
+    public function store(Request $request, Organization $organization, Team $team, AddTeamMember $action): Response
     {
         Gate::authorize('add_member', $team);
 
@@ -40,7 +41,7 @@ class TeamMemberController
         return response()->noContent();
     }
 
-    public function update(Request $request, Team $team, User $user, UpdateTeamMemberRole $action): Response
+    public function update(Request $request, Organization $organization, Team $team, User $user, UpdateTeamMemberRole $action): Response
     {
         Gate::authorize('update_member_role', $team);
 
@@ -49,7 +50,7 @@ class TeamMemberController
         return response()->noContent();
     }
 
-    public function destroy(Team $team, User $user, RemoveTeamMember $action): Response
+    public function destroy(Organization $organization, Team $team, User $user, RemoveTeamMember $action): Response
     {
         Gate::authorize('remove_member', $team);
 

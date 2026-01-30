@@ -34,7 +34,7 @@ describe('ProjectMemberController', function () {
             $project->assignedUsers()->attach($otherUser);
             $project->assignedUsers()->attach($user);
 
-            getJson("/api/projects/{$project->id}/members")
+            getJson("/api/organizations/{$organization->id}/projects/{$project->id}/members")
                 ->assertOk()
                 ->assertJsonCount(2, 'data')
                 ->assertJsonStructure([
@@ -53,7 +53,7 @@ describe('ProjectMemberController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            getJson("/api/projects/{$project->id}/members")
+            getJson("/api/organizations/{$organization->id}/projects/{$project->id}/members")
                 ->assertForbidden();
         });
     });
@@ -74,7 +74,7 @@ describe('ProjectMemberController', function () {
             // User must be organization member to be added to project (usually, but let's assume valid flow)
             $organization->users()->attach($newUser, ['role' => OrganizationRole::Member]);
 
-            postJson("/api/projects/{$project->id}/members", [
+            postJson("/api/organizations/{$organization->id}/projects/{$project->id}/members", [
                 'user_id' => $newUser->id,
             ])
                 ->assertNoContent();
@@ -99,7 +99,7 @@ describe('ProjectMemberController', function () {
             $newUser = User::factory()->create();
             $organization->users()->attach($newUser, ['role' => OrganizationRole::Member]);
 
-            postJson("/api/projects/{$project->id}/members", [
+            postJson("/api/organizations/{$organization->id}/projects/{$project->id}/members", [
                 'user_id' => $newUser->id,
             ])
                 ->assertForbidden();
@@ -116,7 +116,7 @@ describe('ProjectMemberController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            postJson("/api/projects/{$project->id}/members", [])
+            postJson("/api/organizations/{$organization->id}/projects/{$project->id}/members", [])
                 ->assertNotFound(); // Because findOrFail throws 404 if ID is null/missing? Or 500?
             // Controller uses User::findOrFail($request->input('user_id')).
             // If user_id is missing, findOrFail(null) might behave specific way or if valid usage expecting validation request.
@@ -146,7 +146,7 @@ describe('ProjectMemberController', function () {
             $member = User::factory()->create();
             $project->assignedUsers()->attach($member);
 
-            deleteJson("/api/projects/{$project->id}/members/{$member->id}")
+            deleteJson("/api/organizations/{$organization->id}/projects/{$project->id}/members/{$member->id}")
                 ->assertNoContent();
 
             assertDatabaseMissing('project_user', [
@@ -169,7 +169,7 @@ describe('ProjectMemberController', function () {
             $member = User::factory()->create();
             $project->assignedUsers()->attach($member);
 
-            deleteJson("/api/projects/{$project->id}/members/{$member->id}")
+            deleteJson("/api/organizations/{$organization->id}/projects/{$project->id}/members/{$member->id}")
                 ->assertForbidden();
         });
     });

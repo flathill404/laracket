@@ -122,7 +122,7 @@ describe('TeamController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            getJson("/api/teams/{$team->id}")
+            getJson("/api/organizations/{$organization->id}/teams/{$team->id}")
                 ->assertOk()
                 ->assertJson([
                     'data' => [
@@ -143,7 +143,7 @@ describe('TeamController', function () {
             ]);
             // User not attached
 
-            getJson("/api/teams/{$team->id}")
+            getJson("/api/organizations/{$organization->id}/teams/{$team->id}")
                 ->assertForbidden();
         });
     });
@@ -165,7 +165,7 @@ describe('TeamController', function () {
                 'name' => 'Updated Team',
             ];
 
-            putJson("/api/teams/{$team->id}", $data)
+            putJson("/api/organizations/{$organization->id}/teams/{$team->id}", $data)
                 ->assertOk()
                 ->assertJsonFragment([
                     'slug' => 'updated-team',
@@ -189,7 +189,7 @@ describe('TeamController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            putJson("/api/teams/{$team->id}", ['slug' => 'new-name'])
+            putJson("/api/organizations/{$organization->id}/teams/{$team->id}", ['slug' => 'new-name'])
                 ->assertForbidden();
         });
     });
@@ -206,7 +206,7 @@ describe('TeamController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            deleteJson("/api/teams/{$team->id}")
+            deleteJson("/api/organizations/{$organization->id}/teams/{$team->id}")
                 ->assertNoContent();
 
             assertDatabaseMissing('teams', [
@@ -225,7 +225,7 @@ describe('TeamController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            deleteJson("/api/teams/{$team->id}")
+            deleteJson("/api/organizations/{$organization->id}/teams/{$team->id}")
                 ->assertForbidden();
         });
     });

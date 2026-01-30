@@ -25,11 +25,11 @@ trait HasHybridRouting
 
         // If the value is a valid UUID, query by primary key
         if (Str::isUuid($value)) {
-            return $query->where($this->getKeyName(), $value);
+            return $query->where($this->qualifyColumn($this->getKeyName()), $value);
         }
 
         // Otherwise, query by the route key (slug)
-        return $query->where($this->getRouteKeyName(), $value);
+        return $query->where($this->qualifyColumn($this->getRouteKeyName()), $value);
     }
 
     /**

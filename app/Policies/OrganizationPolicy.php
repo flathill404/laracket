@@ -26,7 +26,7 @@ class OrganizationPolicy
             return true;
         }
 
-        return $user->organizations()->where('organization_id', $organization->id)->exists();
+        return $user->organizations()->where('organizations.id', $organization->id)->exists();
     }
 
     /**

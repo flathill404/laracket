@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api;
 
 use App\Http\Resources\TicketResource;
+use App\Models\Organization;
 use App\Models\Team;
 use App\Queries\GetTeamTickets;
 use App\Values\TicketQuery;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Gate;
 
 class TeamTicketsController
 {
-    public function index(Request $request, Team $team, GetTeamTickets $query): AnonymousResourceCollection
+    public function index(Request $request, Organization $organization, Team $team, GetTeamTickets $query): AnonymousResourceCollection
     {
         Gate::authorize('view', $team);
 

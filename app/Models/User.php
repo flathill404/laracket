@@ -77,7 +77,6 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasHybridRouting, HasUuids {
         HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
     }
-
     use Notifiable;
     use TwoFactorAuthenticatable;
 
@@ -194,7 +193,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isAdmin(Organization $organization): bool
     {
         return $this->organizations()
-            ->where('organization_id', $organization->id)
+            ->where('organizations.id', $organization->id)
             ->wherePivot('role', \App\Enums\OrganizationRole::Admin)
             ->exists();
     }
@@ -207,7 +206,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasProjectAccess(Project $project): bool
     {
         $directAccess = $this->assignedProjects()
-            ->where('project_id', $project->id)
+            ->where('projects.id', $project->id)
             ->exists();
 
         if ($directAccess) {
@@ -227,7 +226,7 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isTeamLeader(Team $team): bool
     {
         return $this->teams()
-            ->where('team_id', $team->id)
+            ->where('teams.id', $team->id)
             ->wherePivot('role', \App\Enums\TeamRole::Leader)
             ->exists();
     }

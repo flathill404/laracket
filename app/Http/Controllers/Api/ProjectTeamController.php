@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\Project\AttachTeamToProject;
 use App\Actions\Project\DetachTeamFromProject;
+use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Team;
 use Illuminate\Http\Request;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Gate;
 
 class ProjectTeamController
 {
-    public function store(Request $request, Project $project, AttachTeamToProject $action): Response
+    public function store(Request $request, Organization $organization, Project $project, AttachTeamToProject $action): Response
     {
         Gate::authorize('attach_team', $project);
 
@@ -25,7 +26,7 @@ class ProjectTeamController
         return response()->noContent();
     }
 
-    public function destroy(Project $project, Team $team, DetachTeamFromProject $action): Response
+    public function destroy(Organization $organization, Project $project, Team $team, DetachTeamFromProject $action): Response
     {
         Gate::authorize('detach_team', $project);
 

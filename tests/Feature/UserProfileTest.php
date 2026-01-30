@@ -32,6 +32,7 @@ describe('UserProfile', function () {
 
         $response = actingAs($user)
             ->putJson('/api/user/profile-information', [
+                'name' => 'Super Power',
                 'slug' => 'super-power',
                 'email' => 'super_power@example.com',
             ]);
@@ -39,6 +40,7 @@ describe('UserProfile', function () {
         $response->assertOk();
         assertDatabaseHas('users', [
             'id' => $user->id,
+            'name' => 'Super Power',
             'slug' => 'super-power',
             'email' => 'super_power@example.com',
         ]);

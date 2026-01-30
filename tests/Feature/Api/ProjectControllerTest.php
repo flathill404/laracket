@@ -109,7 +109,7 @@ describe('ProjectController', function () {
             ]);
             $project->assignedUsers()->attach($user);
 
-            getJson("/api/projects/{$project->id}")
+            getJson("/api/organizations/{$organization->id}/projects/{$project->id}")
                 ->assertOk()
                 ->assertJson([
                     'data' => [
@@ -129,7 +129,7 @@ describe('ProjectController', function () {
             ]);
             // User not attached
 
-            getJson("/api/projects/{$project->id}")
+            getJson("/api/organizations/{$organization->id}/projects/{$project->id}")
                 ->assertForbidden();
         });
     });
@@ -151,7 +151,7 @@ describe('ProjectController', function () {
                 'name' => 'Updated Project',
             ];
 
-            putJson("/api/projects/{$project->id}", $data)
+            putJson("/api/organizations/{$organization->id}/projects/{$project->id}", $data)
                 ->assertOk()
                 ->assertJsonFragment([
                     'slug' => 'updated-project',
@@ -160,7 +160,7 @@ describe('ProjectController', function () {
 
             assertDatabaseHas('projects', [
                 'id' => $project->id,
-                'name' => 'updated-project',
+                'name' => 'Updated Project',
             ]);
         });
 
@@ -176,7 +176,7 @@ describe('ProjectController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            putJson("/api/projects/{$project->id}", ['name' => 'new-name'])
+            putJson("/api/organizations/{$organization->id}/projects/{$project->id}", ['name' => 'new-name'])
                 ->assertForbidden();
         });
     });
@@ -195,7 +195,7 @@ describe('ProjectController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            deleteJson("/api/projects/{$project->id}")
+            deleteJson("/api/organizations/{$organization->id}/projects/{$project->id}")
                 ->assertNoContent();
 
             // Project model does not use SoftDeletes based on previous view_file
@@ -217,7 +217,7 @@ describe('ProjectController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            deleteJson("/api/projects/{$project->id}")
+            deleteJson("/api/organizations/{$organization->id}/projects/{$project->id}")
                 ->assertForbidden();
         });
     });
