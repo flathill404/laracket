@@ -34,45 +34,53 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/users/{user}/tickets', [UserTicketsController::class, 'index']);
 
     // Organization Scope
+    Route::prefix('organizations/{organization}')->group(function () {
+        Route::get('/', [OrganizationController::class, 'show']);
+        Route::put('/', [OrganizationController::class, 'update']);
+        Route::delete('/', [OrganizationController::class, 'destroy']);
+
+        // Org Members (Sub)
+        Route::get('/members', [OrganizationMemberController::class, 'index']);
+        Route::post('/members', [OrganizationMemberController::class, 'store']);
+        Route::patch('/members/{user}', [OrganizationMemberController::class, 'update']);
+        Route::delete('/members/{user}', [OrganizationMemberController::class, 'destroy']);
+
+        // Projects (Scoped)
+        Route::get('/projects', [ProjectController::class, 'index']);
+        Route::post('/projects', [ProjectController::class, 'store']);
+        Route::scopeBindings()->group(function () {
+            Route::get('/projects/{project}', [ProjectController::class, 'show']);
+            Route::put('/projects/{project}', [ProjectController::class, 'update']);
+            Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
+
+            // Project Sub-Resources
+            Route::get('/projects/{project}/members', [ProjectMemberController::class, 'index']);
+            Route::post('/projects/{project}/members', [ProjectMemberController::class, 'store']);
+            Route::delete('/projects/{project}/members/{user}', [ProjectMemberController::class, 'destroy']);
+            Route::post('/projects/{project}/teams', [ProjectTeamController::class, 'store']);
+            Route::delete('/projects/{project}/teams/{team}', [ProjectTeamController::class, 'destroy']);
+        });
+
+        // Teams (Scoped)
+        Route::get('/teams', [TeamController::class, 'index']);
+        Route::post('/teams', [TeamController::class, 'store']);
+        Route::scopeBindings()->group(function () {
+            Route::get('/teams/{team}', [TeamController::class, 'show']);
+            Route::put('/teams/{team}', [TeamController::class, 'update']);
+            Route::delete('/teams/{team}', [TeamController::class, 'destroy']);
+
+            // Team Members (Sub)
+            Route::get('/teams/{team}/members', [TeamMemberController::class, 'index']);
+            Route::post('/teams/{team}/members', [TeamMemberController::class, 'store']);
+            Route::patch('/teams/{team}/members/{user}', [TeamMemberController::class, 'update']);
+            Route::delete('/teams/{team}/members/{user}', [TeamMemberController::class, 'destroy']);
+            Route::get('/teams/{team}/tickets', [TeamTicketsController::class, 'index']);
+        });
+    });
+
+    // Top-level Organization Index/Store
     Route::get('/organizations', [OrganizationController::class, 'index']);
     Route::post('/organizations', [OrganizationController::class, 'store']);
-    Route::get('/organizations/{organization}', [OrganizationController::class, 'show']);
-    Route::put('/organizations/{organization}', [OrganizationController::class, 'update']);
-    Route::delete('/organizations/{organization}', [OrganizationController::class, 'destroy']);
-
-    // Org Members (Sub)
-    Route::get('/organizations/{organization}/members', [OrganizationMemberController::class, 'index']);
-    Route::post('/organizations/{organization}/members', [OrganizationMemberController::class, 'store']);
-    Route::patch('/organizations/{organization}/members/{user}', [OrganizationMemberController::class, 'update']);
-    Route::delete('/organizations/{organization}/members/{user}', [OrganizationMemberController::class, 'destroy']);
-
-    // Projects
-    Route::get('/organizations/{organization}/projects', [ProjectController::class, 'index']);
-    Route::post('/organizations/{organization}/projects', [ProjectController::class, 'store']);
-    Route::get('/projects/{project}', [ProjectController::class, 'show']);
-    Route::put('/projects/{project}', [ProjectController::class, 'update']);
-    Route::delete('/projects/{project}', [ProjectController::class, 'destroy']);
-
-    // Project Sub-Resources
-    Route::get('/projects/{project}/members', [ProjectMemberController::class, 'index']);
-    Route::post('/projects/{project}/members', [ProjectMemberController::class, 'store']);
-    Route::delete('/projects/{project}/members/{user}', [ProjectMemberController::class, 'destroy']);
-    Route::post('/projects/{project}/teams', [ProjectTeamController::class, 'store']);
-    Route::delete('/projects/{project}/teams/{team}', [ProjectTeamController::class, 'destroy']);
-
-    // Teams
-    Route::get('/organizations/{organization}/teams', [TeamController::class, 'index']);
-    Route::post('/organizations/{organization}/teams', [TeamController::class, 'store']);
-    Route::get('/teams/{team}', [TeamController::class, 'show']);
-    Route::put('/teams/{team}', [TeamController::class, 'update']);
-    Route::delete('/teams/{team}', [TeamController::class, 'destroy']);
-
-    // Team Members (Sub)
-    Route::get('/teams/{team}/members', [TeamMemberController::class, 'index']);
-    Route::post('/teams/{team}/members', [TeamMemberController::class, 'store']);
-    Route::patch('/teams/{team}/members/{user}', [TeamMemberController::class, 'update']);
-    Route::delete('/teams/{team}/members/{user}', [TeamMemberController::class, 'destroy']);
-    Route::get('/teams/{team}/tickets', [TeamTicketsController::class, 'index']);
 
     // Tickets
     Route::get('/projects/{project}/tickets', [TicketController::class, 'index']);
