@@ -13,11 +13,11 @@ return new class extends Migration
         Schema::create('teams', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('organization_id')->constrained()->cascadeOnDelete();
+            $table->string('slug');
             $table->string('name');
-            $table->string('display_name');
             $table->timestamps();
 
-            $table->unique(['organization_id', 'name']);
+            $table->unique(['organization_id', 'slug']);
         });
 
         Schema::create('team_user', function (Blueprint $table) {

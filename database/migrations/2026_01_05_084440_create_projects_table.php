@@ -13,12 +13,12 @@ return new class extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUUid('organization_id')->constrained()->cascadeOnDelete();
+            $table->string('slug');
             $table->string('name');
-            $table->string('display_name');
             $table->text('description')->nullable();
             $table->timestamps();
 
-            $table->unique(['organization_id', 'name']);
+            $table->unique(['organization_id', 'slug']);
         });
 
         Schema::create('project_user', function (Blueprint $table) {
