@@ -41,14 +41,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Organization extends Model
 {
+    use \App\Traits\HasHybridRouting, HasUuids {
+        \App\Traits\HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
+    }
+
     /**
      * @use HasFactory<\Database\Factories\OrganizationFactory>
      */
     use HasFactory;
-
-    use HasUuids, \App\Traits\HasHybridRouting {
-        \App\Traits\HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
-    }
 
     public function getRouteKeyName(): string
     {

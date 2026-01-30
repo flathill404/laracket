@@ -68,14 +68,14 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
+    use \App\Traits\HasHybridRouting, HasUuids {
+        \App\Traits\HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
+    }
+
     /**
      * @use HasFactory<\Database\Factories\UserFactory>
      */
     use HasFactory;
-
-    use HasUuids, \App\Traits\HasHybridRouting {
-        \App\Traits\HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
-    }
     use Notifiable;
     use TwoFactorAuthenticatable;
 

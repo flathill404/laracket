@@ -49,14 +49,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Project extends Model
 {
+    use \App\Traits\HasHybridRouting, HasUuids {
+        \App\Traits\HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
+    }
+
     /**
      * @use HasFactory<\Database\Factories\ProjectFactory>
      */
     use HasFactory;
-
-    use HasUuids, \App\Traits\HasHybridRouting {
-        \App\Traits\HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
-    }
 
     public function getRouteKeyName(): string
     {
@@ -116,8 +116,8 @@ class Project extends Model
     {
         $query->where(function (Builder $q) use ($user) {
             $q->whereOrganizationAccessibleByUser($user)
-                ->orWhere(fn(Builder $q) => $q->whereDirectlyAssignedToUser($user))
-                ->orWhere(fn(Builder $q) => $q->whereAssignedToUserViaTeam($user));
+                ->orWhere(fn (Builder $q) => $q->whereDirectlyAssignedToUser($user))
+                ->orWhere(fn (Builder $q) => $q->whereAssignedToUserViaTeam($user));
         });
     }
 

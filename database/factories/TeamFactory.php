@@ -15,7 +15,7 @@ class TeamFactory extends Factory
     {
         return [
             'slug' => $this->faker->slug(),
-            'name' => $this->faker->jobTitle() . ' Team',
+            'name' => $this->faker->jobTitle().' Team',
             'organization_id' => \App\Models\Organization::factory(),
         ];
     }
