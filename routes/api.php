@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\TeamMemberController;
 use App\Http\Controllers\Api\TeamTicketsController;
 use App\Http\Controllers\Api\TicketActivityController;
 use App\Http\Controllers\Api\TicketAssigneeController;
+use App\Http\Controllers\Api\TicketCommentController;
 use App\Http\Controllers\Api\TicketController;
 use App\Http\Controllers\Api\TicketOrderController;
 use App\Http\Controllers\Api\TicketReviewerController;
@@ -39,7 +40,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/', [OrganizationController::class, 'update']);
         Route::delete('/', [OrganizationController::class, 'destroy']);
 
-        // Org Members (Sub)
+        // Organization Sub-Resources
         Route::get('/members', [OrganizationMemberController::class, 'index']);
         Route::post('/members', [OrganizationMemberController::class, 'store']);
         Route::patch('/members/{user}', [OrganizationMemberController::class, 'update']);
@@ -69,7 +70,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('/teams/{team}', [TeamController::class, 'update']);
             Route::delete('/teams/{team}', [TeamController::class, 'destroy']);
 
-            // Team Members (Sub)
+            // Team Sub-Resources
             Route::get('/teams/{team}/members', [TeamMemberController::class, 'index']);
             Route::post('/teams/{team}/members', [TeamMemberController::class, 'store']);
             Route::patch('/teams/{team}/members/{user}', [TeamMemberController::class, 'update']);
@@ -78,7 +79,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    // Top-level Organization Index/Store
+    // Organizations
     Route::get('/organizations', [OrganizationController::class, 'index']);
     Route::post('/organizations', [OrganizationController::class, 'store']);
 
@@ -99,8 +100,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/tickets/{ticket}/reviewers/{user}', [TicketReviewerController::class, 'destroy']);
 
     // Comments
-    Route::get('/tickets/{ticket}/comments', [\App\Http\Controllers\Api\TicketCommentController::class, 'index']);
-    Route::post('/tickets/{ticket}/comments', [\App\Http\Controllers\Api\TicketCommentController::class, 'store']);
+    Route::get('/tickets/{ticket}/comments', [TicketCommentController::class, 'index']);
+    Route::post('/tickets/{ticket}/comments', [TicketCommentController::class, 'store']);
 
     // Activities
     Route::get('/tickets/{ticket}/activities', [TicketActivityController::class, 'index']);
