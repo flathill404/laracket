@@ -27,8 +27,8 @@ class CreateNewUser implements CreatesNewUsers
 
         $user = DB::transaction(function () use ($validated) {
             return User::create([
+                'slug' => $validated['slug'],
                 'name' => $validated['name'],
-                'display_name' => $validated['display_name'],
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
             ]);
@@ -43,8 +43,8 @@ class CreateNewUser implements CreatesNewUsers
     protected function rules(): array
     {
         return [
+            'slug' => ['required', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
-            'display_name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
                 'string',

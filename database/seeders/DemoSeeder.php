@@ -43,8 +43,8 @@ class DemoSeeder extends Seeder
 
         // 1.1 Create Jeison manually to ensure ID 1
         $jeisonData = [
-            'name' => 'jeison',
-            'display_name' => 'Jeison Stethem',
+            'slug' => 'jeison',
+            'name' => 'Jeison Stethem',
             'email' => 'jeison.stethem@acme.com',
             'password' => bcrypt('password'),
         ];
@@ -56,7 +56,7 @@ class DemoSeeder extends Seeder
 
         $jeison = User::factory()->create($jeisonData);
         $users['jeison'] = $jeison;
-        $this->command?->line("   ✓ Created user: {$jeison->display_name}");
+        $this->command?->line("   ✓ Created user: {$jeison->name}");
 
         // 1.2 Create other users from YAML
         foreach ($data['users'] ?? [] as $userData) {
@@ -65,20 +65,20 @@ class DemoSeeder extends Seeder
             }
 
             $input = [
+                'slug' => $userData['slug'],
                 'name' => $userData['name'],
-                'display_name' => $userData['display_name'],
                 'email' => $userData['email'],
                 'password' => bcrypt('password'),
             ];
 
-            $avatarFile = database_path('seeders/imgaes/avatars/'.$userData['name'].'.webp');
+            $avatarFile = database_path('seeders/imgaes/avatars/'.$userData['slug'].'.webp');
             if (file_exists($avatarFile)) {
                 $input['avatar_path'] = Storage::putFile('avatars', new File($avatarFile));
             }
 
             $user = User::factory()->create($input);
             $users[$userData['name']] = $user;
-            $this->command?->line("   ✓ Created user: {$user->display_name}");
+            $this->command?->line("   ✓ Created user: {$user->name}");
         }
         $this->command?->info('   → '.count($users).' users created');
         $this->command?->info('');
@@ -88,10 +88,10 @@ class DemoSeeder extends Seeder
         $createOrganization = app(CreateOrganization::class);
         foreach ($users as $user) {
             $org = $createOrganization($user, [
-                'name' => 'the-'.$user->name.'-organization',
-                'display_name' => 'The '.$user->display_name.' Organization',
+                'slug' => 'the-'.$user->slug.'-organization',
+                'name' => 'The '.$user->name.' Organization',
             ]);
-            $this->command?->line("   ✓ Created: {$org->display_name}");
+            $this->command?->line("   ✓ Created: {$org->name}");
         }
         $this->command?->info('   → '.count($users).' personal organizations created');
         $this->command?->info('');
@@ -101,11 +101,11 @@ class DemoSeeder extends Seeder
         $organizations = [];
         foreach ($data['organizations'] ?? [] as $orgData) {
             $org = Organization::factory()->create([
+                'slug' => $orgData['slug'],
                 'name' => $orgData['name'],
-                'display_name' => $orgData['display_name'],
             ]);
-            $organizations[$orgData['name']] = $org;
-            $this->command?->line("   ✓ Created: {$org->display_name}");
+            $organizations[$orgData['slug']] = $org;
+            $this->command?->line("   ✓ Created: {$org->name}");
         }
         $this->command?->info('   → '.count($organizations).' organizations created');
         $this->command?->info('');
@@ -119,11 +119,11 @@ class DemoSeeder extends Seeder
             }
             $team = Team::factory()->create([
                 'organization_id' => $organizations[$teamData['organization_name']]->id,
+                'slug' => $teamData['slug'],
                 'name' => $teamData['name'],
-                'display_name' => $teamData['display_name'],
             ]);
-            $teams[$teamData['name']] = $team;
-            $this->command?->line("   ✓ Created: {$team->display_name}");
+            $teams[$teamData['slug']] = $team;
+            $this->command?->line("   ✓ Created: {$team->name}");
         }
         $this->command?->info('   → '.count($teams).' teams created');
         $this->command?->info('');
@@ -137,11 +137,11 @@ class DemoSeeder extends Seeder
             }
             $project = Project::factory()->create([
                 'organization_id' => $organizations[$projectData['organization_name']]->id,
+                'slug' => $projectData['slug'],
                 'name' => $projectData['name'],
-                'display_name' => $projectData['display_name'],
             ]);
-            $projects[$projectData['name']] = $project;
-            $this->command?->line("   ✓ Created: {$project->display_name}");
+            $projects[$projectData['slug']] = $project;
+            $this->command?->line("   ✓ Created: {$project->name}");
         }
         $this->command?->info('   → '.count($projects).' projects created');
         $this->command?->info('');
@@ -151,7 +151,7 @@ class DemoSeeder extends Seeder
         foreach ($projects as $project) {
             $orgTeams = $project->organization->teams;
             $project->assignedTeams()->sync($orgTeams);
-            $this->command?->line("   ✓ Linked: {$project->display_name} → ".$orgTeams->count().' teams');
+            $this->command?->line("   ✓ Linked: {$project->name} → ".$orgTeams->count().' teams');
         }
         $this->command?->info('');
 

@@ -36,11 +36,13 @@ describe('UpdateOrganization', function () {
         $action = new UpdateOrganization;
 
         expect(fn () => $action($organization, [
-            'name' => 'Invalid Name!',
+            'slug' => 'invalid-name!',
+            'name' => 'Valid Display',
         ]))->toThrow(ValidationException::class);
 
         expect(fn () => $action($organization, [
-            'display_name' => str_repeat('a', 101),
+            'slug' => 'valid-name',
+            'name' => str_repeat('a', 101),
         ]))->toThrow(ValidationException::class);
     });
 });

@@ -20,8 +20,8 @@ describe('CreateTeam', function () {
         $action = new CreateTeam;
 
         $input = [
-            'name' => 'TestTeam',
-            'display_name' => 'Test Team Display',
+            'slug' => 'test-team',
+            'name' => 'Test Team Display',
             'members' => [$member->id],
         ];
 
@@ -29,7 +29,7 @@ describe('CreateTeam', function () {
 
         assertDatabaseHas('teams', [
             'id' => $team->id,
-            'name' => 'TestTeam',
+            'slug' => 'test-team',
             'organization_id' => $organization->id,
         ]);
 
@@ -46,13 +46,13 @@ describe('CreateTeam', function () {
         $action = new CreateTeam;
 
         expect(fn () => $action($user, $organization, [
-            'name' => 'Invalid Name!',
-            'display_name' => 'Valid Display',
+            'slug' => 'invalid-name!',
+            'name' => 'Valid Display',
         ]))->toThrow(ValidationException::class);
 
         expect(fn () => $action($user, $organization, [
-            'name' => 'valid-name',
-            'display_name' => str_repeat('a', 51),
+            'slug' => 'valid-name',
+            'name' => str_repeat('a', 51),
         ]))->toThrow(ValidationException::class);
     });
 });

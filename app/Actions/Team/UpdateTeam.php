@@ -43,8 +43,8 @@ class UpdateTeam
     protected function rules(): array
     {
         return [
-            'name' => ['sometimes', 'required', 'string', 'max:30', 'alpha_dash'],
-            'display_name' => ['sometimes', 'required', 'string', 'max:50'],
+            'slug' => ['sometimes', 'required', 'string', 'max:30', 'alpha_dash'],
+            'name' => ['sometimes', 'required', 'string', 'max:50'],
             'members' => ['sometimes', 'array'],
         ];
     }

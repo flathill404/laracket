@@ -14,8 +14,8 @@ uses(LazilyRefreshDatabase::class);
 describe('Registration', function () {
     it('registers a new user', function () {
         $response = postJson('/api/register', [
+            'slug' => 'power-chan',
             'name' => 'Power Chan',
-            'display_name' => 'Power Chan',
             'email' => 'power@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
@@ -30,8 +30,8 @@ describe('Registration', function () {
 
     it('fails registration if passwords do not match', function () {
         $response = postJson('/api/register', [
+            'slug' => 'power-chan',
             'name' => 'Power Chan',
-            'display_name' => 'Power Chan',
             'email' => 'power@example.com',
             'password' => 'password',
             'password_confirmation' => 'wrong-password',
@@ -47,8 +47,8 @@ describe('Registration', function () {
         ]);
 
         $response = postJson('/api/register', [
+            'slug' => 'power-chan',
             'name' => 'Another Power',
-            'display_name' => 'Another Power',
             'email' => 'power@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',

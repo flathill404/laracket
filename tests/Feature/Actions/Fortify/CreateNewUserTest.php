@@ -16,8 +16,8 @@ describe('CreateNewUser', function () {
     it('creates a new user', function () {
         $action = app(CreateNewUser::class);
         $input = [
+            'slug' => 'power-chan',
             'name' => 'Power Chan',
-            'display_name' => 'Power Chan',
             'email' => 'power@example.com',
             'password' => 'password123',
             'password_confirmation' => 'password123',
@@ -37,8 +37,8 @@ describe('CreateNewUser', function () {
     it('validates password confirmation', function () {
         $action = app(CreateNewUser::class);
         $input = [
+            'slug' => 'denji',
             'name' => 'Denji',
-            'display_name' => 'Denji',
             'email' => 'denji@example.com',
             'password' => 'password123',
             'password_confirmation' => 'wrong-password',
@@ -51,8 +51,8 @@ describe('CreateNewUser', function () {
     it('validates password rules', function () {
         $action = app(CreateNewUser::class);
         $input = [
+            'slug' => 'aki',
             'name' => 'Aki',
-            'display_name' => 'Aki',
             'email' => 'aki@example.com',
             'password' => 'short',
             'password_confirmation' => 'short',

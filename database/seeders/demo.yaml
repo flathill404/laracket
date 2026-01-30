@@ -1,154 +1,154 @@
 organizations:
-  - name: acme
-    display_name: Acme Inc.
+  - slug: acme
+    name: Acme Inc.
 
 projects:
   - organization_name: acme
-    name: laracket
-    display_name: Laracket
+    slug: laracket
+    name: Laracket
   - organization_name: acme
     name: flowdocs
-    display_name: FlowDocs
+    name: FlowDocs
   - organization_name: acme
     name: next-ec-base
-    display_name: Next-EC-Base
+    name: Next-EC-Base
 
 teams:
   - organization_name: acme
-    name: backend
-    display_name: Backend Team
+    slug: backend
+    name: Backend Team
   - organization_name: acme
-    name: frontend
-    display_name: Frontend Team
+    slug: frontend
+    name: Frontend Team
   - organization_name: acme
     name: product
-    display_name: Product Team
+    name: Product Team
   - organization_name: acme
     name: design
-    display_name: Design Team
+    name: Design Team
   - organization_name: acme
     name: mobile-app
-    display_name: Mobile App Team
+    name: Mobile App Team
   - organization_name: acme
     name: qa
-    display_name: QA Team
+    name: QA Team
   - organization_name: acme
     name: ops
-    display_name: Operations Team
+    name: Operations Team
 
 users:
   # --- Product / Management ---
   - organization_name: acme
-    name: emma
-    display_name: Emma Watson
+    slug: emma
+    name: Emma Watson
     email: emma.watson@acme.com
     teams: [product]
 
   - organization_name: acme
-    name: li
-    display_name: Li Wei
+    slug: li
+    name: Li Wei
     email: li.wei@acme.com
     teams: [product, design]
 
   # --- Backend (Core) ---
   - organization_name: acme
-    name: james
-    display_name: James Smith
+    slug: james
+    name: James Smith
     email: james.smith@acme.com
     teams: [backend, product]
 
   - organization_name: acme
-    name: michael
-    display_name: Michael Johnson
+    slug: michael
+    name: Michael Johnson
     email: michael.johnson@acme.com
     teams: [backend, ops]
 
   - organization_name: acme
-    name: robert
-    display_name: Robert Brown
+    slug: robert
+    name: Robert Brown
     email: robert.brown@acme.com
     teams: [backend]
 
   - organization_name: acme
-    name: david
-    display_name: David Miller
+    slug: david
+    name: David Miller
     email: david.miller@acme.com
     teams: [backend]
 
   # --- Frontend ---
   - organization_name: acme
-    name: sarah
-    display_name: Sarah Davis
+    slug: sarah
+    name: Sarah Davis
     email: sarah.davis@acme.com
     teams: [frontend, design]
 
   - organization_name: acme
-    name: jennifer
-    display_name: Jennifer Wilson
+    slug: jennifer
+    name: Jennifer Wilson
     email: jennifer.wilson@acme.com
     teams: [frontend]
 
   - organization_name: acme
-    name: daniel
-    display_name: Daniel Taylor
+    slug: daniel
+    name: Daniel Taylor
     email: daniel.taylor@acme.com
     teams: [frontend, mobile-app]
 
   # --- Mobile App ---
   - organization_name: acme
-    name: christopher
-    display_name: Christopher Anderson
+    slug: christopher
+    name: Christopher Anderson
     email: christopher.anderson@acme.com
     teams: [mobile-app]
 
   - organization_name: acme
-    name: thomas
-    display_name: Thomas Martinez
+    slug: thomas
+    name: Thomas Martinez
     email: thomas.martinez@acme.com
     teams: [mobile-app, qa]
 
   # --- Design ---
   - organization_name: acme
-    name: jessica
-    display_name: Jessica White
+    slug: jessica
+    name: Jessica White
     email: jessica.white@acme.com
     teams: [design]
 
   - organization_name: acme
-    name: karen
-    display_name: Karen Lewis
+    slug: karen
+    name: Karen Lewis
     email: karen.lewis@acme.com
     teams: [design, frontend]
 
   # --- QA ---
   - organization_name: acme
-    name: nancy
-    display_name: Nancy Clark
+    slug: nancy
+    name: Nancy Clark
     email: nancy.clark@acme.com
     teams: [qa]
 
   - organization_name: acme
-    name: brian
-    display_name: Brian Hall
+    slug: brian
+    name: Brian Hall
     email: brian.hall@acme.com
     teams: [qa, ops]
 
   # --- Operations (SRE/DevOps) ---
   - organization_name: acme
-    name: kevin
-    display_name: Kevin Allen
+    slug: kevin
+    name: Kevin Allen
     email: kevin.allen@acme.com
     teams: [ops, backend]
 
   - organization_name: acme
-    name: mark
-    display_name: Mark King
+    slug: mark
+    name: Mark King
     email: mark.king@acme.com
     teams: [ops]
 
   - organization_name: acme
-    name: jeison
-    display_name: Jeison Stethem
+    slug: jeison
+    name: Jeison Stethem
     email: jeison.stethem@acme.com
     teams: [backend, frontend, product, design, mobile-app, qa, ops]
 

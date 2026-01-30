@@ -36,7 +36,7 @@ describe('TeamController', function () {
                 ->assertJsonCount(3, 'data')
                 ->assertJsonStructure([
                     'data' => [
-                        '*' => ['id', 'name', 'display_name', 'organization_id'],
+                        '*' => ['id', 'slug', 'name', 'organization_id'],
                     ],
                 ]);
         });
@@ -62,21 +62,21 @@ describe('TeamController', function () {
             $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
             $data = [
-                'name' => 'test-team',
-                'display_name' => 'Test Team',
+                'slug' => 'test-team',
+                'name' => 'Test Team',
                 'description' => 'Test Description',
             ];
 
             postJson("/api/organizations/{$organization->id}/teams", $data)
                 ->assertCreated()
                 ->assertJsonFragment([
-                    'name' => 'test-team',
-                    'display_name' => 'Test Team',
+                    'slug' => 'test-team',
+                    'name' => 'Test Team',
                     'organization_id' => $organization->id,
                 ]);
 
             assertDatabaseHas('teams', [
-                'name' => 'test-team',
+                'slug' => 'test-team',
                 'organization_id' => $organization->id,
             ]);
         });
@@ -89,8 +89,8 @@ describe('TeamController', function () {
             $organization->users()->attach($user, ['role' => OrganizationRole::Member]);
 
             $data = [
-                'name' => 'test-team',
-                'display_name' => 'Test Team',
+                'slug' => 'test-team',
+                'name' => 'Test Team',
             ];
 
             postJson("/api/organizations/{$organization->id}/teams", $data)
@@ -106,7 +106,7 @@ describe('TeamController', function () {
 
             postJson("/api/organizations/{$organization->id}/teams", [])
                 ->assertUnprocessable()
-                ->assertJsonValidationErrors(['name']);
+                ->assertJsonValidationErrors(['slug', 'name']);
         });
     });
 
@@ -127,6 +127,7 @@ describe('TeamController', function () {
                 ->assertJson([
                     'data' => [
                         'id' => $team->id,
+                        'slug' => $team->slug,
                         'name' => $team->name,
                     ],
                 ]);
@@ -160,20 +161,20 @@ describe('TeamController', function () {
             ]);
 
             $data = [
-                'name' => 'updated-team',
-                'display_name' => 'Updated Team',
+                'slug' => 'updated-team',
+                'name' => 'Updated Team',
             ];
 
             putJson("/api/teams/{$team->id}", $data)
                 ->assertOk()
                 ->assertJsonFragment([
-                    'name' => 'updated-team',
-                    'display_name' => 'Updated Team',
+                    'slug' => 'updated-team',
+                    'name' => 'Updated Team',
                 ]);
 
             assertDatabaseHas('teams', [
                 'id' => $team->id,
-                'name' => 'updated-team',
+                'slug' => 'updated-team',
             ]);
         });
 
@@ -188,7 +189,7 @@ describe('TeamController', function () {
                 'organization_id' => $organization->id,
             ]);
 
-            putJson("/api/teams/{$team->id}", ['name' => 'new-name'])
+            putJson("/api/teams/{$team->id}", ['slug' => 'new-name'])
                 ->assertForbidden();
         });
     });

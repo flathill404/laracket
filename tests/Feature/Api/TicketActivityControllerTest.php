@@ -44,7 +44,7 @@ describe('TicketActivityController', function () {
                 ->assertJsonCount(2, 'data')
                 ->assertJsonStructure([
                     'data' => [
-                        '*' => ['id', 'type', 'payload', 'created_at', 'user' => ['id', 'name', 'display_name']],
+                        '*' => ['id', 'type', 'payload', 'created_at', 'user' => ['id', 'slug', 'name']],
                     ],
                 ]);
         });

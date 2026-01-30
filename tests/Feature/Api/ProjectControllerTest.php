@@ -36,7 +36,7 @@ describe('ProjectController', function () {
                 ->assertJsonCount(3, 'data')
                 ->assertJsonStructure([
                     'data' => [
-                        '*' => ['id', 'name', 'display_name', 'organization_id'],
+                        '*' => ['id', 'slug', 'name', 'organization_id'],
                     ],
                 ]);
         });
@@ -62,21 +62,21 @@ describe('ProjectController', function () {
             $organization->users()->attach($user, ['role' => OrganizationRole::Admin]);
 
             $data = [
-                'name' => 'test-project',
-                'display_name' => 'Test Project',
+                'slug' => 'test-project',
+                'name' => 'Test Project',
                 'description' => 'Test Description',
             ];
 
             postJson("/api/organizations/{$organization->id}/projects", $data)
                 ->assertCreated()
                 ->assertJsonFragment([
-                    'name' => 'test-project',
-                    'display_name' => 'Test Project',
+                    'slug' => 'test-project',
+                    'name' => 'Test Project',
                     'organization_id' => $organization->id,
                 ]);
 
             assertDatabaseHas('projects', [
-                'name' => 'test-project',
+                'slug' => 'test-project',
                 'organization_id' => $organization->id,
             ]);
 
@@ -147,15 +147,15 @@ describe('ProjectController', function () {
             ]);
 
             $data = [
-                'name' => 'updated-project',
-                'display_name' => 'Updated Project',
+                'slug' => 'updated-project',
+                'name' => 'Updated Project',
             ];
 
             putJson("/api/projects/{$project->id}", $data)
                 ->assertOk()
                 ->assertJsonFragment([
-                    'name' => 'updated-project',
-                    'display_name' => 'Updated Project',
+                    'slug' => 'updated-project',
+                    'name' => 'Updated Project',
                 ]);
 
             assertDatabaseHas('projects', [

@@ -43,11 +43,13 @@ describe('UpdateTeam', function () {
         $action = new UpdateTeam;
 
         expect(fn () => $action($team, [
-            'name' => 'Invalid Name!',
+            'slug' => 'invalid-name!',
+            'name' => 'Valid Display',
         ]))->toThrow(ValidationException::class);
 
         expect(fn () => $action($team, [
-            'display_name' => str_repeat('a', 51),
+            'slug' => 'valid-name',
+            'name' => str_repeat('a', 51),
         ]))->toThrow(ValidationException::class);
     });
 });

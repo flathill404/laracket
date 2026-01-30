@@ -12,22 +12,22 @@ uses(LazilyRefreshDatabase::class);
 describe('UpdateUserProfileInformation', function () {
     it('updates profile information', function () {
         $user = User::factory()->make([
+            'slug' => 'original-name',
             'name' => 'Original Name',
-            'display_name' => 'Old Name',
-            'email' => 'old@example.com',
+            'email' => 'original@example.com',
         ]);
 
         $action = new UpdateUserProfileInformation;
 
         $action->update($user, [
-            'name' => 'New Name', // Should be ignored
-            'display_name' => 'New Name',
+            'slug' => 'new-name',
+            'name' => 'New Name',
             'email' => 'new@example.com',
         ]);
         $user->refresh();
 
-        expect($user->name)->toBe('Original Name');
-        expect($user->display_name)->toBe('New Name');
+        expect($user->slug)->toBe('new-name');
+        expect($user->name)->toBe('New Name');
         expect($user->email)->toBe('new@example.com');
     });
 
@@ -37,7 +37,8 @@ describe('UpdateUserProfileInformation', function () {
         $action = new UpdateUserProfileInformation;
 
         expect(fn () => $action->update($user, [
-            'display_name' => 'New Name',
+            'slug' => 'new-name',
+            'name' => 'New Name',
             'email' => 'taken@example.com',
         ]))->toThrow(ValidationException::class);
     });
@@ -47,11 +48,13 @@ describe('UpdateUserProfileInformation', function () {
         $action = new UpdateUserProfileInformation;
 
         $action->update($user, [
-            'display_name' => 'New Name',
+            'slug' => 'new-name',
+            'name' => 'New Name',
             'email' => 'me@example.com',
         ]);
 
         $user->refresh();
-        expect($user->display_name)->toBe('New Name');
+        expect($user->slug)->toBe('new-name');
+        expect($user->name)->toBe('New Name');
     });
 });

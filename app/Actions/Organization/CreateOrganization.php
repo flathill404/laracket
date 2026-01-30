@@ -24,8 +24,8 @@ class CreateOrganization
         $organization = DB::transaction(function () use ($creator, $validated) {
             /** @var Organization $organization */
             $organization = Organization::create([
+                'slug' => $validated['slug'],
                 'name' => $validated['name'],
-                'display_name' => $validated['display_name'],
                 'owner_user_id' => $creator->id,
             ]);
 
@@ -44,8 +44,8 @@ class CreateOrganization
     protected function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:30', 'alpha_dash'],
-            'display_name' => ['required', 'string', 'max:100'],
+            'slug' => ['required', 'string', 'max:30', 'alpha_dash'],
+            'name' => ['required', 'string', 'max:100'],
         ];
     }
 }

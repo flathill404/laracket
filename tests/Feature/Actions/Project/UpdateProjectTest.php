@@ -49,11 +49,13 @@ describe('UpdateProject', function () {
         $action = new UpdateProject;
 
         expect(fn () => $action($project, [
-            'name' => 'Invalid Name!',
+            'slug' => 'invalid-name!',
+            'name' => 'Valid Display',
         ]))->toThrow(ValidationException::class);
 
         expect(fn () => $action($project, [
-            'display_name' => str_repeat('a', 51),
+            'slug' => 'valid-name',
+            'name' => str_repeat('a', 51),
         ]))->toThrow(ValidationException::class);
     });
 });

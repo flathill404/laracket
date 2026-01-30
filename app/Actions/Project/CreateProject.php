@@ -25,8 +25,8 @@ class CreateProject
         $project = DB::transaction(function () use ($organization, $validated) {
             /** @var Project $project */
             $project = $organization->projects()->create([
+                'slug' => $validated['slug'],
                 'name' => $validated['name'],
-                'display_name' => $validated['display_name'],
                 'description' => $validated['description'] ?? null,
             ]);
 
@@ -50,8 +50,8 @@ class CreateProject
     protected function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:30', 'alpha_dash'],
-            'display_name' => ['required', 'string', 'max:50'],
+            'slug' => ['required', 'string', 'max:30', 'alpha_dash'],
+            'name' => ['required', 'string', 'max:50'],
             'description' => ['nullable', 'string', 'max:1000'],
             'assigned_users' => ['sometimes', 'array'],
             'assigned_teams' => ['sometimes', 'array'],

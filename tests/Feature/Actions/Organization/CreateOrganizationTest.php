@@ -17,15 +17,15 @@ describe('CreateOrganization', function () {
         $action = new CreateOrganization;
 
         $input = [
-            'name' => 'TestOrganization',
-            'display_name' => 'Test Org Display',
+            'slug' => 'test-organization',
+            'name' => 'Test Org Display',
         ];
 
         $organization = $action($user, $input);
 
         assertDatabaseHas('organizations', [
             'id' => $organization->id,
-            'name' => 'TestOrganization',
+            'slug' => 'test-organization',
             'owner_user_id' => $user->id,
         ]);
 
@@ -41,13 +41,13 @@ describe('CreateOrganization', function () {
         $action = new CreateOrganization;
 
         expect(fn () => $action($user, [
-            'name' => 'Invalid Name!',
-            'display_name' => 'Valid Display',
+            'slug' => 'invalid-name!',
+            'name' => 'Valid Display',
         ]))->toThrow(ValidationException::class);
 
         expect(fn () => $action($user, [
-            'name' => 'valid-name',
-            'display_name' => str_repeat('a', 101),
+            'slug' => 'valid-name',
+            'name' => str_repeat('a', 101),
         ]))->toThrow(ValidationException::class);
     });
 });

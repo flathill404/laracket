@@ -37,7 +37,7 @@ components:
           format: uuid
         name:
           type: string
-        display_name:
+        name:
           type: string
         email:
           type: string
@@ -63,7 +63,7 @@ components:
           format: uuid
         name:
           type: string
-        display_name:
+        name:
           type: string
         owner_user_id:
           type: string
@@ -102,7 +102,7 @@ components:
           format: uuid
         name:
           type: string
-        display_name:
+        name:
           type: string
         description:
           type: string
@@ -127,7 +127,7 @@ components:
           format: uuid
         name:
           type: string
-        display_name:
+        name:
           type: string
         created_at:
           type: string
@@ -201,7 +201,7 @@ components:
               format: uuid
             name:
               type: string
-            display_name:
+            name:
               type: string
 
     # --- Error Responses ---
@@ -537,12 +537,12 @@ paths:
           application/json:
             schema:
               type: object
-              required: [name, display_name]
+              required: [name, name]
               properties:
                 name:
                   type: string
                   maxLength: 30
-                display_name:
+                name:
                   type: string
                   maxLength: 100
       responses:
@@ -597,7 +597,7 @@ paths:
                 name:
                   type: string
                   maxLength: 30
-                display_name:
+                name:
                   type: string
                   maxLength: 100
       responses:
@@ -754,12 +754,12 @@ paths:
           application/json:
             schema:
               type: object
-              required: [name, display_name]
+              required: [name, name]
               properties:
                 name:
                   type: string
                   maxLength: 30
-                display_name:
+                name:
                   type: string
                   maxLength: 50
                 description:
@@ -821,7 +821,7 @@ paths:
                 name:
                   type: string
                   maxLength: 30
-                display_name:
+                name:
                   type: string
                   maxLength: 50
                 description:
@@ -997,12 +997,12 @@ paths:
           application/json:
             schema:
               type: object
-              required: [name, display_name]
+              required: [name, name]
               properties:
                 name:
                   type: string
                   maxLength: 30
-                display_name:
+                name:
                   type: string
                   maxLength: 50
                 members:
@@ -1056,7 +1056,7 @@ paths:
                 name:
                   type: string
                   maxLength: 30
-                display_name:
+                name:
                   type: string
                   maxLength: 50
       responses:

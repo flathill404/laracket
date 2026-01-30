@@ -25,8 +25,8 @@ class CreateTeam
         $team = DB::transaction(function () use ($organization, $validated) {
             /** @var Team $team */
             $team = $organization->teams()->create([
+                'slug' => $validated['slug'],
                 'name' => $validated['name'],
-                'display_name' => $validated['display_name'],
             ]);
 
             if (isset($validated['members'])) {
@@ -46,7 +46,7 @@ class CreateTeam
     {
         return [
             'name' => ['required', 'string', 'max:30', 'alpha_dash'],
-            'display_name' => ['required', 'string', 'max:50'],
+            'name' => ['required', 'string', 'max:50'],
             'members' => ['sometimes', 'array'],
         ];
     }

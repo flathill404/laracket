@@ -38,7 +38,7 @@ describe('OrganizationController', function () {
                 ->assertJsonCount(3, 'data')
                 ->assertJsonStructure([
                     'data' => [
-                        '*' => ['id', 'name', 'display_name'],
+                        '*' => ['id', 'name', 'name'],
                     ],
                 ]);
         });
@@ -75,20 +75,20 @@ describe('OrganizationController', function () {
             actingAs($user);
 
             $data = [
-                'name' => 'test-org',
-                'display_name' => 'Test Organization',
+                'slug' => 'test-org',
+                'name' => 'Test Organization',
             ];
 
             postJson('/api/organizations', $data)
                 ->assertCreated()
                 ->assertJsonFragment([
-                    'name' => 'test-org',
-                    'display_name' => 'Test Organization',
+                    'slug' => 'test-org',
+                    'name' => 'Test Organization',
                     'owner_user_id' => $user->id,
                 ]);
 
             assertDatabaseHas('organizations', [
-                'name' => 'test-org',
+                'slug' => 'test-org',
                 'owner_user_id' => $user->id,
             ]);
 
@@ -104,7 +104,7 @@ describe('OrganizationController', function () {
 
             postJson('/api/organizations', [])
                 ->assertUnprocessable()
-                ->assertJsonValidationErrors(['name']);
+                ->assertJsonValidationErrors(['slug', 'name']);
         });
     });
 
@@ -123,6 +123,7 @@ describe('OrganizationController', function () {
                 ->assertJson([
                     'data' => [
                         'id' => $organization->id,
+                        'slug' => $organization->slug,
                         'name' => $organization->name,
                     ],
                 ]);
@@ -154,20 +155,20 @@ describe('OrganizationController', function () {
             $organization->users()->attach($user);
 
             $data = [
-                'name' => 'updated-org',
-                'display_name' => 'Updated Organization',
+                'slug' => 'updated-org',
+                'name' => 'Updated Organization',
             ];
 
             putJson("/api/organizations/{$organization->id}", $data)
                 ->assertOk()
                 ->assertJsonFragment([
-                    'name' => 'updated-org',
-                    'display_name' => 'Updated Organization',
+                    'slug' => 'updated-org',
+                    'name' => 'Updated Organization',
                 ]);
 
             assertDatabaseHas('organizations', [
                 'id' => $organization->id,
-                'name' => 'updated-org',
+                'slug' => 'updated-org',
             ]);
         });
 
@@ -182,7 +183,8 @@ describe('OrganizationController', function () {
             $organization->users()->attach($user); // Member but not owner (assuming policy checks owner or specific permission)
 
             $data = [
-                'name' => 'updated-org',
+                'slug' => 'updated-org',
+                'name' => 'Updated Organization',
             ];
 
             putJson("/api/organizations/{$organization->id}", $data)
