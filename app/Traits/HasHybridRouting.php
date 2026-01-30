@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Str;
 
 trait HasHybridRouting
@@ -30,6 +31,29 @@ trait HasHybridRouting
 
         // Otherwise, query by the route key (slug)
         return $query->where($this->qualifyColumn($this->getRouteKeyName()), $value);
+    }
+
+    /**
+     * Retrieve the child model for a bound value.
+     *
+     * @param  string  $childType
+     * @param  mixed  $value
+     * @param  string|null  $field
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function resolveChildRouteBinding($childType, $value, $field)
+    {
+        if ($field) {
+            return parent::resolveChildRouteBinding($childType, $value, $field);
+        }
+
+        $relationship = $this->{Str::plural(Str::camel($childType))}();
+
+        $query = $relationship->getRelated()->resolveRouteBindingQuery($relationship, $value, null);
+
+        return $relationship instanceof Relation
+            ? $query->firstOrFail()
+            : $query->first();
     }
 
     /**

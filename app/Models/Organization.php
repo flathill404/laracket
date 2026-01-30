@@ -102,27 +102,4 @@ class Organization extends Model
     {
         return $this->hasMany(Project::class);
     }
-
-    /**
-     * Retrieve the child model for a bound value.
-     *
-     * @param  string  $childType
-     * @param  mixed  $value
-     * @param  string|null  $field
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function resolveChildRouteBinding($childType, $value, $field)
-    {
-        if ($field) {
-            return parent::resolveChildRouteBinding($childType, $value, $field);
-        }
-
-        $relationship = $this->{\Illuminate\Support\Str::plural(\Illuminate\Support\Str::camel($childType))}();
-
-        $query = $relationship->getRelated()->resolveRouteBindingQuery($relationship, $value, null);
-
-        return $relationship instanceof \Illuminate\Database\Eloquent\Relations\Relation
-            ? $query->firstOrFail()
-            : $query->first();
-    }
 }
