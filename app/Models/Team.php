@@ -13,8 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 /**
  * @property string $id
  * @property string $organization_id
+ * @property string $slug
  * @property string $name
- * @property string $display_name
  * @property \Carbon\CarbonImmutable|null $created_at
  * @property \Carbon\CarbonImmutable|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Project> $assignedProjects
@@ -30,9 +30,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereDisplayName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereOrganizationId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Team whereUpdatedAt($value)
  *
@@ -46,6 +46,12 @@ class Team extends Model
     use HasFactory;
 
     use HasUuids;
+    use \App\Traits\HasHybridRouting;
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 
     protected $guarded = [];
 

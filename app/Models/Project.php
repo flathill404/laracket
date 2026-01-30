@@ -16,8 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 /**
  * @property string $id
  * @property string $organization_id
+ * @property string $slug
  * @property string $name
- * @property string $display_name
  * @property string|null $description
  * @property \Carbon\CarbonImmutable|null $created_at
  * @property \Carbon\CarbonImmutable|null $updated_at
@@ -38,9 +38,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder<static>|Project whereCreatedAt($value)
  * @method static Builder<static>|Project whereDescription($value)
  * @method static Builder<static>|Project whereDirectlyAssignedToUser(\App\Models\User $user)
- * @method static Builder<static>|Project whereDisplayName($value)
- * @method static Builder<static>|Project whereId($value)
  * @method static Builder<static>|Project whereName($value)
+ * @method static Builder<static>|Project whereId($value)
+ * @method static Builder<static>|Project whereSlug($value)
  * @method static Builder<static>|Project whereOrganizationAccessibleByUser(\App\Models\User $user)
  * @method static Builder<static>|Project whereOrganizationId($value)
  * @method static Builder<static>|Project whereUpdatedAt($value)
@@ -55,6 +55,12 @@ class Project extends Model
     use HasFactory;
 
     use HasUuids;
+    use \App\Traits\HasHybridRouting;
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 
     protected $guarded = [];
 
@@ -109,8 +115,8 @@ class Project extends Model
     {
         $query->where(function (Builder $q) use ($user) {
             $q->whereOrganizationAccessibleByUser($user)
-                ->orWhere(fn (Builder $q) => $q->whereDirectlyAssignedToUser($user))
-                ->orWhere(fn (Builder $q) => $q->whereAssignedToUserViaTeam($user));
+                ->orWhere(fn(Builder $q) => $q->whereDirectlyAssignedToUser($user))
+                ->orWhere(fn(Builder $q) => $q->whereAssignedToUserViaTeam($user));
         });
     }
 

@@ -13,8 +13,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property string $id
+ * @property string $slug
  * @property string $name
- * @property string $display_name
  * @property string $owner_user_id
  * @property \Carbon\CarbonImmutable|null $created_at
  * @property \Carbon\CarbonImmutable|null $updated_at
@@ -31,9 +31,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereDisplayName($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereOwnerUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereUpdatedAt($value)
  *
@@ -47,6 +47,12 @@ class Organization extends Model
     use HasFactory;
 
     use HasUuids;
+    use \App\Traits\HasHybridRouting;
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
 
     protected $guarded = [];
 
