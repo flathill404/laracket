@@ -22,6 +22,10 @@ class OrganizationPolicy
      */
     public function view(User $user, Organization $organization): bool
     {
+        if ($user->isOrganizationOwner($organization)) {
+            return true;
+        }
+
         return $user->organizations()->where('organization_id', $organization->id)->exists();
     }
 

@@ -45,8 +45,9 @@ class Team extends Model
      */
     use HasFactory;
 
-    use HasUuids;
-    use \App\Traits\HasHybridRouting;
+    use HasUuids, \App\Traits\HasHybridRouting {
+        \App\Traits\HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
+    }
 
     public function getRouteKeyName(): string
     {

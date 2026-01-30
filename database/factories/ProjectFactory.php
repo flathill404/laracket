@@ -14,8 +14,8 @@ class ProjectFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->catchPhrase().' Project',
-            'display_name' => $this->faker->catchPhrase().' Project',
+            'slug' => $this->faker->slug(),
+            'name' => $this->faker->catchPhrase() . ' Project',
             'description' => $this->faker->realText(50),
             'organization_id' => \App\Models\Organization::factory(),
         ];

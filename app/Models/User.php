@@ -73,10 +73,11 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     use HasFactory;
 
-    use HasUuids;
+    use HasUuids, \App\Traits\HasHybridRouting {
+        \App\Traits\HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
+    }
     use Notifiable;
     use TwoFactorAuthenticatable;
-    use \App\Traits\HasHybridRouting;
 
     public function getRouteKeyName(): string
     {

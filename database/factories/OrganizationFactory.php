@@ -14,8 +14,8 @@ class OrganizationFactory extends Factory
     public function definition(): array
     {
         return [
+            'slug' => $this->faker->slug(),
             'name' => $this->faker->company(),
-            'display_name' => $this->faker->companySuffix(),
             'owner_user_id' => \App\Models\User::factory(),
         ];
     }

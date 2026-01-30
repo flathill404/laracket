@@ -43,7 +43,7 @@ class TeamController
         return response()->json(new TeamResource($team), 201);
     }
 
-    public function show(Team $team, GetTeamDetail $query): TeamResource
+    public function show(Organization $organization, Team $team, GetTeamDetail $query): TeamResource
     {
         Gate::authorize('view', $team);
 
@@ -52,7 +52,7 @@ class TeamController
         return new TeamResource($team);
     }
 
-    public function update(Request $request, Team $team, UpdateTeam $action, GetTeamDetail $query): TeamResource
+    public function update(Request $request, Organization $organization, Team $team, UpdateTeam $action, GetTeamDetail $query): TeamResource
     {
         Gate::authorize('update', $team);
 
@@ -65,7 +65,7 @@ class TeamController
         return new TeamResource($updatedTeam);
     }
 
-    public function destroy(Request $request, Team $team, DeleteTeam $action): Response
+    public function destroy(Request $request, Organization $organization, Team $team, DeleteTeam $action): Response
     {
         Gate::authorize('delete', $team);
 

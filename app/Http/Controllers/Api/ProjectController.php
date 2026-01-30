@@ -43,7 +43,7 @@ class ProjectController
         return response()->json(new ProjectResource($project), 201);
     }
 
-    public function show(Project $project, GetProjectDetail $query): ProjectResource
+    public function show(Organization $organization, Project $project, GetProjectDetail $query): ProjectResource
     {
         Gate::authorize('view', $project);
 
@@ -52,7 +52,7 @@ class ProjectController
         return new ProjectResource($project);
     }
 
-    public function update(Request $request, Project $project, UpdateProject $action, GetProjectDetail $query): ProjectResource
+    public function update(Request $request, Organization $organization, Project $project, UpdateProject $action, GetProjectDetail $query): ProjectResource
     {
         Gate::authorize('update', $project);
 
@@ -65,7 +65,7 @@ class ProjectController
         return new ProjectResource($updatedProject);
     }
 
-    public function destroy(Request $request, Project $project, DeleteProject $action): Response
+    public function destroy(Request $request, Organization $organization, Project $project, DeleteProject $action): Response
     {
         Gate::authorize('delete', $project);
 
