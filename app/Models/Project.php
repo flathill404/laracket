@@ -27,8 +27,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $assignedUsers
  * @property-read int|null $assigned_users_count
  * @property-read \App\Models\Organization $organization
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Team> $teams
+ * @property-read int|null $teams_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ticket> $tickets
  * @property-read int|null $tickets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read int|null $users_count
  *
  * @method static \Database\Factories\ProjectFactory factory($count = null, $state = [])
  * @method static Builder<static>|Project newModelQuery()
@@ -39,11 +43,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder<static>|Project whereCreatedAt($value)
  * @method static Builder<static>|Project whereDescription($value)
  * @method static Builder<static>|Project whereDirectlyAssignedToUser(\App\Models\User $user)
- * @method static Builder<static>|Project whereName($value)
  * @method static Builder<static>|Project whereId($value)
- * @method static Builder<static>|Project whereSlug($value)
+ * @method static Builder<static>|Project whereName($value)
  * @method static Builder<static>|Project whereOrganizationAccessibleByUser(\App\Models\User $user)
  * @method static Builder<static>|Project whereOrganizationId($value)
+ * @method static Builder<static>|Project whereSlug($value)
  * @method static Builder<static>|Project whereUpdatedAt($value)
  *
  * @mixin \Eloquent

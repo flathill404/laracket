@@ -32,10 +32,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereOwnerUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereSlug($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Organization whereUpdatedAt($value)
  *
  * @mixin \Eloquent
