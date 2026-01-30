@@ -63,6 +63,7 @@ describe('ProjectController', function () {
 
             $data = [
                 'slug' => 'test-project',
+                'key' => 'TEST',
                 'name' => 'Test Project',
                 'description' => 'Test Description',
             ];
@@ -71,6 +72,7 @@ describe('ProjectController', function () {
                 ->assertCreated()
                 ->assertJsonFragment([
                     'slug' => 'test-project',
+                    'key' => 'TEST',
                     'name' => 'Test Project',
                     'organization_id' => $organization->id,
                 ]);
@@ -92,7 +94,7 @@ describe('ProjectController', function () {
 
             postJson("/api/organizations/{$organization->id}/projects", [])
                 ->assertUnprocessable()
-                ->assertJsonValidationErrors(['name']);
+                ->assertJsonValidationErrors(['slug', 'key', 'name']);
         });
     });
 

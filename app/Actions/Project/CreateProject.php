@@ -26,6 +26,7 @@ class CreateProject
             /** @var Project $project */
             $project = $organization->projects()->create([
                 'slug' => $validated['slug'],
+                'key' => $validated['key'],
                 'name' => $validated['name'],
                 'description' => $validated['description'] ?? null,
             ]);
@@ -51,6 +52,7 @@ class CreateProject
     {
         return [
             'slug' => ['required', 'string', 'max:30', 'alpha_dash'],
+            'key' => ['required', 'string', 'max:10', 'alpha', 'uppercase'],
             'name' => ['required', 'string', 'max:50'],
             'description' => ['nullable', 'string', 'max:1000'],
             'assigned_users' => ['sometimes', 'array'],

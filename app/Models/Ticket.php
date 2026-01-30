@@ -69,11 +69,36 @@ class Ticket extends Model
     protected $guarded = [];
 
     protected $casts = [
+        'issue_number' => 'integer',
         'status' => TicketStatus::class,
         'due_date' => 'immutable_date',
         'updated_at' => 'immutable_datetime',
         'created_at' => 'immutable_datetime',
     ];
+
+    /**
+     * Get the full ticket ID (e.g., "WEB-101").
+     */
+    public function getFullIdAttribute(): ?string
+    {
+        /** @var int|null $issueNumber */
+        $issueNumber = $this->attributes['issue_number'] ?? null;
+
+        if ($issueNumber === null) {
+            return null;
+        }
+
+        /** @var string|null $key */
+        $key = $this->relationLoaded('project')
+            ? $this->project->key
+            : $this->project()->value('key');
+
+        if ($key === null) {
+            return null;
+        }
+
+        return "{$key}-{$issueNumber}";
+    }
 
     /**
      * @return array<string, mixed>

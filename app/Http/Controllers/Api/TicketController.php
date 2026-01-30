@@ -8,6 +8,7 @@ use App\Actions\Ticket\CreateTicket;
 use App\Actions\Ticket\DeleteTicket;
 use App\Actions\Ticket\UpdateTicket;
 use App\Http\Resources\TicketResource;
+use App\Models\Organization;
 use App\Models\Project;
 use App\Models\Ticket;
 use App\Queries\GetProjectTickets;
@@ -46,7 +47,7 @@ class TicketController
         return response()->json(new TicketResource($ticket), 201);
     }
 
-    public function show(Ticket $ticket, GetTicketDetail $query): TicketResource
+    public function show(Organization $organization, Project $project, Ticket $ticket, GetTicketDetail $query): TicketResource
     {
         Gate::authorize('view', $ticket);
 

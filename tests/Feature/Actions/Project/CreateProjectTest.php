@@ -22,6 +22,7 @@ describe('CreateProject', function () {
 
         $input = [
             'slug' => 'test-project',
+            'key' => 'TEST',
             'name' => 'Test Project Display',
             'description' => 'Test Description',
             'assigned_users' => [$user->id],
@@ -54,11 +55,13 @@ describe('CreateProject', function () {
 
         expect(fn () => $action($user, $organization, [
             'slug' => 'invalid-name!',
+            'key' => 'TEST',
             'name' => 'Valid Display',
         ]))->toThrow(ValidationException::class);
 
         expect(fn () => $action($user, $organization, [
             'slug' => 'valid-name',
+            'key' => 'TEST',
             'name' => str_repeat('a', 51),
         ]))->toThrow(ValidationException::class);
     });
