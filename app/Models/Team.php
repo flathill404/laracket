@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\HasHybridRouting;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -40,14 +41,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class Team extends Model
 {
-    use \App\Traits\HasHybridRouting, HasUuids {
-        \App\Traits\HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
-    }
-
     /**
      * @use HasFactory<\Database\Factories\TeamFactory>
      */
     use HasFactory;
+
+    use HasHybridRouting, HasUuids {
+        HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
+    }
 
     public function getRouteKeyName(): string
     {

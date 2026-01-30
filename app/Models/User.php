@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\TicketUserType;
 use App\Enums\TwoFactorStatus;
+use App\Traits\HasHybridRouting;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -68,14 +69,15 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  */
 class User extends Authenticatable implements MustVerifyEmail
 {
-    use \App\Traits\HasHybridRouting, HasUuids {
-        \App\Traits\HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
-    }
-
     /**
      * @use HasFactory<\Database\Factories\UserFactory>
      */
     use HasFactory;
+
+    use HasHybridRouting, HasUuids {
+        HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
+    }
+
     use Notifiable;
     use TwoFactorAuthenticatable;
 
