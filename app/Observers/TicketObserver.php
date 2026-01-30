@@ -15,7 +15,7 @@ class TicketObserver
      */
     public function created(Ticket $ticket): void
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return;
         }
 
