@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Enums\TicketStatus;
 use App\Enums\TicketUserType;
+use App\Traits\HasHybridRouting;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -60,7 +61,9 @@ class Ticket extends Model
     /** @use HasFactory<\Database\Factories\TicketFactory> */
     use HasFactory;
 
-    use HasUuids;
+    use HasHybridRouting, HasUuids {
+        HasHybridRouting::resolveRouteBindingQuery insteadof HasUuids;
+    }
     use Searchable;
 
     protected $guarded = [];
@@ -97,39 +100,6 @@ class Ticket extends Model
     public function getRouteKeyName(): string
     {
         return 'issue_number';
-    }
-
-    /**
-     * Retrieve the model for a bound value.
-     *
-     * @param  mixed  $value
-     * @param  string|null  $field
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function resolveRouteBinding($value, $field = null)
-    {
-        if (\Illuminate\Support\Str::isUuid($value)) {
-            return $this->where('id', $value)->firstOrFail();
-        }
-
-        return parent::resolveRouteBinding($value, $field);
-    }
-
-    /**
-     * Retrieve the child model for a bound value.
-     *
-     * @param  string  $childType
-     * @param  mixed  $value
-     * @param  string|null  $field
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    public function resolveChildRouteBinding($childType, $value, $field)
-    {
-        if (\Illuminate\Support\Str::isUuid($value)) {
-            return $this->where('id', $value)->firstOrFail();
-        }
-
-        return parent::resolveChildRouteBinding($childType, $value, $field);
     }
 
     /**
