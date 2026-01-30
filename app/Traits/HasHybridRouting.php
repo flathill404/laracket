@@ -13,10 +13,9 @@ trait HasHybridRouting
     /**
      * Retrieve the model for a bound value.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\Relation  $query
+     * @param  \Illuminate\Database\Eloquent\Builder<Model>|\Illuminate\Database\Eloquent\Relations\Relation<Model, Model, mixed>  $query
      * @param  mixed  $value
-     * @param  string|null  $field
-     * @return \Illuminate\Database\Eloquent\Relations\Relation|\Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Relations\Relation<Model, Model, mixed>|\Illuminate\Contracts\Database\Eloquent\Builder
      */
     public function resolveRouteBindingQuery($query, $value, $field = null)
     {
@@ -47,13 +46,15 @@ trait HasHybridRouting
             return parent::resolveChildRouteBinding($childType, $value, $field);
         }
 
+        /** @var \Illuminate\Database\Eloquent\Relations\Relation<Model, Model, mixed> $relationship */
         $relationship = $this->{Str::plural(Str::camel($childType))}();
 
         $query = $relationship->getRelated()->resolveRouteBindingQuery($relationship, $value, null);
 
+        // @phpstan-ignore instanceof.alwaysTrue
         return $relationship instanceof Relation
             ? $query->firstOrFail()
-            : $query->first();
+            : $query->first(); // @phpstan-ignore method.nonObject
     }
 
     /**
