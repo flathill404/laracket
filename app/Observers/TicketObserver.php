@@ -11,35 +11,19 @@ use Illuminate\Support\Facades\Auth;
 class TicketObserver
 {
     /**
-     * Handle the Ticket "creating" event.
-     */
-    public function creating(Ticket $ticket): void
-    {
-        if (! is_null($ticket->issue_number)) {
-            return;
-        }
-
-        \Illuminate\Support\Facades\DB::transaction(function () use ($ticket) {
-            // Lock the project to ensure sequential numbering
-            \App\Models\Project::where('id', $ticket->project_id)->lockForUpdate()->first();
-
-            $max = \App\Models\Ticket::where('project_id', $ticket->project_id)->max('issue_number') ?? 0;
-            $ticket->issue_number = $max + 1;
-        });
-    }
-
-    /**
      * Handle the Ticket "created" event.
      */
     public function created(Ticket $ticket): void
     {
-        if (Auth::check()) {
-            $ticket->activities()->create([
-                'user_id' => Auth::id(),
-                'type' => TicketActivityType::Created,
-                'payload' => null,
-            ]);
+        if (!Auth::check()) {
+            return;
         }
+
+        $ticket->activities()->create([
+            'user_id' => Auth::id(),
+            'type' => TicketActivityType::Created,
+            'payload' => null,
+        ]);
     }
 
     /**

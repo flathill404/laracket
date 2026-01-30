@@ -84,7 +84,6 @@ class Ticket extends Model
             'project_id' => $this->project_id,
             'user_id' => $this->user_id,
             'issue_number' => $this->issue_number,
-            'full_id' => $this->full_id,
             'status' => $this->status->value,
             'created_at' => $this->created_at?->timestamp,
             'updated_at' => $this->updated_at?->timestamp,
@@ -98,18 +97,6 @@ class Ticket extends Model
     public function getRouteKeyName(): string
     {
         return 'issue_number';
-    }
-
-    /**
-     * Get the ticket's full ID (e.g. "WEB-1").
-     *
-     * @return \Illuminate\Database\Eloquent\Casts\Attribute<string, never>
-     */
-    protected function fullId(): \Illuminate\Database\Eloquent\Casts\Attribute
-    {
-        return \Illuminate\Database\Eloquent\Casts\Attribute::make(
-            get: fn () => $this->project->key.'-'.$this->issue_number,
-        );
     }
 
     /**

@@ -31,9 +31,14 @@ class CreateTicket
         }
 
         $ticket = DB::transaction(function () use ($project, $validated, $creator) {
+            Project::where('id', $project->id)->lockForUpdate()->first();
+            $max = Ticket::where('project_id', $project->id)->max('issue_number') ?? 0;
+            $issueNumber = $max + 1;
+
             /** @var Ticket $ticket */
             $ticket = $project->tickets()->create([
                 'user_id' => $creator->id,
+                'issue_number' => $issueNumber,
                 'title' => $validated['title'],
                 'description' => $validated['description'] ?? null,
                 'status' => $validated['status'] ?? TicketStatus::Open->value,
