@@ -12,14 +12,17 @@ return new class extends Migration
     {
         Schema::create('tickets', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUUid('project_id')->constrained()->cascadeOnDelete();
-            $table->foreignUuid('created_by')->constrained('users')->cascadeOnDelete();
+            $table->foreignUuid('project_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('issue_number');
+            $table->foreignUuid('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('status')->default('open');
             $table->date('due_date')->nullable();
             $table->double('display_order')->default(0);
             $table->timestamps();
+
+            $table->unique(['project_id', 'issue_number']);
         });
 
         Schema::create('ticket_user', function (Blueprint $table) {

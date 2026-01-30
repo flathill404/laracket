@@ -183,7 +183,7 @@ describe('TicketController', function () {
 
             assertDatabaseHas('tickets', [
                 'title' => 'Ticket with Creator',
-                'created_by' => $user->id,
+                'user_id' => $user->id,
             ]);
         });
     });

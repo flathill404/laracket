@@ -15,6 +15,7 @@ class ProjectFactory extends Factory
     {
         return [
             'slug' => $this->faker->slug(),
+            'key' => strtoupper($this->faker->lexify('???')),
             'name' => $this->faker->catchPhrase().' Project',
             'description' => $this->faker->realText(50),
             'organization_id' => \App\Models\Organization::factory(),

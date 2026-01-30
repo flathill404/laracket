@@ -60,6 +60,13 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('/projects/{project}/members/{user}', [ProjectMemberController::class, 'destroy']);
             Route::post('/projects/{project}/teams', [ProjectTeamController::class, 'store']);
             Route::delete('/projects/{project}/teams/{team}', [ProjectTeamController::class, 'destroy']);
+
+            // Tickets (Scoped)
+            Route::get('/projects/{project}/tickets', [TicketController::class, 'index']);
+            Route::post('/projects/{project}/tickets', [TicketController::class, 'store']);
+            Route::get('/projects/{project}/tickets/{ticket}', [TicketController::class, 'show']);
+            Route::put('/projects/{project}/tickets/{ticket}', [TicketController::class, 'update']);
+            Route::delete('/projects/{project}/tickets/{ticket}', [TicketController::class, 'destroy']);
         });
 
         // Teams (Scoped)

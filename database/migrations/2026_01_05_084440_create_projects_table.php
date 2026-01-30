@@ -14,11 +14,13 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->foreignUUid('organization_id')->constrained()->cascadeOnDelete();
             $table->string('slug');
+            $table->string('key');
             $table->string('name');
             $table->text('description')->nullable();
             $table->timestamps();
 
             $table->unique(['organization_id', 'slug']);
+            $table->unique(['organization_id', 'key']);
         });
 
         Schema::create('project_user', function (Blueprint $table) {

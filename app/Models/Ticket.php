@@ -31,10 +31,12 @@ use Laravel\Scout\Searchable;
  * @property-read int|null $assignees_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Comment> $comments
  * @property-read int|null $comments_count
- * @property-read \App\Models\User $creator
+ * @property-read \App\Models\User|null $creator
+ * @property-read mixed $full_id
  * @property-read \App\Models\Project $project
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $reviewers
  * @property-read int|null $reviewers_count
+ * @property-read \App\Models\User|null $user
  *
  * @method static \Database\Factories\TicketFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Ticket newModelQuery()
@@ -80,12 +82,67 @@ class Ticket extends Model
             'title' => $this->title,
             'description' => $this->description,
             'project_id' => $this->project_id,
-            'created_by' => $this->created_by,
+            'user_id' => $this->user_id,
+            'issue_number' => $this->issue_number,
+            'full_id' => $this->full_id,
             'status' => $this->status->value,
             'created_at' => $this->created_at?->timestamp,
             'updated_at' => $this->updated_at?->timestamp,
             'display_order' => $this->display_order,
         ];
+    }
+
+    /**
+     * Get the route key for the model.
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'issue_number';
+    }
+
+    /**
+     * Get the ticket's full ID (e.g. "WEB-1").
+     *
+     * @return \Illuminate\Database\Eloquent\Casts\Attribute<string, never>
+     */
+    protected function fullId(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::make(
+            get: fn () => $this->project->key.'-'.$this->issue_number,
+        );
+    }
+
+    /**
+     * Retrieve the model for a bound value.
+     *
+     * @param  mixed  $value
+     * @param  string|null  $field
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        if (\Illuminate\Support\Str::isUuid($value)) {
+            return $this->where('id', $value)->firstOrFail();
+        }
+
+        return parent::resolveRouteBinding($value, $field);
+    }
+
+    /**
+     * Retrieve the child model for a bound value.
+     *
+     * @param  string  $childType
+     * @param  mixed  $value
+     * @param  string|null  $field
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    public function resolveChildRouteBinding($childType, $value, $field)
+    {
+        if (\Illuminate\Support\Str::isUuid($value)) {
+            return $this->where('id', $value)->firstOrFail();
+        }
+
+        return parent::resolveChildRouteBinding($childType, $value, $field);
     }
 
     /**
@@ -99,9 +156,17 @@ class Ticket extends Model
     /**
      * @return BelongsTo<User, $this>
      */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     /**
