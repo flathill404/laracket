@@ -16,7 +16,7 @@
         "laravel/horizon": "^5.43",
         "laravel/sanctum": "^4.0",
         "laravel/scout": "^10.23",
-        "laravel/tinker": "^2.10.1",
+        "laravel/tinker": "^3.0.2",
         "league/flysystem-aws-s3-v3": "^3.30",
         "meilisearch/meilisearch-php": "^1.16",
         "predis/predis": "*"
