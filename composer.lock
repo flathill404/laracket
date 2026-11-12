@@ -473,20 +473,20 @@
         },
         {
             "name": "doctrine/deprecations",
-            "version": "1.1.6",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/deprecations.git",
-                "reference": "d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca"
+                "reference": "d2e16653a734c8784c1851ad68b02f997b53ca82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca",
-                "reference": "d4fe3e6fd9bb9e72557a19674f44d8ac7db4c6ca",
+                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/d2e16653a734c8784c1851ad68b02f997b53ca82",
+                "reference": "d2e16653a734c8784c1851ad68b02f997b53ca82",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1 || ^8.0"
+                "php": "^7.4 || ^8.0"
             },
             "conflict": {
                 "phpunit/phpunit": "<=7.5 || >=14"
@@ -515,9 +515,9 @@
             "homepage": "https://www.doctrine-project.org/",
             "support": {
                 "issues": "https://github.com/doctrine/deprecations/issues",
-                "source": "https://github.com/doctrine/deprecations/tree/1.1.6"
+                "source": "https://github.com/doctrine/deprecations/tree/1.2.0"
             },
-            "time": "2026-02-07T07:09:04+00:00"
+            "time": "2026-11-11T10:04:49+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -1712,16 +1712,16 @@
         },
         {
             "name": "laravel/horizon",
-            "version": "v5.50.1",
+            "version": "v5.51.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/horizon.git",
-                "reference": "9d65cae809688179ce2c4ace64eb75e886e245c5"
+                "reference": "e168e56b97a4a4bb2b7481c1ad01b1be1e49963e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/horizon/zipball/9d65cae809688179ce2c4ace64eb75e886e245c5",
-                "reference": "9d65cae809688179ce2c4ace64eb75e886e245c5",
+                "url": "https://api.github.com/repos/laravel/horizon/zipball/e168e56b97a4a4bb2b7481c1ad01b1be1e49963e",
+                "reference": "e168e56b97a4a4bb2b7481c1ad01b1be1e49963e",
                 "shasum": ""
             },
             "require": {
@@ -1786,9 +1786,9 @@
             ],
             "support": {
                 "issues": "https://github.com/laravel/horizon/issues",
-                "source": "https://github.com/laravel/horizon/tree/v5.50.1"
+                "source": "https://github.com/laravel/horizon/tree/v5.51.0"
             },
-            "time": "2026-10-13T06:25:19+00:00"
+            "time": "2026-11-02T15:26:17+00:00"
         },
         {
             "name": "laravel/passkeys",
